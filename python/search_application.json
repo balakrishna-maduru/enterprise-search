@@ -1,0 +1,73 @@
+{
+  "indices": [
+    "enterprise_documents"
+  ],
+  "template": {
+    "script": {
+      "source": {
+        "query": {
+          "bool": {
+            "should": [
+              {
+                "multi_match": {
+                  "query": "{{query_string}}",
+                  "fields": [
+                    "title^3",
+                    "content^2",
+                    "summary^2",
+                    "tags^1.5"
+                  ],
+                  "type": "best_fields",
+                  "fuzziness": "AUTO",
+                  "boost": 1.0
+                }
+              }
+            ],
+            "minimum_should_match": 1,
+            "filter": [
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "term": {
+                        "department": "{{user_department}}"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "highlight": {
+          "fields": {
+            "title": {},
+            "content": {},
+            "summary": {}
+          },
+          "pre_tags": [
+            "<mark>"
+          ],
+          "post_tags": [
+            "</mark>"
+          ]
+        },
+        "sort": [
+          {
+            "_score": {
+              "order": "desc"
+            }
+          },
+          {
+            "ratings.score": {
+              "order": "desc",
+              "missing": "_last"
+            }
+          }
+        ],
+        "size": "{{size}}",
+        "from": "{{from}}"
+      }
+    }
+  }
+}

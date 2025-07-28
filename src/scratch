@@ -1,0 +1,8 @@
+  const config = {
+    elasticEndpoint: process.env.REACT_APP_ELASTIC_ENDPOINT || 'http://localhost:9200',
+    elasticIndex: process.env.REACT_APP_ELASTIC_INDEX ||  'enterprise_documents',
+    openaiEndpoint: process.env.REACT_APP_LLM_ENDPOINT || 'https://api.openai.com/v1/chat/completions',
+    openaiApiKey: process.env.REACT_APP_LLM_KEY || '', // Set your OpenAI API key here
+    openaiModel: 'gpt-3.5-turbo',
+    apiKey: process.env.REACT_APP_API_KEY || ''
+  };

@@ -1,0 +1,106 @@
+{
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "summary": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "source": {
+        "type": "keyword"
+      },
+      "author": {
+        "type": "keyword"
+      },
+      "department": {
+        "type": "keyword"
+      },
+      "content_type": {
+        "type": "keyword"
+      },
+      "tags": {
+        "type": "keyword"
+      },
+      "timestamp": {
+        "type": "date"
+      },
+      "url": {
+        "type": "keyword",
+        "index": false
+      },
+      "ratings": {
+        "properties": {
+          "positive_count": {
+            "type": "integer"
+          },
+          "negative_count": {
+            "type": "integer"
+          },
+          "total_ratings": {
+            "type": "integer"
+          },
+          "score": {
+            "type": "float"
+          },
+          "last_updated": {
+            "type": "date"
+          }
+        }
+      },
+      "user_ratings": {
+        "type": "nested",
+        "properties": {
+          "user_id": {
+            "type": "keyword"
+          },
+          "rating": {
+            "type": "integer"
+          },
+          "timestamp": {
+            "type": "date"
+          },
+          "query": {
+            "type": "text",
+            "index": false
+          }
+        }
+      },
+      "priority": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "project": {
+        "type": "keyword"
+      },
+      "space": {
+        "type": "keyword"
+      },
+      "site": {
+        "type": "keyword"
+      }
+    }
+  },
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "analysis": {
+      "analyzer": {
+        "standard": {
+          "type": "standard",
+          "stopwords": "_english_"
+        }
+      }
+    }
+  }
+}
