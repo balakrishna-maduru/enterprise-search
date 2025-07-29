@@ -5,7 +5,7 @@ import { useSearch } from '../../contexts/SearchContext';
 import { useUnifiedUser } from "../../hooks/useUnifiedUser";
 import { useBranding } from '../../contexts/BrandingContext';
 import { generateAISummaryPDF } from '../../utils/pdfGenerator';
-import ResultCard from './ResultCard';
+import EnhancedResultCard from './EnhancedResultCard';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import QuickSearchSuggestions from '../Search/QuickSearchSuggestions';
 
@@ -208,11 +208,11 @@ const ResultsSection = ({ showSummaryModal, setShowSummaryModal }) => {
 
       {/* Search Results */}
       {searchResults.map((result) => (
-        <ResultCard
+        <EnhancedResultCard
           key={result.id}
           result={result}
-          isSelected={selectedResults.includes(result.id)}
-          onToggleSelection={() => toggleResultSelection(result.id)}
+          isSelected={selectedResults.some(r => r.id === result.id)}
+          onSelect={(result) => toggleResultSelection(result)}
         />
       ))}
 

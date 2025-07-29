@@ -1,0 +1,24 @@
+# FastAPI and ASGI server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Database and search
+elasticsearch==8.11.1
+
+# HTTP client
+httpx==0.25.2
+
+# Data validation and parsing
+pydantic==2.5.0
+
+# CORS support
+python-multipart==0.0.6
+
+# Environment variables
+python-dotenv==1.0.0
+
+# JSON handling
+orjson==3.9.10
+
+# Async support
+asyncio-mqtt==0.13.0

@@ -1,0 +1,140 @@
+{
+  "id": "1",
+  "name": "John Smith",
+  "title": "Chief Executive Officer",
+  "email": "john.smith@company.com",
+  "department": "Executive",
+  "location": "New York, NY",
+  "phone": "+1-555-0101",
+  "startDate": "2018-01-15",
+  "skills": ["Strategic Planning", "Leadership", "Business Development"],
+  "projects": ["Digital Transformation", "Market Expansion"],
+  "bio": "Experienced CEO with 15+ years in enterprise technology.",
+  "reports": [
+    {
+      "id": "2",
+      "name": "Sarah Johnson",
+      "title": "Chief Technology Officer",
+      "email": "sarah.johnson@company.com",
+      "department": "Technology",
+      "location": "San Francisco, CA",
+      "phone": "+1-555-0102",
+      "startDate": "2019-03-20",
+      "skills": ["Software Architecture", "Cloud Computing", "AI/ML"],
+      "projects": ["Platform Modernization", "AI Integration"],
+      "bio": "Technology leader specializing in scalable enterprise solutions.",
+      "reports": [
+        {
+          "id": "3",
+          "name": "Mike Chen",
+          "title": "Senior Software Engineer",
+          "email": "mike.chen@company.com",
+          "department": "Engineering",
+          "location": "San Francisco, CA",
+          "phone": "+1-555-0103",
+          "startDate": "2020-07-10",
+          "skills": ["React", "TypeScript", "Node.js"],
+          "projects": ["Search Platform", "User Interface"],
+          "bio": "Full-stack developer with expertise in modern web technologies."
+        },
+        {
+          "id": "4",
+          "name": "Lisa Rodriguez",
+          "title": "DevOps Engineer",
+          "email": "lisa.rodriguez@company.com",
+          "department": "Engineering",
+          "location": "Austin, TX",
+          "phone": "+1-555-0104",
+          "startDate": "2021-02-15",
+          "skills": ["Kubernetes", "Docker", "AWS"],
+          "projects": ["Infrastructure Automation", "CI/CD Pipeline"],
+          "bio": "DevOps specialist focused on scalable cloud infrastructure."
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "David Wilson",
+      "title": "Chief Financial Officer",
+      "email": "david.wilson@company.com",
+      "department": "Finance",
+      "location": "New York, NY",
+      "phone": "+1-555-0105",
+      "startDate": "2018-09-01",
+      "skills": ["Financial Planning", "Risk Management", "Compliance"],
+      "projects": ["Budget Optimization", "Financial Reporting"],
+      "bio": "Financial executive with strong background in corporate finance.",
+      "reports": [
+        {
+          "id": "6",
+          "name": "Emma Davis",
+          "title": "Financial Analyst",
+          "email": "emma.davis@company.com",
+          "department": "Finance",
+          "location": "New York, NY",
+          "phone": "+1-555-0106",
+          "startDate": "2022-01-10",
+          "skills": ["Financial Modeling", "Data Analysis", "Excel"],
+          "projects": ["Cost Analysis", "Revenue Forecasting"],
+          "bio": "Detail-oriented analyst with expertise in financial modeling."
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Jennifer Martinez",
+      "title": "VP of Human Resources",
+      "email": "jennifer.martinez@company.com",
+      "department": "Human Resources",
+      "location": "Chicago, IL",
+      "phone": "+1-555-0107",
+      "startDate": "2019-11-15",
+      "skills": ["Talent Acquisition", "Employee Development", "HR Strategy"],
+      "projects": ["Diversity Initiative", "Performance Management"],
+      "bio": "HR leader focused on building inclusive and high-performing teams.",
+      "reports": [
+        {
+          "id": "8",
+          "name": "Alex Thompson",
+          "title": "HR Specialist",
+          "email": "alex.thompson@company.com",
+          "department": "Human Resources",
+          "location": "Chicago, IL",
+          "phone": "+1-555-0108",
+          "startDate": "2021-08-20",
+          "skills": ["Recruitment", "Employee Relations", "HRIS"],
+          "projects": ["Onboarding Process", "Employee Satisfaction"],
+          "bio": "HR professional specializing in employee experience and recruitment."
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Robert Brown",
+      "title": "VP of Sales",
+      "email": "robert.brown@company.com",
+      "department": "Sales",
+      "location": "Los Angeles, CA",
+      "phone": "+1-555-0109",
+      "startDate": "2020-04-01",
+      "skills": ["Sales Strategy", "Customer Relations", "Team Leadership"],
+      "projects": ["Enterprise Sales", "Customer Success"],
+      "bio": "Sales leader with proven track record in enterprise software sales.",
+      "reports": [
+        {
+          "id": "10",
+          "name": "Jessica Lee",
+          "title": "Senior Account Manager",
+          "email": "jessica.lee@company.com",
+          "department": "Sales",
+          "location": "Los Angeles, CA",
+          "phone": "+1-555-0110",
+          "startDate": "2021-06-15",
+          "skills": ["Account Management", "Negotiation", "CRM"],
+          "projects": ["Key Account Growth", "Client Retention"],
+          "bio": "Account manager focused on building long-term client relationships."
+        }
+      ]
+    }
+  ]
+}
