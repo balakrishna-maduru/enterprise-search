@@ -2,19 +2,18 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional, Dict, Any
 from elasticsearch import Elasticsearch
-import os
+from config import settings
 from datetime import datetime
 
 router = APIRouter(prefix="/employees", tags=["employees"])
 
 # Initialize Elasticsearch client
 def get_es_client():
-    """Get Elasticsearch client"""
-    es_host = os.getenv('ELASTICSEARCH_HOST', 'localhost')
-    es_port = int(os.getenv('ELASTICSEARCH_PORT', '9200'))
-    
+    """Get Elasticsearch client using settings from config"""
     try:
-        es = Elasticsearch([f"http://{es_host}:{es_port}"])
+        # Parse URL from settings
+        es_url = settings.ELASTICSEARCH_URL or "http://localhost:9200"
+        es = Elasticsearch([es_url])
         if not es.ping():
             raise Exception("Cannot connect to Elasticsearch")
         return es

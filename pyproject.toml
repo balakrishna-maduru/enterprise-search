@@ -29,6 +29,14 @@ dev = [
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["api*", "python*"]
+exclude = ["tests*"]
+
 [tool.black]
 line-length = 88
 target-version = ['py311']

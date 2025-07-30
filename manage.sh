@@ -1,9 +1,16 @@
 #!/bin/bash
 
 # Enterprise Search Application Management Script
-# This script manages both the Python API backend and React frontend
+# This script manages both the Python API backend and React frontend using Conda
 
 set -e  # Exit on any error
+
+# Python Configuration - Prevent bytecode generation
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPYCACHEPREFIX=""
+
+# Conda Environment Configuration
+CONDA_ENV_NAME="enterprise-search"
 
 # Configuration
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -22,6 +29,23 @@ NC='\033[0m' # No Color
 
 # Create necessary directories
 mkdir -p "$LOG_DIR" "$PID_DIR"
+
+# Function to activate conda environment
+activate_conda_env() {
+    if command -v conda >/dev/null 2>&1; then
+        print_status "Activating conda environment: $CONDA_ENV_NAME"
+        source "$(conda info --base)/etc/profile.d/conda.sh"
+        conda activate "$CONDA_ENV_NAME" 2>/dev/null || {
+            print_error "Failed to activate conda environment '$CONDA_ENV_NAME'"
+            print_status "Creating conda environment from environment.yml..."
+            conda env create -f environment.yml
+            conda activate "$CONDA_ENV_NAME"
+        }
+    else
+        print_error "Conda not found. Please install Miniconda or Anaconda."
+        exit 1
+    fi
+}
 
 # Function to print colored output
 print_status() {
@@ -127,25 +151,20 @@ start_elasticsearch() {
 
 # Function to check if Python dependencies need to be installed
 check_python_deps() {
-    cd "$API_DIR"
-    
-    if [ ! -d ".venv" ]; then
-        return 1  # Need to install
+    # Check if conda environment exists
+    if ! conda env list | grep -q "^$CONDA_ENV_NAME "; then
+        return 1  # Need to create environment
     fi
     
-    source .venv/bin/activate
+    # Activate conda environment and check dependencies
+    source "$(conda info --base)/etc/profile.d/conda.sh"
+    conda activate "$CONDA_ENV_NAME"
     
     # Check if required packages are installed
     if ! python -c "import fastapi, uvicorn" 2>/dev/null; then
         return 1  # Need to install
     fi
     
-    # Check if requirements file is newer than the virtual environment
-    if [ "requirements-dev.txt" -nt ".venv" ]; then
-        return 1  # Need to install
-    fi
-    
-    cd "$PROJECT_ROOT"
     return 0  # Dependencies are up to date
 }
 
@@ -167,29 +186,21 @@ check_node_deps() {
 
 # Function to setup Python environment and install dependencies
 setup_python_env() {
-    print_status "Setting up Python environment..."
+    print_status "Setting up Python environment with Conda..."
     
-    cd "$API_DIR"
+    # Activate conda environment (create if needed)
+    activate_conda_env
     
-    # Check if virtual environment exists
-    if [ ! -d ".venv" ]; then
-        print_status "Creating Python virtual environment..."
-        python3 -m venv .venv
-    fi
-    
-    # Activate virtual environment and upgrade pip
-    source .venv/bin/activate
-    
-    # Only install dependencies if needed
+    # Install any additional dependencies if needed
     if ! check_python_deps; then
-        print_status "Installing Python dependencies..."
+        print_status "Installing additional Python dependencies..."
         pip install --upgrade pip
-        pip install -r requirements-dev.txt
+        if [ -f "$API_DIR/requirements-dev.txt" ]; then
+            pip install -r "$API_DIR/requirements-dev.txt"
+        fi
     else
-        print_status "Python dependencies are up to date, skipping installation"
+        print_status "Python dependencies are up to date"
     fi
-    
-    cd "$PROJECT_ROOT"
 }
 
 # Function to start the Python API backend
@@ -201,8 +212,10 @@ start_backend() {
         return 0
     fi
     
+    # Activate conda environment
+    activate_conda_env
+    
     cd "$API_DIR"
-    source .venv/bin/activate
     
     if [ "$DEBUG_MODE" = "true" ]; then
         print_debug "Starting backend in debug mode with auto-reload..."
@@ -259,18 +272,10 @@ start_frontend() {
 setup_elasticsearch_data() {
     print_status "Setting up Elasticsearch data..."
     
-    cd "$PYTHON_DIR"
+    # Activate conda environment
+    activate_conda_env
     
-    # Create virtual environment if it doesn't exist
-    if [ ! -d ".venv" ]; then
-        print_status "Creating Python virtual environment for data setup..."
-        python3 -m venv .venv
-        source .venv/bin/activate
-        pip install --upgrade pip
-        pip install -r requirements.txt
-    else
-        source .venv/bin/activate
-    fi
+    cd "$PYTHON_DIR"
     
     # Run Elasticsearch setup
     print_status "Setting up Elasticsearch indices and data..."
@@ -439,15 +444,157 @@ case "${1:-}" in
         setup_elasticsearch_data
         print_status "Setup completed successfully!"
         ;;
+    "install")
+        case "${2:-}" in
+            "clean")
+                print_status "=== CLEAN INSTALLATION ==="
+                print_warning "This will remove and recreate the conda environment and node_modules"
+                read -p "Are you sure you want to continue? (y/N): " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    # Stop all services first
+                    stop_all
+                    
+                    # Remove conda environment
+                    print_status "Removing existing conda environment: $CONDA_ENV_NAME"
+                    conda env remove -n "$CONDA_ENV_NAME" -y 2>/dev/null || print_warning "Environment didn't exist"
+                    
+                    # Remove node_modules and package-lock
+                    print_status "Cleaning Node.js artifacts..."
+                    cd "$FRONTEND_DIR"
+                    rm -rf node_modules package-lock.json npm-debug.log* .npm
+                    
+                    # Remove Python cache files
+                    print_status "Cleaning Python cache files..."
+                    find "$PROJECT_ROOT" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+                    find "$PROJECT_ROOT" -type f -name "*.pyc" -delete 2>/dev/null || true
+                    find "$PROJECT_ROOT" -type f -name "*.pyo" -delete 2>/dev/null || true
+                    
+                    # Clean logs and PIDs
+                    print_status "Cleaning logs and PID files..."
+                    rm -rf "$LOG_DIR"/* "$PID_DIR"/*
+                    
+                    # Fresh installation
+                    print_status "Starting fresh installation..."
+                    conda env create -f environment.yml
+                    activate_conda_env
+                    
+                    # Install Python dependencies
+                    print_status "Installing Python dependencies..."
+                    cd "$API_DIR"
+                    pip install --upgrade pip
+                    if [ -f "requirements-dev.txt" ]; then
+                        pip install -r requirements-dev.txt
+                    fi
+                    
+                    # Install Node.js dependencies
+                    print_status "Installing Node.js dependencies..."
+                    cd "$FRONTEND_DIR"
+                    npm install --legacy-peer-deps
+                    
+                    print_status "✅ Clean installation completed successfully!"
+                    print_status "Run './manage.sh start' to start the application"
+                else
+                    print_status "Clean installation cancelled"
+                fi
+                ;;
+            "deps"|"dependencies"|"")
+                print_status "=== DEPENDENCY INSTALLATION/UPDATE ==="
+                print_status "Installing/updating all dependencies..."
+                
+                # Setup Python environment and dependencies
+                activate_conda_env
+                cd "$API_DIR"
+                pip install --upgrade pip
+                if [ -f "requirements-dev.txt" ]; then
+                    pip install -r requirements-dev.txt
+                fi
+                
+                # Install Node.js dependencies
+                cd "$FRONTEND_DIR"
+                print_status "Installing/updating Node.js dependencies..."
+                npm install --legacy-peer-deps
+                
+                print_status "✅ Dependencies installation completed!"
+                ;;
+            "elasticsearch"|"es")
+                print_status "=== ELASTICSEARCH SETUP ==="
+                start_elasticsearch || {
+                    print_error "Failed to start Elasticsearch"
+                    exit 1
+                }
+                setup_elasticsearch_data
+                print_status "✅ Elasticsearch setup completed!"
+                ;;
+            "python")
+                print_status "=== PYTHON ENVIRONMENT SETUP ==="
+                activate_conda_env
+                cd "$API_DIR"
+                pip install --upgrade pip
+                if [ -f "requirements-dev.txt" ]; then
+                    pip install -r requirements-dev.txt
+                fi
+                print_status "✅ Python environment setup completed!"
+                ;;
+            "node"|"npm")
+                print_status "=== NODE.JS DEPENDENCIES SETUP ==="
+                cd "$FRONTEND_DIR"
+                npm install --legacy-peer-deps
+                print_status "✅ Node.js dependencies setup completed!"
+                ;;
+            "full")
+                print_status "=== FULL INSTALLATION ==="
+                print_status "Installing everything from scratch (keeping existing environments)..."
+                
+                # Setup Python environment
+                activate_conda_env
+                cd "$API_DIR"
+                pip install --upgrade pip
+                if [ -f "requirements-dev.txt" ]; then
+                    pip install -r requirements-dev.txt
+                fi
+                
+                # Setup Node.js dependencies
+                cd "$FRONTEND_DIR"
+                npm install --legacy-peer-deps
+                
+                # Setup Elasticsearch
+                start_elasticsearch || {
+                    print_error "Failed to start Elasticsearch"
+                    exit 1
+                }
+                setup_elasticsearch_data
+                
+                print_status "✅ Full installation completed!"
+                print_status "Run './manage.sh start' to start the application"
+                ;;
+            *)
+                echo "Usage: $0 install {clean|deps|elasticsearch|python|node|full}"
+                echo
+                echo "Install Options:"
+                echo "  clean         - Clean installation (removes environments and reinstalls everything)"
+                echo "  deps          - Install/update all dependencies (default)"
+                echo "  elasticsearch - Setup Elasticsearch data only"
+                echo "  python        - Setup Python environment and dependencies only"
+                echo "  node          - Install Node.js dependencies only"
+                echo "  full          - Full installation (dependencies + Elasticsearch setup)"
+                echo
+                echo "Examples:"
+                echo "  $0 install clean      # Complete clean installation"
+                echo "  $0 install deps       # Update all dependencies"
+                echo "  $0 install python     # Setup Python environment only"
+                echo "  $0 install full       # Full installation"
+                exit 1
+                ;;
+        esac
+        ;;
     "install-deps")
         print_status "Force installing all dependencies..."
+        activate_conda_env
         cd "$API_DIR"
-        if [ -d ".venv" ]; then
-            source .venv/bin/activate
-            pip install --upgrade pip
+        pip install --upgrade pip
+        if [ -f "requirements-dev.txt" ]; then
             pip install -r requirements-dev.txt
-        else
-            setup_python_env
         fi
         cd "$FRONTEND_DIR"
         npm install --legacy-peer-deps
@@ -519,7 +666,7 @@ case "${1:-}" in
     *)
         echo "Enterprise Search Application Manager"
         echo
-        echo "Usage: $0 {start|stop|restart|status|logs|dev|setup|install-deps|elasticsearch}"
+        echo "Usage: $0 {start|stop|restart|status|logs|dev|setup|install|install-deps|elasticsearch}"
         echo
         echo "Commands:"
         echo "  start       - Start all services (backend + frontend)"
@@ -529,15 +676,19 @@ case "${1:-}" in
         echo "  logs        - Show logs (usage: logs [backend|frontend])"
         echo "  dev         - Start in development mode with auto-reload"
         echo "  setup       - Setup Python environment and Elasticsearch data"
-        echo "  install-deps - Force install/update all dependencies"
+        echo "  install     - Install/reinstall components (clean|deps|python|node|elasticsearch|full)"
+        echo "  install-deps - Force install/update all dependencies (legacy)"
         echo "  elasticsearch - Manage Elasticsearch (start|stop|restart|logs)"
         echo
         echo "Examples:"
         echo "  $0 dev                    # Start in development mode"
         echo "  $0 start                  # Start all services"
+        echo "  $0 install clean          # Clean installation (removes everything)"
+        echo "  $0 install deps           # Update all dependencies"
+        echo "  $0 install python         # Setup Python environment only"
+        echo "  $0 install full           # Full installation with Elasticsearch"
         echo "  $0 logs backend          # Show backend logs"
         echo "  $0 status                # Show service status"
-        echo "  $0 install-deps          # Force update dependencies"
         echo "  $0 elasticsearch start   # Start only Elasticsearch"
         echo "  $0 elasticsearch logs    # Show Elasticsearch logs"
         echo

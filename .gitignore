@@ -23,6 +23,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
+*.pyo
 .Python
 build/
 develop-eggs/
@@ -42,13 +44,16 @@ wheels/
 MANIFEST
 
 # Virtual Environment
-.env
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Conda environments
+.conda/
+conda-meta/
 
 # IDEs
 .vscode/
@@ -85,5 +90,34 @@ elasticsearch/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Test and temporary files
+test_*.py
+test_*.js
+test_*.ts
+*_test.py
+*_test.js
+*_test.ts
+*.test.py
+*.test.js
+*.test.ts
+temp/
+tmp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Development and debug files
+debug_*
+debug.*
+*.debug
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+*.code-workspace
 
 .env

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enterprise Search API Package
+Python utilities package for Enterprise Search
 """
 import sys
 import os

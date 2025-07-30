@@ -2,7 +2,7 @@
   "name": "enterprise-search",
   "version": "1.0.0",
   "description": "Enterprise Search with Elasticsearch Search Applications and OpenAI integration",
-  "main": "src/index.js",
+  "main": "src/index.tsx",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
