@@ -68,19 +68,27 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setConversationalSummary('');
   }, [currentUser]);
 
-  // Debounced search - simplified to prevent focus issues
+  // Clear results when search query is cleared
   useEffect(() => {
-    if (searchQuery) {
-      const debounceTimer = setTimeout(() => {
-        handleSearch(searchQuery);
-      }, 300);
-      
-      return () => clearTimeout(debounceTimer);
-    } else {
+    if (!searchQuery.trim()) {
       setSearchResults([]);
       setConversationalSummary('');
     }
-  }, [searchQuery, selectedFilters]); // Removed handleSearch dependency
+  }, [searchQuery]);
+
+  // Manual search function - only called when user explicitly triggers search
+  const executeManualSearch = useCallback(async (query?: string): Promise<void> => {
+    const searchTerm = query || searchQuery;
+    console.log('🔍 Manual search triggered for:', searchTerm);
+    
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
+      setConversationalSummary('');
+      return;
+    }
+    
+    await handleSearch(searchTerm);
+  }, [searchQuery]);
 
   // Simple handleSearch function without useCallback
   const handleSearch = async (query: string): Promise<void> => {
@@ -158,20 +166,6 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setConversationalSummary('');
   }, [currentUser]);
 
-  // Debounced search - simplified to prevent focus issues
-  useEffect(() => {
-    if (searchQuery) {
-      const debounceTimer = setTimeout(() => {
-        handleSearch(searchQuery);
-      }, 300);
-      
-      return () => clearTimeout(debounceTimer);
-    } else {
-      setSearchResults([]);
-      setConversationalSummary('');
-    }
-  }, [searchQuery, selectedFilters]); // Removed handleSearch dependency
-
   // Execute a saved search - this function can be called by saved searches
   const executeSearch = useCallback(async (query: string, filters: Partial<SearchFilters> = {}): Promise<void> => {
     setSearchQuery(query);
@@ -227,7 +221,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     testConnection,
     setSearchMode,
     setConnectionStatus,
-    executeSearch,
+    executeSearch: executeManualSearch,
     searchType,
     setSearchType,
     toggleResultSelection,
@@ -248,7 +242,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     testConnection,
     setSearchMode,
     setConnectionStatus,
-    executeSearch,
+    executeManualSearch,
     setSearchType,
     toggleResultSelection,
     selectAllResults,
