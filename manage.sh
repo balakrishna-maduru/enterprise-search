@@ -84,11 +84,85 @@ start_elasticsearch() {
         return 0
     fi
     
+    # Try to start with Docker Compose first
+    if command -v docker-compose >/dev/null 2>&1 || command -v docker >/dev/null 2>&1; then
+        print_status "Starting Elasticsearch 8.18.0 using Docker Compose..."
+        
+        # Try docker-compose first, then docker compose
+        if command -v docker-compose >/dev/null 2>&1; then
+            docker-compose up -d elasticsearch 2>/dev/null || {
+                print_warning "docker-compose failed, trying docker compose..."
+                docker compose up -d elasticsearch 2>/dev/null || {
+                    print_error "Both docker-compose and docker compose failed"
+                }
+            }
+        else
+            docker compose up -d elasticsearch 2>/dev/null || {
+                print_error "docker compose failed"
+            }
+        fi
+        
+        # Wait for Elasticsearch to be ready
+        print_status "Waiting for Elasticsearch to be ready..."
+        local attempts=30
+        while [ $attempts -gt 0 ]; do
+            if curl -s -f "http://localhost:9200" > /dev/null 2>&1; then
+                print_status "Elasticsearch 8.18.0 is ready!"
+                return 0
+            fi
+            echo -n "."
+            sleep 2
+            attempts=$((attempts - 1))
+        done
+        print_error "Elasticsearch failed to start with Docker"
+    fi
+    
     print_warning "Elasticsearch is not running. Please start Elasticsearch manually:"
-    print_warning "  brew services start elasticsearch"
+    print_warning "  docker-compose up -d elasticsearch    # Using Docker Compose (recommended)"
+    print_warning "  brew services start elasticsearch     # Using Homebrew"
     print_warning "  or"
-    print_warning "  docker run -d --name elasticsearch -p 9200:9200 -e \"discovery.type=single-node\" docker.elastic.co/elasticsearch/elasticsearch:8.15.0"
+    print_warning "  docker run -d --name elasticsearch -p 9200:9200 -e \"discovery.type=single-node\" -e \"xpack.security.enabled=false\" docker.elastic.co/elasticsearch/elasticsearch:8.18.0"
     return 1
+}
+
+# Function to check if Python dependencies need to be installed
+check_python_deps() {
+    cd "$API_DIR"
+    
+    if [ ! -d ".venv" ]; then
+        return 1  # Need to install
+    fi
+    
+    source .venv/bin/activate
+    
+    # Check if required packages are installed
+    if ! python -c "import fastapi, uvicorn" 2>/dev/null; then
+        return 1  # Need to install
+    fi
+    
+    # Check if requirements file is newer than the virtual environment
+    if [ "requirements-dev.txt" -nt ".venv" ]; then
+        return 1  # Need to install
+    fi
+    
+    cd "$PROJECT_ROOT"
+    return 0  # Dependencies are up to date
+}
+
+# Function to check if Node.js dependencies need to be installed
+check_node_deps() {
+    cd "$FRONTEND_DIR"
+    
+    if [ ! -d "node_modules" ]; then
+        return 1  # Need to install
+    fi
+    
+    # Check if package.json is newer than node_modules
+    if [ "package.json" -nt "node_modules" ]; then
+        return 1  # Need to install
+    fi
+    
+    return 0  # Dependencies are up to date
 }
 
 # Function to setup Python environment and install dependencies
@@ -106,10 +180,14 @@ setup_python_env() {
     # Activate virtual environment and upgrade pip
     source .venv/bin/activate
     
-    # Install/upgrade dependencies
-    print_status "Installing Python dependencies..."
-    pip install --upgrade pip
-    pip install -r requirements-dev.txt
+    # Only install dependencies if needed
+    if ! check_python_deps; then
+        print_status "Installing Python dependencies..."
+        pip install --upgrade pip
+        pip install -r requirements-dev.txt
+    else
+        print_status "Python dependencies are up to date, skipping installation"
+    fi
     
     cd "$PROJECT_ROOT"
 }
@@ -151,9 +229,13 @@ start_frontend() {
     
     cd "$FRONTEND_DIR"
     
-    # Install/update dependencies
-    print_status "Installing/updating Node.js dependencies..."
-    npm install
+    # Only install dependencies if needed
+    if ! check_node_deps; then
+        print_status "Installing/updating Node.js dependencies..."
+        npm install --legacy-peer-deps
+    else
+        print_status "Node.js dependencies are up to date, skipping installation"
+    fi
     
     # Clear any cached builds
     rm -rf node_modules/.cache
@@ -357,10 +439,87 @@ case "${1:-}" in
         setup_elasticsearch_data
         print_status "Setup completed successfully!"
         ;;
+    "install-deps")
+        print_status "Force installing all dependencies..."
+        cd "$API_DIR"
+        if [ -d ".venv" ]; then
+            source .venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements-dev.txt
+        else
+            setup_python_env
+        fi
+        cd "$FRONTEND_DIR"
+        npm install --legacy-peer-deps
+        print_status "Dependencies installation completed!"
+        ;;
+    "elasticsearch")
+        case "${2:-}" in
+            "start")
+                print_status "Starting Elasticsearch 8.18.0..."
+                if command -v docker-compose >/dev/null 2>&1; then
+                    docker-compose up -d elasticsearch 2>/dev/null || {
+                        print_error "Failed to start with docker-compose, trying docker compose..."
+                        docker compose up -d elasticsearch 2>/dev/null || {
+                            print_error "Failed to start Elasticsearch with Docker"
+                            exit 1
+                        }
+                    }
+                else
+                    docker compose up -d elasticsearch 2>/dev/null || {
+                        print_error "Failed to start Elasticsearch with Docker"
+                        exit 1
+                    }
+                fi
+                
+                # Wait for Elasticsearch to be ready
+                print_status "Waiting for Elasticsearch to start..."
+                local attempts=30
+                while [ $attempts -gt 0 ]; do
+                    if curl -s -f "http://localhost:9200" > /dev/null 2>&1; then
+                        print_status "Elasticsearch 8.18.0 is ready!"
+                        return 0
+                    fi
+                    echo -n "."
+                    sleep 2
+                    attempts=$((attempts - 1))
+                done
+                print_error "Elasticsearch failed to start within 60 seconds"
+                ;;
+            "stop")
+                print_status "Stopping Elasticsearch..."
+                if command -v docker-compose >/dev/null 2>&1; then
+                    docker-compose stop elasticsearch 2>/dev/null
+                else
+                    docker compose stop elasticsearch 2>/dev/null
+                fi
+                ;;
+            "restart")
+                print_status "Restarting Elasticsearch..."
+                if command -v docker-compose >/dev/null 2>&1; then
+                    docker-compose restart elasticsearch 2>/dev/null
+                else
+                    docker compose restart elasticsearch 2>/dev/null
+                fi
+                ;;
+            "logs")
+                print_status "Showing Elasticsearch logs..."
+                if command -v docker-compose >/dev/null 2>&1; then
+                    docker-compose logs -f elasticsearch
+                else
+                    docker compose logs -f elasticsearch
+                fi
+                ;;
+            *)
+                echo "Usage: $0 elasticsearch {start|stop|restart|logs}"
+                exit 1
+                ;;
+        esac
+        ;;
     *)
         echo "Enterprise Search Application Manager"
         echo
-        echo "Usage: $0 {start|stop|restart|status|logs|dev|setup}"
+        echo "Usage: $0 {start|stop|restart|status|logs|dev|setup|install-deps|elasticsearch}"
         echo
         echo "Commands:"
         echo "  start       - Start all services (backend + frontend)"
@@ -370,12 +529,17 @@ case "${1:-}" in
         echo "  logs        - Show logs (usage: logs [backend|frontend])"
         echo "  dev         - Start in development mode with auto-reload"
         echo "  setup       - Setup Python environment and Elasticsearch data"
+        echo "  install-deps - Force install/update all dependencies"
+        echo "  elasticsearch - Manage Elasticsearch (start|stop|restart|logs)"
         echo
         echo "Examples:"
         echo "  $0 dev                    # Start in development mode"
         echo "  $0 start                  # Start all services"
         echo "  $0 logs backend          # Show backend logs"
         echo "  $0 status                # Show service status"
+        echo "  $0 install-deps          # Force update dependencies"
+        echo "  $0 elasticsearch start   # Start only Elasticsearch"
+        echo "  $0 elasticsearch logs    # Show Elasticsearch logs"
         echo
         exit 1
         ;;

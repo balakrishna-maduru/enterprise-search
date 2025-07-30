@@ -1,0 +1,45 @@
+[project]
+name = "enterprise-search"
+version = "1.0.0"
+description = "Enterprise Search Application with React Frontend and FastAPI Backend"
+requires-python = ">=3.11.0"
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "httpx>=0.25.2",
+    "python-jose[cryptography]>=3.3.0",
+    "python-multipart>=0.0.6",
+    "pydantic[email]>=2.4.2",
+    "pydantic-settings>=2.0.3",
+    "python-dotenv>=1.0.0",
+    "elasticsearch>=8.18.0",
+    "faker>=18.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.3",
+    "pytest-asyncio>=0.21.1",
+    "black>=23.11.0",
+    "flake8>=6.1.0",
+    "mypy>=1.7.0"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["api", "python"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
