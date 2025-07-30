@@ -52,24 +52,31 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
   const getCompanyName = (format: 'name' | 'short' | 'full' | 'domain' = 'name'): string => {
     switch (format) {
       case 'short':
-        return config.company.shortName;
+        return config.companyName.short;
       case 'full':
-        return config.company.fullName;
+        return config.companyName.full;
       case 'domain':
-        return config.company.domain;
+        return 'enterprise-search.com'; // Default domain since it's not in the config
       default:
-        return config.company.name;
+        return config.companyName.full;
     }
   };
 
   const getColor = (colorType: string, shade: number = 600): string => {
-    const colorPalette = config.colors[colorType];
-    if (!colorPalette) return config.colors.primary[600];
-    return colorPalette[shade] || colorPalette[600];
+    const colorValue = config.colors[colorType as keyof typeof config.colors];
+    return colorValue || config.colors.primary;
   };
 
   const getThemeValue = (property: string): string => {
-    return config.theme[property] || '';
+    // Since we don't have a theme object anymore, map common properties to colors
+    const themeMap: Record<string, string> = {
+      'primary': config.colors.primary,
+      'secondary': config.colors.secondary,
+      'accent': config.colors.accent,
+      'background': config.colors.background,
+      'text': config.colors.text,
+    };
+    return themeMap[property] || config.colors.primary;
   };
 
   const value: BrandingContextType = {

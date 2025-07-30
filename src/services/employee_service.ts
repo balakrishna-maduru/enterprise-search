@@ -89,7 +89,20 @@ export class EmployeeService {
       }
 
       const data = await response.json();
-      return data.data?.hierarchy || null;
+      
+      if (!data.success || !data.data) {
+        return null;
+      }
+
+      // Return the hierarchy data as received from API
+      const hierarchyData: EmployeeHierarchy = {
+        employee: data.data.employee,
+        hierarchy_tree: data.data.hierarchy_tree,
+        management_chain: data.data.management_chain || [],
+        total_employees: data.data.total_employees || 0
+      };
+
+      return hierarchyData;
     } catch (error) {
       console.error('Employee hierarchy fetch error:', error);
       return null;
@@ -173,31 +186,34 @@ export class EmployeeService {
   }
 
   private buildOrgChart(employees: Employee[]): HierarchyNode[] {
-    const employeeMap = new Map<number, HierarchyNode>();
+    const employeeMap = new Map<string, HierarchyNode>();
     const rootNodes: HierarchyNode[] = [];
 
     // Create nodes for all employees
     employees.forEach(employee => {
-      employeeMap.set(employee.id, {
-        id: employee.id,
+      employeeMap.set(employee.id.toString(), {
+        id: employee.id.toString(),
         name: employee.name,
         title: employee.title,
+        email: employee.email,
+        department: employee.department,
         level: employee.level,
-        children: []
+        is_target: false,
+        reports: []
       });
     });
 
     // Build parent-child relationships
     employees.forEach(employee => {
-      const node = employeeMap.get(employee.id);
+      const node = employeeMap.get(employee.id.toString());
       if (node) {
-        if (employee.manager_id && employeeMap.has(employee.manager_id)) {
-          const parentNode = employeeMap.get(employee.manager_id);
-          if (parentNode && parentNode.children) {
-            parentNode.children.push(node);
+        if (employee.manager_id && employeeMap.has(employee.manager_id.toString())) {
+          const parentNode = employeeMap.get(employee.manager_id.toString());
+          if (parentNode && parentNode.reports) {
+            parentNode.reports.push(node);
           }
         } else {
-          // This is a root node (no manager or manager not found)
+          // Root node (CEO or top-level)
           rootNodes.push(node);
         }
       }

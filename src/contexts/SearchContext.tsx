@@ -1,5 +1,5 @@
 // src/contexts/SearchContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from 'react';
 import { config } from '../config';
 import { useUnifiedUser } from '../hooks/useUnifiedUser';
 import { useElasticsearch } from '../hooks/useElasticsearch';
@@ -25,7 +25,7 @@ export const useSearch = (): SearchContextType => {
 
 export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const { currentUser } = useUnifiedUser();
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQueryState] = useState<string>('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedResults, setSelectedResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,7 +39,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [searchType, setSearchType] = useState<'documents' | 'employees' | 'all'>('all');
 
-  const employeeService = new EmployeeService();
+  // Use useMemo with empty dependency array to create service only once
+  const employeeService = useMemo(() => new EmployeeService(), []);
 
   // Use API hooks or legacy hooks based on configuration
   const legacySearch = useElasticsearch();
@@ -54,15 +55,20 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const { searchElastic, connectionStatus, searchMode, testConnection, setSearchMode, setConnectionStatus } = searchHooks;
   const { generateSummary, generateComprehensiveSummary, generateChatResponse } = llmHooks;
 
+  // Memoize setSearchQuery to prevent unnecessary re-renders
+  const setSearchQuery = useCallback((query: string) => {
+    setSearchQueryState(query);
+  }, []);
+
   // Clear selections when user changes
   useEffect(() => {
     setSelectedResults([]);
-    setSearchQuery('');
+    setSearchQueryState('');
     setSearchResults([]);
     setConversationalSummary('');
   }, [currentUser]);
 
-  // Debounced search
+  // Debounced search - simplified to prevent focus issues
   useEffect(() => {
     if (searchQuery) {
       const debounceTimer = setTimeout(() => {
@@ -74,8 +80,9 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       setSearchResults([]);
       setConversationalSummary('');
     }
-  }, [searchQuery, selectedFilters]);
+  }, [searchQuery, selectedFilters]); // Removed handleSearch dependency
 
+  // Simple handleSearch function without useCallback
   const handleSearch = async (query: string): Promise<void> => {
     console.log('🔍 Searching for:', query);
     
@@ -143,8 +150,30 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     }
   };
 
+  // Clear selections when user changes
+  useEffect(() => {
+    setSelectedResults([]);
+    setSearchQueryState('');
+    setSearchResults([]);
+    setConversationalSummary('');
+  }, [currentUser]);
+
+  // Debounced search - simplified to prevent focus issues
+  useEffect(() => {
+    if (searchQuery) {
+      const debounceTimer = setTimeout(() => {
+        handleSearch(searchQuery);
+      }, 300);
+      
+      return () => clearTimeout(debounceTimer);
+    } else {
+      setSearchResults([]);
+      setConversationalSummary('');
+    }
+  }, [searchQuery, selectedFilters]); // Removed handleSearch dependency
+
   // Execute a saved search - this function can be called by saved searches
-  const executeSearch = async (query: string, filters: Partial<SearchFilters> = {}): Promise<void> => {
+  const executeSearch = useCallback(async (query: string, filters: Partial<SearchFilters> = {}): Promise<void> => {
     setSearchQuery(query);
     setSelectedFilters({
       source: filters.source || [],
@@ -153,28 +182,30 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     });
     
     // The useEffect will trigger the search automatically when searchQuery changes
-  };
+  }, [setSearchQuery]);
 
-  const toggleResultSelection = (result: SearchResult): void => {
-    setSelectedResults(prev => {
-      const isSelected = prev.some(r => r.id === result.id);
+  const toggleResultSelection = useCallback((result: SearchResult): void => {
+    setSelectedResults((prev: SearchResult[]) => {
+      const isSelected = prev.some((r: SearchResult) => r.id === result.id);
       if (isSelected) {
-        return prev.filter(r => r.id !== result.id);
+        return prev.filter((r: SearchResult) => r.id !== result.id);
       } else {
         return [...prev, result];
       }
     });
-  };
+  }, []);
 
-  const selectAllResults = (): void => {
-    if (selectedResults.length === searchResults.length) {
-      setSelectedResults([]);
-    } else {
-      setSelectedResults([...searchResults]);
-    }
-  };
+  const selectAllResults = useCallback((): void => {
+    setSelectedResults((prev: SearchResult[]) => {
+      if (prev.length === searchResults.length) {
+        return [];
+      } else {
+        return [...searchResults];
+      }
+    });
+  }, [searchResults]);
 
-  const value: SearchContextType = {
+  const value: SearchContextType = useMemo(() => ({
     searchQuery,
     setSearchQuery,
     searchResults,
@@ -202,7 +233,27 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     toggleResultSelection,
     selectAllResults,
     generateComprehensiveSummary
-  };
+  }), [
+    searchQuery,
+    searchResults,
+    selectedResults,
+    isLoading,
+    isConversationalMode,
+    conversationalSummary,
+    selectedFilters,
+    showFilters,
+    connectionStatus,
+    searchMode,
+    searchType,
+    testConnection,
+    setSearchMode,
+    setConnectionStatus,
+    executeSearch,
+    setSearchType,
+    toggleResultSelection,
+    selectAllResults,
+    generateComprehensiveSummary
+  ]);
 
   return (
     <SearchContext.Provider value={value}>

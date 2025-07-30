@@ -1,10 +1,9 @@
 // src/data/users.ts
 import { User } from '../types';
-import { getCurrentCompanyConfig } from '../config/branding';
 
 const getCompanyDomain = (): string => {
-  const config = getCurrentCompanyConfig();
-  return config.company.domain;
+  // Return a default domain since it's not in the config anymore
+  return 'enterprise-search.com';
 };
 
 export const availableUsers: User[] = [

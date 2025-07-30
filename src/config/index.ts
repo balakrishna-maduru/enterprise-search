@@ -1,7 +1,7 @@
 // Application configuration
 export const config = {
   api: {
-    baseUrl: 'http://localhost:8000',
+    baseUrl: 'http://localhost:8000/api/v1',
     useApiLayer: true,
     timeout: 30000,
   },

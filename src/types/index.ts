@@ -19,17 +19,20 @@ export interface Employee {
 
 export interface EmployeeHierarchy {
   employee: Employee;
-  hierarchy_path: HierarchyNode[];
-  direct_reports: HierarchyNode[];
-  total_reports: number;
+  hierarchy_tree: HierarchyNode;
+  management_chain: HierarchyNode[];
+  total_employees: number;
 }
 
 export interface HierarchyNode {
-  id: number;
+  id: string;
   name: string;
   title: string;
+  department: string;
+  email: string;
   level: number;
-  children?: HierarchyNode[];
+  reports: HierarchyNode[];
+  is_target: boolean;
 }
 
 export interface EmployeeSearchResult extends SearchResult {

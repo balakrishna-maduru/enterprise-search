@@ -93,7 +93,8 @@ async def search_employees(
         # Format results
         employees = []
         for hit in result['hits']['hits']:
-            employee = hit['_source']
+            employee = hit['_source'].copy()
+            employee['id'] = hit['_id']  # Add the document ID to the source
             employee['score'] = hit['_score']
             employees.append(employee)
         
@@ -118,10 +119,12 @@ async def get_employee(employee_id: str):
         es = get_es_client()
         
         result = es.get(index="employees", id=employee_id)
+        employee_data = result['_source'].copy()
+        employee_data['id'] = result['_id']  # Add the document ID to the source
         
         return {
             "success": True,
-            "data": result['_source']
+            "data": employee_data
         }
         
     except Exception as e:
@@ -139,7 +142,8 @@ async def get_employee_hierarchy(employee_id: str):
         
         # Get the employee
         employee_doc = es.get(index="employees", id=employee_id)
-        employee = employee_doc['_source']
+        employee = employee_doc['_source'].copy()
+        employee['id'] = employee_doc['_id']  # Add the document ID to the source
         
         # Get all employees to build hierarchy
         all_employees_result = es.search(
@@ -147,11 +151,16 @@ async def get_employee_hierarchy(employee_id: str):
             body={
                 "query": {"match_all": {}},
                 "size": 1000,
-                "_source": ["id", "name", "title", "department", "manager_id", "level", "email"]
+                "_source": ["name", "title", "department", "manager_id", "level", "email"]
             }
         )
         
-        all_employees = {emp['_source']['id']: emp['_source'] for emp in all_employees_result['hits']['hits']}
+        # Build employee dict using document _id as the key and include id in source
+        all_employees = {}
+        for emp_doc in all_employees_result['hits']['hits']:
+            emp_source = emp_doc['_source'].copy()
+            emp_source['id'] = emp_doc['_id']  # Add the document ID to the source
+            all_employees[emp_doc['_id']] = emp_source
         
         # Build hierarchy tree
         def build_hierarchy_node(emp_id: str, employees_dict: Dict[str, Any]) -> Dict[str, Any]:

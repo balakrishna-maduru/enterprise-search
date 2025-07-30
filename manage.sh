@@ -137,7 +137,7 @@ start_backend() {
     cd "$PROJECT_ROOT"
     
     # Wait for backend to be ready
-    wait_for_service "http://localhost:8000/health" "Python API Backend"
+    wait_for_service "http://localhost:8000/api/v1/health" "Python API Backend"
 }
 
 # Function to start the React frontend
