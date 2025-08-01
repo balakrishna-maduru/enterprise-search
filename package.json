@@ -1,7 +1,7 @@
 {
-  "name": "enterprise-search",
+  "name": "knowkute-dbs-enterprise-search",
   "version": "1.0.0",
-  "description": "Enterprise Search with Elasticsearch Search Applications and OpenAI integration",
+  "description": "Knowkute - DBS Bank Enterprise Search with Elasticsearch Search Applications and AI integration",
   "main": "src/index.tsx",
   "scripts": {
     "start": "react-scripts start",

@@ -1,12 +1,12 @@
 // src/contexts/SearchContext.tsx
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from 'react';
 import { config } from '../config';
 import { useUnifiedUser } from '../hooks/useUnifiedUser';
 import { useElasticsearch } from '../hooks/useElasticsearch';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiSearch } from '../hooks/useApiSearch';
 import { useApiLLM } from '../hooks/useApiLLM';
-import { SearchContextType, SearchResult, SearchFilters, Employee, PaginationInfo } from '../types';
+import { SearchContextType, SearchResult, SearchFilters, ConnectionStatus, SearchMode, Employee, PaginationInfo } from '../types';
 import { EmployeeService } from '../services/employee_service';
 import { apiService } from '../services/api_service';
 
@@ -163,27 +163,9 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('❌ Dual search failed:', error);
-      // Fallback to mock data
-      const mockResults: SearchResult[] = [
-        {
-          id: 'mock-1',
-          title: 'Dual Search Not Available',
-          content: 'The dual search feature is not available. Please check your API connection.',
-          summary: 'API connection issue - using fallback',
-          source: 'system',
-          author: 'System',
-          department: 'IT',
-          content_type: 'notice',
-          tags: ['system', 'fallback'],
-          timestamp: new Date().toISOString(),
-          url: '#',
-          score: 100
-        }
-      ];
-      setSearchResults(mockResults);
-      setEmployeeResults([]);
-      setDocumentResults([]);
+      // Fallback to regular search
       setIsDualSearchMode(false);
+      await handleSearch(searchTerm || '');
     } finally {
       setIsLoading(false);
     }
@@ -225,20 +207,151 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     await executeDualSearch(searchTerm);
   }, [searchQuery, executeDualSearch]);
 
+  // Simple handleSearch function for fallback
+  const handleSearch = async (query: string): Promise<void> => {
+    console.log('🔍 Fallback search for:', query);
+    
+    if (!query.trim()) {
+      // If query is empty, load default documents
+      await loadDefaultDocuments();
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    const conversationalIndicators = ['what', 'how', 'why', 'when', 'who', 'tell me', 'explain', 'summarize', 'find me', 'show me', 'help me'];
+    const isConversational = conversationalIndicators.some(indicator => 
+      query.toLowerCase().includes(indicator)
+    );
+    
+    setIsConversationalMode(isConversational);
+    
+    try {
+      let documentResults: SearchResult[] = [];
+      let employeeResults: SearchResult[] = [];
+      let totalDocuments = 0;
+
+      // Search documents using API with fallback to mock data
+      if (searchType === 'documents' || searchType === 'all') {
+        try {
+          if (config.api.useApiLayer && searchWithTotal) {
+            // Use the efficient searchWithTotal function
+            const searchResponse = await searchWithTotal(query, selectedFilters, currentUser, 1, pagination.pageSize);
+            documentResults = searchResponse.results;
+            totalDocuments = searchResponse.total;
+          } else {
+            // Fallback to regular search
+            documentResults = await searchElastic(query, selectedFilters, currentUser, 1, pagination.pageSize);
+            totalDocuments = documentResults.length * 10; // Estimate
+          }
+        } catch (searchError) {
+          console.error('Search failed, using mock results:', searchError);
+          // Fallback to filtered mock data
+          const allMockResults: SearchResult[] = [
+            {
+              id: 'search-1',
+              title: `Search Results for "${query}"`,
+              content: `This is a mock search result for your query: ${query}. In a real implementation, this would be actual search results from your index.`,
+              summary: `Mock search result demonstrating search for: ${query}`,
+              source: 'mock-search',
+              author: 'Search System',
+              department: 'System',
+              content_type: 'result',
+              tags: ['search', 'mock', query.toLowerCase()],
+              timestamp: new Date().toISOString(),
+              url: '#',
+              score: 100
+            }
+          ];
+          documentResults = allMockResults;
+          totalDocuments = allMockResults.length;
+        }
+      }
+
+      // Search using the main search API for employees
+      if (searchType === 'employees' || searchType === 'all') {
+        try {
+          // Use the main search API for employees
+          const employeeResponse = await apiService.searchWithApi(query, 10, currentUser, ['employee']);
+          employeeResults = employeeResponse.results;
+          console.log('✅ Search API results:', employeeResults.length);
+        } catch (error) {
+          console.warn('⚠️ Search API failed, trying employee API:', error);
+          try {
+            // Fallback to employee-specific API
+            employeeResults = await apiService.searchEmployees(query, 10, 1);
+            console.log('✅ Employee API fallback results:', employeeResults.length);
+          } catch (employeeError) {
+            console.warn('⚠️ Employee API also failed, using local service:', employeeError);
+            // Final fallback to existing employee service
+            const employees = await employeeService.searchEmployees(query, 10);
+            employeeResults = employees.map((emp: Employee) => ({
+              id: `employee_${emp.id}`,
+              title: emp.name,
+              content: `${emp.title} in ${emp.department}`,
+              summary: `${emp.name} - ${emp.title} in ${emp.department}, located in ${emp.location}`,
+              source: 'employees',
+              author: 'HR System',
+              department: emp.department,
+              content_type: 'employee',
+              tags: [emp.department.toLowerCase(), emp.title.toLowerCase()],
+              timestamp: emp.start_date,
+              url: `mailto:${emp.email}`,
+              score: 100,
+              employee_data: emp
+            }));
+          }
+        }
+      }
+
+      // Combine results based on search type
+      let combinedResults: SearchResult[] = [];
+      if (searchType === 'all') {
+        combinedResults = [...employeeResults, ...documentResults];
+      } else if (searchType === 'employees') {
+        combinedResults = employeeResults;
+      } else {
+        combinedResults = documentResults;
+      }
+
+      setSearchResults(combinedResults);
+
+      const newPagination: PaginationInfo = {
+        currentPage: 1,
+        totalPages: Math.ceil(combinedResults.length / pagination.pageSize),
+        totalResults: combinedResults.length,
+        pageSize: pagination.pageSize,
+        hasNextPage: combinedResults.length > pagination.pageSize,
+        hasPreviousPage: false
+      };
+
+      setPagination(newPagination);
+
+      console.log('✅ Search completed:', {
+        query,
+        searchType,
+        employees: employeeResults.length,
+        documents: documentResults.length,
+        total: combinedResults.length,
+        isConversational
+      });
+
+    } catch (error) {
+      console.error('❌ Search failed:', error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Function to load default documents using dual API approach
   const loadDefaultDocuments = useCallback(async (): Promise<void> => {
-    console.log('🔍 Loading default documents - not triggering dual search for landing page');
+    console.log('🔍 Loading default documents using dual API approach...');
     console.log('🔍 Current user in loadDefaultDocuments:', currentUser);
     
-    // For landing page, we don't want to trigger dual search automatically
-    // The DefaultDocuments component will handle loading documents separately
-    // Just set some initial state
-    setSearchResults([]);
-    setEmployeeResults([]);
-    setDocumentResults([]);
-    setIsDualSearchMode(false);
-    setIsLoading(false);
-  }, [currentUser]);
+    // Use the new dual search approach for landing page
+    await executeDualSearch();
+  }, [currentUser, executeDualSearch]);
 
   // Load initial data when component mounts or user changes
   useEffect(() => {
@@ -263,19 +376,59 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setIsLoading(true);
 
     try {
-      // TODO: Implement pagination for dual search mode
-      console.log('Pagination in dual search mode not yet fully implemented');
-      
-      // For now, just update pagination state
-      const newPagination: PaginationInfo = {
-        currentPage: page,
-        totalPages: pagination.totalPages,
-        totalResults: pagination.totalResults,
-        pageSize: pagination.pageSize,
-        hasNextPage: page < pagination.totalPages,
-        hasPreviousPage: page > 1
-      };
-      setPagination(newPagination);
+      // If we're on page 1 and have a search query, or if we're in dual search mode
+      if (searchQuery && searchQuery.trim() !== '') {
+        console.log(`🔍 Getting page ${page} for search query: "${searchQuery}"`);
+        
+        // For search queries in dual mode, we need to implement pagination
+        if (isDualSearchMode) {
+          // TODO: Implement dual search pagination
+          console.log('Dual search pagination not yet implemented');
+        } else {
+          // Use regular search pagination
+          const paginatedResponse = await apiService.searchWithApi(
+            searchQuery,
+            pagination.pageSize,
+            currentUser,
+            [], // no content type filter
+            (page - 1) * pagination.pageSize
+          );
+
+          const newPagination: PaginationInfo = {
+            currentPage: page,
+            totalPages: pagination.totalPages,
+            totalResults: pagination.totalResults,
+            pageSize: pagination.pageSize,
+            hasNextPage: page < pagination.totalPages,
+            hasPreviousPage: page > 1
+          };
+
+          setSearchResults(paginatedResponse.results);
+          setPagination(newPagination);
+        }
+      } else {
+        // For default/landing view, handle page navigation
+        if (page === 1) {
+          // Page 1: Show logged-in user or default employees
+          await loadDefaultDocuments();
+        } else {
+          // Page 2+: Show documents only
+          const from = (page - 2) * pagination.pageSize; // page 2 starts from 0
+          const documentsResponse = await apiService.getNonEmployeeDocuments(currentUser, from, pagination.pageSize);
+          
+          const newPagination: PaginationInfo = {
+            currentPage: page,
+            totalPages: pagination.totalPages, // Keep total pages from initial calculation
+            totalResults: pagination.totalResults, // Keep total results from initial calculation
+            pageSize: pagination.pageSize,
+            hasNextPage: page < pagination.totalPages,
+            hasPreviousPage: page > 1
+          };
+
+          setSearchResults(documentsResponse.results);
+          setPagination(newPagination);
+        }
+      }
 
       console.log(`✅ Successfully navigated to page ${page}`);
     } catch (error) {
@@ -283,7 +436,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [pagination]);
+  }, [searchQuery, pagination, currentUser, isDualSearchMode, loadDefaultDocuments]);
 
   const nextPage = useCallback(async () => {
     if (pagination.hasNextPage) {
@@ -299,10 +452,10 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 
   // Helper function to toggle result selection
   const toggleResultSelection = useCallback((result: SearchResult) => {
-    setSelectedResults((prev: SearchResult[]) => {
-      const isSelected = prev.some((r: SearchResult) => r.id === result.id);
+    setSelectedResults(prev => {
+      const isSelected = prev.some(r => r.id === result.id);
       if (isSelected) {
-        return prev.filter((r: SearchResult) => r.id !== result.id);
+        return prev.filter(r => r.id !== result.id);
       } else {
         return [...prev, result];
       }

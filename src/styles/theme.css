@@ -1,0 +1,183 @@
+/* DBS Bank Theme - Centralized styling */
+:root {
+  /* DBS Brand Colors */
+  --dbs-primary: #ED1C24;
+  --dbs-primary-dark: #D51B23;
+  --dbs-primary-light: #FF4444;
+  --dbs-secondary: #8B0000;
+  --dbs-accent: #FF6B6B;
+  
+  /* Semantic Colors */
+  --primary-color: var(--dbs-primary);
+  --primary-hover: var(--dbs-primary-dark);
+  --primary-light: var(--dbs-primary-light);
+  --secondary-color: var(--dbs-secondary);
+  --accent-color: var(--dbs-accent);
+  
+  /* Text Colors */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-accent: #fef2f2;
+  
+  /* Border Colors */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-dark: #94a3b8;
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* DBS Brand Gradient Classes */
+.dbs-gradient-primary {
+  background: linear-gradient(135deg, var(--dbs-primary) 0%, var(--dbs-primary-dark) 100%);
+}
+
+.dbs-gradient-header {
+  background: linear-gradient(90deg, #ED1C24 0%, #D51B23 50%, #B91C1C 100%);
+}
+
+.dbs-gradient-text {
+  background: linear-gradient(135deg, var(--dbs-primary) 0%, var(--dbs-primary-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dbs-gradient-border {
+  background: linear-gradient(90deg, 
+    rgba(237, 28, 36, 0.2) 0%, 
+    rgba(237, 28, 36, 0.4) 50%, 
+    rgba(213, 27, 35, 0.2) 100%
+  );
+}
+
+/* Interactive States */
+.dbs-button-primary {
+  background-color: var(--dbs-primary);
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.dbs-button-primary:hover {
+  background-color: var(--dbs-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.dbs-button-primary:active {
+  background-color: var(--dbs-secondary);
+  transform: translateY(0);
+}
+
+.dbs-button-primary:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Input Focus States */
+.dbs-input-focus:focus {
+  border-color: var(--dbs-primary);
+  box-shadow: 0 0 0 4px rgba(237, 28, 36, 0.2);
+}
+
+.dbs-input-focus:focus-within {
+  border-color: var(--dbs-primary);
+  box-shadow: 0 0 0 4px rgba(237, 28, 36, 0.2);
+}
+
+/* Avatar Colors */
+.dbs-avatar-primary {
+  background-color: var(--dbs-primary);
+}
+
+.dbs-avatar-secondary {
+  background-color: var(--dbs-secondary);
+}
+
+.dbs-avatar-accent {
+  background-color: var(--dbs-accent);
+}
+
+/* Loading Spinner */
+.dbs-spinner {
+  color: var(--dbs-primary);
+}
+
+/* Custom Scrollbar */
+.dbs-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dbs-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.dbs-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--dbs-primary);
+  border-radius: 3px;
+}
+
+.dbs-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--dbs-primary-dark);
+}
+
+/* Utility Classes */
+.text-dbs-primary { color: var(--dbs-primary); }
+.text-dbs-secondary { color: var(--dbs-secondary); }
+.bg-dbs-primary { background-color: var(--dbs-primary); }
+.bg-dbs-secondary { background-color: var(--dbs-secondary); }
+.border-dbs-primary { border-color: var(--dbs-primary); }
+
+/* Hover States */
+.hover-dbs-primary:hover { background-color: var(--dbs-primary); }
+.hover-dbs-secondary:hover { background-color: var(--dbs-secondary); }
+.hover-text-dbs-primary:hover { color: var(--dbs-primary); }
+
+/* Focus States */
+.focus-dbs-primary:focus { 
+  border-color: var(--dbs-primary);
+  box-shadow: 0 0 0 3px rgba(237, 28, 36, 0.1);
+}
+
+/* Animation Classes */
+.dbs-pulse {
+  animation: dbs-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes dbs-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.dbs-bounce:hover {
+  animation: dbs-bounce 0.3s ease-in-out;
+}
+
+@keyframes dbs-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -10px, 0);
+  }
+  70% {
+    transform: translate3d(0, -5px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}

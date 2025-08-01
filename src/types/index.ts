@@ -97,12 +97,23 @@ export interface SearchRequest {
   filters: SearchFilters;
   size?: number;
   from?: number;
+  page?: number;
+}
+
+export interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalResults: number;
+  pageSize: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }
 
 export interface SearchResponse {
   results: SearchResult[];
   total: number;
   took: number;
+  pagination?: PaginationInfo;
 }
 
 // Search Context Types
@@ -113,12 +124,28 @@ export interface SearchContextType {
   setSearchResults: (results: SearchResult[]) => void;
   selectedResults: SearchResult[];
   setSelectedResults: (results: SearchResult[]) => void;
+  
+  // New dual API state
+  employeeResults: SearchResult[];
+  setEmployeeResults: (results: SearchResult[]) => void;
+  documentResults: SearchResult[];
+  setDocumentResults: (results: SearchResult[]) => void;
+  employeeTotal: number;
+  setEmployeeTotal: (total: number) => void;
+  documentTotal: number;
+  setDocumentTotal: (total: number) => void;
+  isDualSearchMode: boolean;
+  setIsDualSearchMode: (mode: boolean) => void;
+  
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   isConversationalMode: boolean;
   setIsConversationalMode: (mode: boolean) => void;
   conversationalSummary: string;
   setConversationalSummary: (summary: string) => void;
+  generatedSummary: string;
+  showSummary: boolean;
+  setShowSummary: (show: boolean) => void;
   selectedFilters: SearchFilters;
   setSelectedFilters: (filters: SearchFilters) => void;
   showFilters: boolean;
@@ -134,6 +161,16 @@ export interface SearchContextType {
   toggleResultSelection: (result: SearchResult) => void;
   selectAllResults: () => void;
   generateComprehensiveSummary: (results: SearchResult[], user: User) => Promise<string>;
+  
+  // New dual search methods
+  executeDualSearch: (query?: string) => Promise<void>;
+  
+  // Pagination properties
+  pagination: PaginationInfo;
+  loadDefaultDocuments: () => Promise<void>;
+  goToPage: (page: number) => Promise<void>;
+  nextPage: () => Promise<void>;
+  previousPage: () => Promise<void>;
 }
 
 // API Response Types
@@ -224,7 +261,7 @@ export interface BrandingConfig {
 
 // Hook Return Types
 export interface UseElasticsearchReturn {
-  searchElastic: (query: string, filters: SearchFilters, user: User) => Promise<SearchResult[]>;
+  searchElastic: (query: string, filters: SearchFilters, user: User, page?: number, pageSize?: number) => Promise<SearchResult[]>;
   connectionStatus: ConnectionStatus;
   searchMode: SearchMode;
   testConnection: () => Promise<void>;
@@ -233,7 +270,8 @@ export interface UseElasticsearchReturn {
 }
 
 export interface UseApiSearchReturn {
-  searchElastic: (query: string, filters: SearchFilters, user: User) => Promise<SearchResult[]>;
+  searchElastic: (query: string, filters: SearchFilters, user: User, page?: number, pageSize?: number) => Promise<SearchResult[]>;
+  searchWithTotal: (query: string, filters: SearchFilters, user: User, page?: number, pageSize?: number) => Promise<{ results: SearchResult[], total: number }>;
   connectionStatus: ConnectionStatus;
   searchMode: SearchMode;
   testConnection: () => Promise<void>;

@@ -10,7 +10,7 @@ export const config = {
     maxSize: 100,
   },
   elasticsearch: {
-    index: 'employees',
+    index: 'enterprise_search',
     endpoint: 'http://localhost:9200',
     apiKey: undefined,
   },

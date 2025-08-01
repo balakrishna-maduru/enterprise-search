@@ -2,7 +2,22 @@
 import { describe, it, expect, test } from '@jest/globals';
 import { User, SearchResult, SearchFilters, ApiResponse } from '../types';
 import { availableUsers } from '../data/users';
-import { mockResults } from '../data/mockData';
+
+// Test data for SearchResult validation
+const testSearchResult: SearchResult = {
+  id: '1',
+  title: 'Test Document',
+  content: 'This is test content for the document',
+  summary: 'A test document for validation',
+  source: 'confluence',
+  author: 'Test User',
+  department: 'Engineering',
+  content_type: 'document',
+  tags: ['test', 'validation'],
+  timestamp: '2024-01-01T00:00:00Z',
+  url: 'https://test.com/doc/1',
+  score: 95
+};
 
 describe('TypeScript Type Validation', () => {
   test('User type validation', () => {
@@ -24,7 +39,7 @@ describe('TypeScript Type Validation', () => {
   });
 
   test('SearchResult type validation', () => {
-    const testResult: SearchResult = mockResults[0];
+    const testResult: SearchResult = testSearchResult;
     
     expect(testResult).toHaveProperty('id');
     expect(testResult).toHaveProperty('title');
@@ -73,17 +88,14 @@ describe('TypeScript Type Validation', () => {
     expect(typeof errorResponse.error).toBe('string');
   });
 
-  test('Mock data integrity', () => {
-    expect(mockResults.length).toBeGreaterThan(0);
+  test('Test data integrity', () => {
     expect(availableUsers.length).toBeGreaterThan(0);
     
-    // Ensure all mock results conform to SearchResult type
-    mockResults.forEach((result: SearchResult) => {
-      expect(typeof result.id).toBe('string');
-      expect(typeof result.title).toBe('string');
-      expect(typeof result.content).toBe('string');
-      expect(Array.isArray(result.tags)).toBe(true);
-    });
+    // Ensure test result conforms to SearchResult type
+    expect(typeof testSearchResult.id).toBe('string');
+    expect(typeof testSearchResult.title).toBe('string');
+    expect(typeof testSearchResult.content).toBe('string');
+    expect(Array.isArray(testSearchResult.tags)).toBe(true);
     
     // Ensure all users conform to User type
     availableUsers.forEach((user: User) => {
@@ -120,7 +132,7 @@ describe('TypeScript Utility Functions', () => {
     
     const searchResponse: ApiResponse<SearchResult[]> = {
       success: true,
-      data: mockResults
+      data: [testSearchResult]
     };
     
     expect(userResponse.success).toBe(true);

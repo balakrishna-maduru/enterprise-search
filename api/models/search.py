@@ -9,6 +9,7 @@ class SearchFilter(BaseModel):
     date_range: Optional[str] = "all"
     author: Optional[List[str]] = []
     tags: Optional[List[str]] = []
+    exclude_content_type: Optional[List[str]] = []
 
 
 class SearchRequest(BaseModel):

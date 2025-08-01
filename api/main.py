@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 
 from config import settings
-from routers import search, llm, health, auth, employees
+from routers import search, llm, health, auth, employees, chats
 from middleware.auth import get_current_user
 
 
@@ -33,6 +33,7 @@ app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
 app.include_router(search.router, prefix="/api/v1", tags=["search"])
 app.include_router(llm.router, prefix="/api/v1", tags=["llm"])
 app.include_router(employees.router, prefix="/api/v1", tags=["employees"])
+app.include_router(chats.router, prefix="/api/v1", tags=["chats"])
 
 @app.get("/")
 async def root():

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="140" height="50" viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- DBS Red background with subtle rounded corners -->
+  <rect width="140" height="50" fill="#ED1C24" rx="3"/>
+  
+  <!-- DBS Letters - Clean, bold styling matching the official logo -->
+  <g fill="white" font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <!-- D -->
+    <text x="12" y="35" font-size="28" letter-spacing="-0.5px">D</text>
+    <!-- B -->
+    <text x="42" y="35" font-size="28" letter-spacing="-0.5px">B</text>
+    <!-- S -->
+    <text x="72" y="35" font-size="28" letter-spacing="-0.5px">S</text>
+  </g>
+</svg>

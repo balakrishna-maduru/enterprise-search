@@ -2,7 +2,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/globals.css';
+import './index.css'; // Import theme CSS
 import App from './App';
+import { initializeTheme } from './config/branding';
+
+// Initialize DBS theme
+initializeTheme();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

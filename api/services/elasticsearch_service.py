@@ -169,31 +169,35 @@ class ElasticsearchService:
         semantic_enabled = request.semantic_enabled or self.semantic_enabled
         hybrid_weight = request.hybrid_weight or self.hybrid_weight
 
-        if semantic_enabled:
+        # Handle empty query - for default/landing page results
+        if not request.query or request.query.strip() == "":
+            query = {
+                "bool": {
+                    "must": [
+                        {"match_all": {}}
+                    ],
+                    "filter": []
+                }
+            }
+        elif semantic_enabled:
             # Hybrid semantic + lexical search
             query = {
                 "bool": {
                     "should": [
-                        # Semantic search
+                        # Semantic search (if available)
                         {
-                            "semantic": {
-                                "field": f"{self.semantic_field_prefix}content",
+                            "multi_match": {
                                 "query": request.query,
+                                "fields": [
+                                    "title^3",
+                                    "content^2", 
+                                    "summary^2.5",
+                                    "tags^1.5",
+                                    "author^1.2"
+                                ],
+                                "type": "best_fields",
+                                "fuzziness": "AUTO",
                                 "boost": hybrid_weight
-                            }
-                        },
-                        {
-                            "semantic": {
-                                "field": f"{self.semantic_field_prefix}title",
-                                "query": request.query,
-                                "boost": hybrid_weight * 1.5
-                            }
-                        },
-                        {
-                            "semantic": {
-                                "field": f"{self.semantic_field_prefix}summary",
-                                "query": request.query,
-                                "boost": hybrid_weight * 1.2
                             }
                         },
                         # Traditional lexical search
@@ -205,8 +209,7 @@ class ElasticsearchService:
                                     "content^2",
                                     "summary^2",
                                     "tags^1.5",
-                                    "name",
-                                    "description"
+                                    "author"
                                 ],
                                 "type": "best_fields",
                                 "fuzziness": "AUTO",
@@ -231,8 +234,7 @@ class ElasticsearchService:
                                     "content^2",
                                     "summary^2",
                                     "tags^1.5",
-                                    "name",
-                                    "description"
+                                    "author"
                                 ],
                                 "type": "best_fields",
                                 "fuzziness": "AUTO"
@@ -254,37 +256,67 @@ class ElasticsearchService:
         if request.filters.tags:
             filters.append({"terms": {"tags": request.filters.tags}})
         
+        # Add exclude content type filter
+        if hasattr(request.filters, 'exclude_content_type') and request.filters.exclude_content_type:
+            filters.append({"bool": {"must_not": {"terms": {"content_type": request.filters.exclude_content_type}}}})
+        
+        # Date range filter
         if request.filters.date_range and request.filters.date_range != "all":
             date_filter = self._build_date_filter(request.filters.date_range)
             if date_filter:
                 filters.append(date_filter)
 
-        query["bool"]["filter"] = filters
-
-        # Build complete search body
-        search_body = {
-            "query": query,
-            "highlight": {
-                "fields": {
-                    "title": {},
-                    "content": {},
-                    "summary": {}
-                },
-                "pre_tags": ["<mark>"],
-                "post_tags": ["</mark>"]
-            },
-            "size": request.size,
-            "from": request.from_
-        }
-
-        # Add semantic highlighting if enabled
-        if semantic_enabled:
-            search_body["highlight"]["fields"].update({
-                f"{self.semantic_field_prefix}content": {},
-                f"{self.semantic_field_prefix}title": {},
-                f"{self.semantic_field_prefix}summary": {}
+        # Add user context boosting (boost documents from user's department)
+        if user.department:
+            query["bool"]["should"] = query["bool"].get("should", [])
+            query["bool"]["should"].append({
+                "term": {
+                    "department": {
+                        "value": user.department,
+                        "boost": 1.2
+                    }
+                }
             })
 
+        # Apply filters
+        if filters:
+            query["bool"]["filter"] = filters
+
+        # Build the complete search body
+        search_body = {
+            "query": query,
+            "size": request.size,
+            "from": request.from_,
+            "sort": [
+                # Sort by score first, then by timestamp for documents with same score
+                {"_score": {"order": "desc"}},
+                {"timestamp": {"order": "desc", "unmapped_type": "date"}},
+                # Add ratings boost if available
+                {
+                    "ratings.score": {
+                        "order": "desc",
+                        "unmapped_type": "float",
+                        "missing": "_last"
+                    }
+                }
+            ],
+            "highlight": {
+                "pre_tags": ["<mark>"],
+                "post_tags": ["</mark>"],
+                "fields": {
+                    "title": {"number_of_fragments": 1},
+                    "content": {"number_of_fragments": 2, "fragment_size": 150},
+                    "summary": {"number_of_fragments": 1}
+                }
+            },
+            "_source": [
+                "title", "content", "summary", "source", "content_type", 
+                "author", "department", "url", "timestamp", "tags", 
+                "priority", "status", "project", "ratings"
+            ]
+        }
+
+        logger.info(f"Built search query: {json.dumps(search_body, indent=2)}")
         return search_body
 
     def _build_date_filter(self, date_range: str) -> Optional[Dict[str, Any]]:
