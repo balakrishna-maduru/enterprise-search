@@ -5,8 +5,8 @@ import { useUnifiedUser } from '../../hooks/useUnifiedUser';
 import { apiService } from '../../services/api_service';
 import { SearchResult, User } from '../../types';
 import LoadingSpinner from '../Common/LoadingSpinner';
-import SummaryDisplay from '../Summary/SummaryDisplay';
-import { EmployeeSearchResults } from '../Employees/EmployeeSearchResults';
+import SummaryDisplay from '../Results/SummaryDisplay';
+import { EmployeeSearchResults } from '../Employee/EmployeeSearchResults';
 import { SearchResultsSummary } from '../Search/SearchResultsSummary';
 
 interface UnifiedDocumentsPageProps {

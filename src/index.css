@@ -3,4 +3,4 @@
 @tailwind utilities;
 
 /* Import DBS Theme */
-@import './styles/theme.css';
+@import './theme.css';

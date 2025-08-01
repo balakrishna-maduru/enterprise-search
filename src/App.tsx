@@ -4,7 +4,7 @@ import { SearchProvider } from './contexts/SearchContext';
 import { BrandingProvider } from './contexts/BrandingContext';
 import ApiModeWrapper from './components/ApiModeWrapper';
 import Layout from './components/Layout/Layout';
-import './styles/globals.css';
+import './globals.css';
 
 const App: React.FC = () => {
   return (

@@ -1,18 +1,18 @@
-// src/components/Employees/EmployeeResults.tsx
+// src/components/Employee/EmployeeResults.tsx
 import React, { useState } from 'react';
-import { User } from '../../types';
-import { EmployeeCard } from './EmployeeCard';
+import { Employee } from '../../types';
+import EmployeeCard from './EmployeeCard';
 
 interface EmployeeResultsProps {
-  employees: User[];
+  employees: Employee[];
   maxInitialDisplay?: number;
-  onContactEmployee?: (employee: User) => void;
+  onClick?: (employee: Employee) => void;
 }
 
 export const EmployeeResults: React.FC<EmployeeResultsProps> = ({ 
   employees, 
   maxInitialDisplay = 2,
-  onContactEmployee 
+  onClick 
 }) => {
   const [showAll, setShowAll] = useState(false);
   
@@ -46,7 +46,7 @@ export const EmployeeResults: React.FC<EmployeeResultsProps> = ({
           <EmployeeCard
             key={employee.id}
             employee={employee}
-            onContact={onContactEmployee}
+            onClick={onClick ? () => onClick(employee) : undefined}
           />
         ))}
       </div>

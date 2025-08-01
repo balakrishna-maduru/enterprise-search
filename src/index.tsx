@@ -1,7 +1,7 @@
 // src/index.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/globals.css';
+import './globals.css';
 import './index.css'; // Import theme CSS
 import App from './App';
 import { initializeTheme } from './config/branding';

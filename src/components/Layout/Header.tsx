@@ -1,7 +1,7 @@
 // src/components/Layout/Header.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import ConnectionStatus from './ConnectionStatus';
-import CompanyLogo from '../UI/CompanyLogo';
+import CompanyLogo from '../Common/CompanyLogo';
 import { useBranding } from '../../contexts/BrandingContext';
 import { useSearch } from '../../contexts/SearchContext';
 import { useDBSTheme } from '../../hooks/useDBSTheme';
