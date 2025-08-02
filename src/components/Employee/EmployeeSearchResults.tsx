@@ -1,7 +1,7 @@
 // src/components/Employees/EmployeeSearchResults.tsx
 import React, { useState } from 'react';
-import { SearchResult, EmployeeHierarchy } from '../../types';
-import { EmployeeService } from '../../services/employee_service';
+import { SearchResult, EmployeeHierarchy, Employee, HierarchyNode } from '../../types';
+import { employeeService } from '../../services/employee_service';
 import EmployeeHierarchyTree from '../Employee/EmployeeHierarchyTree';
 
 interface EmployeeSearchResultsProps {
@@ -18,7 +18,6 @@ export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({
   const [showAll, setShowAll] = useState(false);
   const [selectedEmployeeHierarchy, setSelectedEmployeeHierarchy] = useState<EmployeeHierarchy | null>(null);
   const [loadingHierarchy, setLoadingHierarchy] = useState<string | null>(null);
-  const employeeService = new EmployeeService();
   
   if (employeeResults.length === 0) {
     return null;
@@ -40,26 +39,107 @@ export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({
   };
 
   const handleViewHierarchy = async (employee: SearchResult) => {
-    const employeeId = employee.employee_data?.id;
+    // Try multiple ways to get employee ID
+    let employeeId = employee.employee_data?.id || employee.id;
+    
+    // If the ID is a string that looks like a number, parse it
+    if (typeof employeeId === 'string') {
+      const numericId = parseInt(employeeId, 10);
+      if (!isNaN(numericId)) {
+        employeeId = numericId;
+      }
+    }
+    
+    console.log('Employee data for hierarchy:', {
+      employee_data: employee.employee_data,
+      employee_id: employeeId,
+      original_id: employee.id,
+      full_employee: employee
+    });
+    
     if (!employeeId) {
       console.warn('No employee ID found for hierarchy');
+      alert('Employee ID not available for hierarchy view. Please make sure the employee data contains a valid ID.');
       return;
     }
 
     setLoadingHierarchy(employee.id);
     try {
-      const hierarchy = await employeeService.getEmployeeHierarchy(Number(employeeId));
+      console.log('Fetching hierarchy for employee ID:', employeeId);
+      const hierarchy = await employeeService.getEmployeeHierarchy(employeeId);
+      console.log('Hierarchy response:', hierarchy);
+      
       if (hierarchy) {
         setSelectedEmployeeHierarchy(hierarchy);
       } else {
-        alert('No hierarchy data available for this employee');
+        console.warn('No hierarchy data returned from API');
+        alert('No hierarchy data available for this employee. This might be because:\n1. The employee has no manager or reports\n2. The API server is not running\n3. There\'s an issue with the employee data');
       }
     } catch (error) {
       console.error('Failed to load employee hierarchy:', error);
-      alert('Failed to load employee hierarchy');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Failed to load employee hierarchy: ${errorMessage}\n\nPlease check:\n1. API server is running on localhost:8000\n2. Employee ID ${employeeId} exists in the database\n3. Network connectivity`);
     } finally {
       setLoadingHierarchy(null);
     }
+  };
+
+  // Helper function to create mock hierarchy for testing
+  const createMockHierarchy = (employee: SearchResult) => {
+    const employeeData = employee.employee_data;
+    const name = employee.title || employeeData?.name || 'Unknown Employee';
+    const position = employeeData?.title || 'Unknown Position';
+    const department = employee.department || employeeData?.department || 'Unknown Department';
+    const email = employeeData?.email || employee.url?.replace('mailto:', '') || 'unknown@company.com';
+    
+    const mockEmployee = {
+      id: Number(employee.id) || 1,
+      name: name,
+      title: position,
+      email: email,
+      department: department,
+      location: employeeData?.location || 'Unknown Location',
+      phone: employeeData?.phone || '+1-555-0000',
+      start_date: employeeData?.start_date || '2020-01-01',
+      manager_id: 2,
+      level: employeeData?.level || 3,
+      has_reports: employeeData?.has_reports || false,
+      report_count: employeeData?.report_count || 0,
+      document_type: "employee",
+      indexed_at: "2024-01-01T00:00:00Z",
+      search_text: `${name} ${position}`
+    };
+
+    const mockHierarchyTree = {
+      id: employee.id,
+      name: name,
+      title: position,
+      department: department,
+      email: email,
+      level: employeeData?.level || 3,
+      is_target: true,
+      reports: []
+    };
+
+    const mockManagementChain = [
+      {
+        id: "manager",
+        name: "Manager Name",
+        title: "Department Manager",
+        department: department,
+        email: "manager@company.com",
+        level: (employeeData?.level || 3) - 1,
+        is_target: false,
+        reports: []
+      }
+    ];
+
+    return {
+      employee: mockEmployee,
+      hierarchy_tree: mockHierarchyTree,
+      management_chain: mockManagementChain,
+      total_employees: 1
+    };
   };
 
   const closeHierarchyView = () => {

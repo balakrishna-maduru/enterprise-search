@@ -1,7 +1,7 @@
 // src/components/Results/EnhancedResultCard.tsx
 import React, { useState } from 'react';
 import { SearchResult, Employee, EmployeeHierarchy } from '../../types';
-import { EmployeeService } from '../../services/employee_service';
+import { employeeService } from '../../services/employee_service';
 import EmployeeHierarchyTree from '../Employee/EmployeeHierarchyTree';
 import LoadingSpinner from '../Common/LoadingSpinner';
 
@@ -21,7 +21,6 @@ const EnhancedResultCard: React.FC<EnhancedResultCardProps> = ({
   const [loadingHierarchy, setLoadingHierarchy] = useState<boolean>(false);
 
   const isEmployee = result.content_type === 'employee' && result.employee_data;
-  const employeeService = new EmployeeService();
 
   const handleViewHierarchy = async (e: React.MouseEvent) => {
     e.stopPropagation();

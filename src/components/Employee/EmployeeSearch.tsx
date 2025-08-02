@@ -1,7 +1,7 @@
 // src/components/Employee/EmployeeSearch.tsx
 import React, { useState, useEffect } from 'react';
 import { Employee, EmployeeHierarchy } from '../../types';
-import { EmployeeService } from '../../services/employee_service';
+import { employeeService } from '../../services/employee_service';
 import EmployeeCard from './EmployeeCard';
 import EmployeeHierarchyTree from './EmployeeHierarchyTree';
 import LoadingSpinner from '../Common/LoadingSpinner';
@@ -22,8 +22,6 @@ const EmployeeSearch: React.FC<EmployeeSearchProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showHierarchy, setShowHierarchy] = useState<boolean>(false);
 
-  const employeeService = new EmployeeService();
-
   useEffect(() => {
     if (query.trim()) {
       searchEmployees(query);
@@ -35,7 +33,7 @@ const EmployeeSearch: React.FC<EmployeeSearchProps> = ({
   const searchEmployees = async (searchQuery: string) => {
     setIsLoading(true);
     try {
-      const results = await employeeService.searchEmployees(searchQuery, 20);
+      const results = await employeeService.searchEmployees(searchQuery);
       setEmployees(results);
     } catch (error) {
       console.error('Employee search failed:', error);

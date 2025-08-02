@@ -42,13 +42,15 @@ async def search_employees(
                         "multi_match": {
                             "query": q,
                             "fields": [
-                                "name^3",
-                                "title^2", 
-                                "department^2",
-                                "email",
-                                "location",
-                                "skills",
-                                "bio"
+                                "employee_data.name^3",
+                                "employee_data.title^2", 
+                                "employee_data.department^2",
+                                "employee_data.email",
+                                "employee_data.location",
+                                "employee_data.search_text^2",
+                                "title^3",  # Fallback to document title
+                                "content",
+                                "summary"
                             ],
                             "type": "best_fields",
                             "fuzziness": "AUTO"
@@ -56,7 +58,7 @@ async def search_employees(
                     },
                     {
                         "wildcard": {
-                            "name.keyword": f"*{q}*"
+                            "employee_data.name.keyword": f"*{q}*"
                         }
                     }
                 ],
@@ -67,35 +69,53 @@ async def search_employees(
         # Add filters
         filters = []
         if department:
-            filters.append({"term": {"department.keyword": department}})
+            filters.append({"term": {"employee_data.department.keyword": department}})
         if location:
-            filters.append({"term": {"location.keyword": location}})
+            filters.append({"term": {"employee_data.location.keyword": location}})
         if level is not None:
-            filters.append({"term": {"level": level}})
+            filters.append({"term": {"employee_data.level": level}})
         
         if filters:
             query["bool"]["filter"] = filters
         
-        # Execute search
+        # Execute search on enterprise_documents index with employee filter
         search_body = {
-            "query": query,
+            "query": {
+                "bool": {
+                    "must": [
+                        query["bool"]  # The original query
+                    ],
+                    "filter": [
+                        {"term": {"content_type": "employee"}}  # Only get employees
+                    ]
+                }
+            },
             "size": size,
             "sort": [
-                {"level": {"order": "asc"}},
+                {"employee_data.level": {"order": "asc", "missing": "_last"}},
                 {"_score": {"order": "desc"}},
-                {"name.keyword": {"order": "asc"}}
+                {"employee_data.name.keyword": {"order": "asc", "missing": "_last"}}
             ]
         }
         
-        result = es.search(index="employees", body=search_body)
+        result = es.search(index="enterprise_documents", body=search_body)
         
         # Format results
         employees = []
         for hit in result['hits']['hits']:
-            employee = hit['_source'].copy()
-            employee['id'] = hit['_id']  # Add the document ID to the source
-            employee['score'] = hit['_score']
-            employees.append(employee)
+            source = hit['_source']
+            # Extract employee data from the enterprise_documents structure
+            if 'employee_data' in source:
+                employee = source['employee_data'].copy()
+                employee['id'] = employee.get('id', hit['_id'])
+                employee['score'] = hit['_score']
+                employees.append(employee)
+            else:
+                # Fallback for older format
+                employee = source.copy()
+                employee['id'] = hit['_id']
+                employee['score'] = hit['_score']
+                employees.append(employee)
         
         return {
             "success": True,
@@ -117,18 +137,42 @@ async def get_employee(employee_id: str):
     try:
         es = get_es_client()
         
-        result = es.get(index="employees", id=employee_id)
-        employee_data = result['_source'].copy()
-        employee_data['id'] = result['_id']  # Add the document ID to the source
+        # Search for employee in enterprise_documents index
+        search_body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"term": {"content_type": "employee"}},
+                        {"term": {"employee_data.id": employee_id}}
+                    ]
+                }
+            },
+            "size": 1
+        }
+        
+        result = es.search(index="enterprise_documents", body=search_body)
+        
+        if result['hits']['total']['value'] == 0:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        hit = result['hits']['hits'][0]
+        source = hit['_source']
+        
+        if 'employee_data' in source:
+            employee_data = source['employee_data'].copy()
+        else:
+            employee_data = source.copy()
+        
+        employee_data['id'] = employee_data.get('id', hit['_id'])
         
         return {
             "success": True,
             "data": employee_data
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
-        if "not_found" in str(e).lower():
-            raise HTTPException(status_code=404, detail="Employee not found")
         raise HTTPException(status_code=500, detail=f"Failed to get employee: {str(e)}")
 
 @router.get("/{employee_id}/hierarchy")
@@ -139,27 +183,53 @@ async def get_employee_hierarchy(employee_id: str):
     try:
         es = get_es_client()
         
-        # Get the employee
-        employee_doc = es.get(index="employees", id=employee_id)
-        employee = employee_doc['_source'].copy()
-        employee['id'] = employee_doc['_id']  # Add the document ID to the source
+        # Get the employee from enterprise_documents
+        search_body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"term": {"content_type": "employee"}},
+                        {"term": {"employee_data.id": employee_id}}
+                    ]
+                }
+            },
+            "size": 1
+        }
+        
+        employee_result = es.search(index="enterprise_documents", body=search_body)
+        
+        if employee_result['hits']['total']['value'] == 0:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        hit = employee_result['hits']['hits'][0]
+        source = hit['_source']
+        
+        if 'employee_data' in source:
+            employee = source['employee_data'].copy()
+        else:
+            employee = source.copy()
+        
+        employee['id'] = employee.get('id', hit['_id'])
         
         # Get all employees to build hierarchy
         all_employees_result = es.search(
-            index="employees",
+            index="enterprise_documents",
             body={
-                "query": {"match_all": {}},
+                "query": {"term": {"content_type": "employee"}},
                 "size": 1000,
-                "_source": ["name", "title", "department", "manager_id", "level", "email"]
+                "_source": ["employee_data", "title"]
             }
         )
         
-        # Build employee dict using document _id as the key and include id in source
+        # Build employee dict using employee_data.id as the key
         all_employees = {}
         for emp_doc in all_employees_result['hits']['hits']:
-            emp_source = emp_doc['_source'].copy()
-            emp_source['id'] = emp_doc['_id']  # Add the document ID to the source
-            all_employees[emp_doc['_id']] = emp_source
+            emp_source = emp_doc['_source']
+            if 'employee_data' in emp_source:
+                emp_data = emp_source['employee_data'].copy()
+                emp_id = str(emp_data.get('id', emp_doc['_id']))
+                emp_data['id'] = emp_id
+                all_employees[emp_id] = emp_data
         
         # Build hierarchy tree
         def build_hierarchy_node(emp_id: str, employees_dict: Dict[str, Any]) -> Dict[str, Any]:
@@ -171,7 +241,7 @@ async def get_employee_hierarchy(employee_id: str):
             # Find direct reports
             reports = []
             for other_id, other_emp in employees_dict.items():
-                if other_emp.get('manager_id') == emp_id:
+                if str(other_emp.get('manager_id', '')) == str(emp_id):
                     report_node = build_hierarchy_node(other_id, employees_dict)
                     if report_node:
                         reports.append(report_node)
@@ -189,17 +259,17 @@ async def get_employee_hierarchy(employee_id: str):
         
         # Find the root of the tree (top-level manager)
         current_emp = employee
-        while current_emp.get('manager_id') and current_emp['manager_id'] in all_employees:
-            current_emp = all_employees[current_emp['manager_id']]
+        while current_emp.get('manager_id') and str(current_emp['manager_id']) in all_employees:
+            current_emp = all_employees[str(current_emp['manager_id'])]
         
         # Build the complete hierarchy from the root
-        hierarchy_tree = build_hierarchy_node(current_emp['id'], all_employees)
+        hierarchy_tree = build_hierarchy_node(str(current_emp['id']), all_employees)
         
         # Get management chain for the target employee
         management_chain = []
         current_emp = employee
-        while current_emp.get('manager_id') and current_emp['manager_id'] in all_employees:
-            manager = all_employees[current_emp['manager_id']]
+        while current_emp.get('manager_id') and str(current_emp['manager_id']) in all_employees:
+            manager = all_employees[str(current_emp['manager_id'])]
             management_chain.append({
                 "id": manager['id'],
                 "name": manager['name'],
@@ -232,12 +302,13 @@ async def get_departments():
         es = get_es_client()
         
         result = es.search(
-            index="employees",
+            index="enterprise_documents",
             body={
+                "query": {"term": {"content_type": "employee"}},
                 "aggs": {
                     "departments": {
                         "terms": {
-                            "field": "department.keyword",
+                            "field": "employee_data.department.keyword",
                             "size": 100
                         }
                     }
@@ -268,12 +339,13 @@ async def get_locations():
         es = get_es_client()
         
         result = es.search(
-            index="employees",
+            index="enterprise_documents",
             body={
+                "query": {"term": {"content_type": "employee"}},
                 "aggs": {
                     "locations": {
                         "terms": {
-                            "field": "location.keyword",
+                            "field": "employee_data.location.keyword",
                             "size": 100
                         }
                     }

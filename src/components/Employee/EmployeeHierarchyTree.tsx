@@ -102,7 +102,18 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 };
 
 const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy }) => {
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set([hierarchy.hierarchy_tree.id]));
+  // Safety check for hierarchy data
+  if (!hierarchy || !hierarchy.employee || !hierarchy.hierarchy_tree) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-gray-500">Unable to load hierarchy data</div>
+      </div>
+    );
+  }
+
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
+    new Set([hierarchy.hierarchy_tree.id])
+  );
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -117,6 +128,11 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
   };
 
   const renderNode = (node: HierarchyNode, depth: number = 0): React.ReactNode => {
+    // Safety check for node
+    if (!node || !node.id) {
+      return null;
+    }
+
     const isExpanded = expandedNodes.has(node.id);
     const hasChildren = node.reports && node.reports.length > 0;
 
@@ -170,25 +186,31 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
         <h4 className="text-lg font-semibold text-gray-900 mb-4">Management Chain</h4>
         
         <div className="flex flex-wrap items-center gap-2">
-          {hierarchy.management_chain.map((node, index) => (
-            <React.Fragment key={node.id}>
-              <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
-                <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                  {node.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{node.name}</div>
-                  <div className="text-xs text-gray-500">{node.title}</div>
-                </div>
-              </div>
-              
-              {index < hierarchy.management_chain.length - 1 && (
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                </svg>
-              )}
-            </React.Fragment>
-          ))}
+          {hierarchy.management_chain && hierarchy.management_chain.length > 0 ? (
+            hierarchy.management_chain.map((node, index) => (
+              node && node.id ? (
+                <React.Fragment key={node.id}>
+                  <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
+                    <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                      {node.name ? node.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{node.name || 'Unknown'}</div>
+                      <div className="text-xs text-gray-500">{node.title || 'Unknown Title'}</div>
+                    </div>
+                  </div>
+                  
+                  {index < hierarchy.management_chain.length - 1 && (
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  )}
+                </React.Fragment>
+              ) : null
+            ))
+          ) : (
+            <div className="text-gray-500 text-sm">No management chain available</div>
+          )}
         </div>
       </div>
 

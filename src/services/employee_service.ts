@@ -42,7 +42,7 @@ export class EmployeeService {
     }
   }
 
-  async getEmployeeById(id: number): Promise<Employee | null> {
+  async getEmployeeById(id: string | number): Promise<Employee | null> {
     if (!config.api.useApiLayer) {
       console.warn('API layer not enabled, returning null');
       return null;
@@ -69,7 +69,7 @@ export class EmployeeService {
     }
   }
 
-  async getEmployeeHierarchy(employeeId: number): Promise<EmployeeHierarchy | null> {
+  async getEmployeeHierarchy(employeeId: string | number): Promise<EmployeeHierarchy | null> {
     if (!config.api.useApiLayer) {
       console.warn('API layer not enabled, returning null');
       return null;
@@ -88,21 +88,76 @@ export class EmployeeService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const apiResponse = await response.json();
       
-      if (!data.success || !data.data) {
+      if (!apiResponse.success || !apiResponse.data) {
         return null;
       }
 
-      // Return the hierarchy data as received from API
-      const hierarchyData: EmployeeHierarchy = {
-        employee: data.data.employee,
-        hierarchy_tree: data.data.hierarchy_tree,
-        management_chain: data.data.management_chain || [],
-        total_employees: data.data.total_employees || 0
+      // Transform API response to match frontend expectations
+      const data = apiResponse.data;
+      const employee = data.employee;
+      const managers = data.managers || [];
+      const reports = data.reports || [];
+      
+      // Create hierarchy_tree (target employee with direct reports)
+      const hierarchy_tree: HierarchyNode = {
+        id: employee.id.toString(),
+        name: employee.name,
+        title: employee.title,
+        department: employee.department || 'Human Resources',
+        email: employee.email || `${employee.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
+        level: employee.level,
+        is_target: true,
+        reports: reports.map((report: any): HierarchyNode => ({
+          id: report.id.toString(),
+          name: report.name,
+          title: report.title,
+          department: report.department || employee.department || 'Human Resources',
+          email: report.email || `${report.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
+          level: report.level,
+          is_target: false,
+          reports: []
+        }))
       };
 
-      return hierarchyData;
+      // Create management_chain (reverse to get CEO -> ... -> Manager order)
+      const management_chain: HierarchyNode[] = managers.reverse().map((manager: any): HierarchyNode => ({
+        id: manager.id.toString(),
+        name: manager.name,
+        title: manager.title,
+        department: manager.department || 'Executive',
+        email: manager.email || `${manager.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
+        level: manager.level,
+        is_target: false,
+        reports: []
+      }));
+
+      const transformedHierarchy: EmployeeHierarchy = {
+        employee: {
+          id: parseInt(employee.id) || 0,
+          name: employee.name,
+          title: employee.title,
+          email: employee.email || `${employee.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
+          department: employee.department || 'Human Resources',
+          location: employee.location || 'Chicago, IL',
+          phone: employee.phone || '+1-555-0000',
+          start_date: employee.start_date || '2019-11-15',
+          manager_id: employee.manager_id,
+          level: employee.level,
+          has_reports: reports.length > 0,
+          report_count: reports.length,
+          document_type: 'employee',
+          indexed_at: new Date().toISOString(),
+          search_text: `${employee.name} ${employee.title}`
+        },
+        hierarchy_tree,
+        management_chain,
+        total_employees: 1 + managers.length + reports.length
+      };
+
+      console.log('✅ Transformed hierarchy data for UI:', transformedHierarchy);
+      return transformedHierarchy;
     } catch (error) {
       console.error('Employee hierarchy fetch error:', error);
       return null;
