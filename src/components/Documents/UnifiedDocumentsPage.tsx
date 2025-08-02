@@ -16,11 +16,13 @@ import LoadingSpinner from '../Common/LoadingSpinner';
 interface UnifiedDocumentsPageProps {
   className?: string;
   onNavigateToChat?: (document?: any) => void;
+  onNavigateToSummary?: (document?: any) => void;
 }
 
 export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({ 
   className = '', 
-  onNavigateToChat 
+  onNavigateToChat,
+  onNavigateToSummary 
 }) => {
   const { 
     searchQuery, 
@@ -83,7 +85,13 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     pagination.reset();
   }, [searchQuery, selectedFilters]);
 
-    const handleDocumentClick = useCallback((document: SearchResult) => {
+  const handleDocumentClick = useCallback((document: SearchResult) => {
+    if (onNavigateToChat) {
+      onNavigateToChat(document);
+    }
+  }, [onNavigateToChat]);
+
+  const handleChatWithDocument = useCallback((document: SearchResult) => {
     if (onNavigateToChat) {
       onNavigateToChat(document);
     }
@@ -98,9 +106,9 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // For now, just navigate to chat with summary context
-      if (onNavigateToChat) {
-        onNavigateToChat({
+      // For now, just navigate to summary with document context
+      if (onNavigateToSummary) {
+        onNavigateToSummary({
           type: 'summary',
           document: document,
           title: `Summary of ${document.title}`
@@ -111,7 +119,7 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     } finally {
       setIsSummarizing(false);
     }
-  }, [onNavigateToChat]);
+  }, [onNavigateToSummary]);
 
   const getHeaderTitle = () => {
     if (searchQuery.trim()) {
@@ -179,7 +187,7 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
             documents={documents}
             onDocumentClick={handleDocumentClick}
             onSummarizeDocument={handleSummarize}
-            onChatWithDocument={(doc: SearchResult) => onNavigateToChat?.(doc)}
+            onChatWithDocument={handleChatWithDocument}
             isLoading={isLoading}
           />
         </div>

@@ -1,17 +1,18 @@
 // src/components/Layout/Header.tsx
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ConnectionStatus from './ConnectionStatus';
 import CompanyLogo from '../Common/CompanyLogo';
 import { useBranding } from '../../contexts/BrandingContext';
 import { useSearch } from '../../contexts/SearchContext';
 import { useDBSTheme } from '../../hooks/useDBSTheme';
-import { useUnifiedUser } from '../../hooks/useUnifiedUser';
 
 const Header: React.FC = () => {
   const { getCompanyName } = useBranding();
   const { setSearchQuery, setSelectedResults } = useSearch();
   const { company, classes } = useDBSTheme();
-  const { currentUser } = useUnifiedUser();
+  const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+  const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -181,7 +182,14 @@ const Header: React.FC = () => {
 
                   {/* Logout */}
                   <div className="border-t border-gray-100 p-4">
-                    <button className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                    <button 
+                      onClick={() => {
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/login';
+                      }}
+                      className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                    >
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>

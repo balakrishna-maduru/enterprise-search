@@ -46,87 +46,90 @@ export const SearchSection: React.FC = () => {
   const activeFilterLabels = getActiveFilterLabels();
 
   return (
-    <div className="relative z-20 bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-4 mb-6">
-      {/* Search Input */}
-      <div className="max-w-4xl mx-auto mb-4">
-        <SearchInput
-          value={searchQuery}
-          onChange={setSearchQuery}
-          onSubmit={handleSearchSubmit}
-          isLoading={isLoading}
-          placeholder="Search content, people, or ask me anything..."
-        />
-      </div>
-
-      {/* Search Filters */}
+    <div className="relative z-20 bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-white/20 p-3 mb-4">
+      {/* Search Input Row with Filters Button */}
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-center gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearchSubmit}
+              isLoading={isLoading}
+              placeholder="Search content, people, or ask me anything..."
+            />
+          </div>
+          
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleFiltersDropdown}
-            className="relative"
+            className="relative flex-shrink-0 px-3 py-2"
           >
-            <Icon name="menu" size="sm" className="mr-2" />
+            <Icon name="menu" size="sm" className="mr-1" />
             Filters
             {Object.keys(selectedFilters).some(key => {
               const filterValue = selectedFilters[key as keyof typeof selectedFilters];
               return Array.isArray(filterValue) ? filterValue.length > 0 : false;
             }) && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
             )}
           </Button>
-          
-          {/* Active Filter Labels */}
-          {activeFilterLabels.map((label, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-md"
-            >
-              {label}
-              <button
-                onClick={() => {
-                  // Handle removing individual filters
-                  const [filterType, filterValue] = label.split(': ');
-                  const newFilters = { ...selectedFilters };
-                  
-                  switch (filterType) {
-                    case 'Source':
-                      newFilters.source = newFilters.source.filter(s => s !== filterValue);
-                      break;
-                    case 'Type':
-                      newFilters.contentType = newFilters.contentType.filter(ct => ct !== filterValue);
-                      break;
-                    case 'Author':
-                      if (newFilters.author) {
-                        newFilters.author = newFilters.author.filter(a => a !== filterValue);
-                      }
-                      break;
-                    case 'Tag':
-                      if (newFilters.tags) {
-                        newFilters.tags = newFilters.tags.filter(t => t !== filterValue);
-                      }
-                      break;
-                    case 'Date':
-                      newFilters.dateRange = 'all';
-                      break;
-                  }
-                  
-                  setSelectedFilters(newFilters);
-                }}
-                className="ml-1 hover:text-red-600"
-              >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </span>
-          ))}
         </div>
+
+        {/* Active Filter Labels Row */}
+        {activeFilterLabels.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap mt-2 pt-2 border-t border-gray-100">
+            {activeFilterLabels.map((label, index) => (
+              <span
+                key={index}
+                className="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-md"
+              >
+                {label}
+                <button
+                  onClick={() => {
+                    // Handle removing individual filters
+                    const [filterType, filterValue] = label.split(': ');
+                    const newFilters = { ...selectedFilters };
+                    
+                    switch (filterType) {
+                      case 'Source':
+                        newFilters.source = newFilters.source.filter(s => s !== filterValue);
+                        break;
+                      case 'Type':
+                        newFilters.contentType = newFilters.contentType.filter(ct => ct !== filterValue);
+                        break;
+                      case 'Author':
+                        if (newFilters.author) {
+                          newFilters.author = newFilters.author.filter(a => a !== filterValue);
+                        }
+                        break;
+                      case 'Tag':
+                        if (newFilters.tags) {
+                          newFilters.tags = newFilters.tags.filter(t => t !== filterValue);
+                        }
+                        break;
+                      case 'Date':
+                        newFilters.dateRange = 'all';
+                        break;
+                    }
+                    
+                    setSelectedFilters(newFilters);
+                  }}
+                  className="ml-1 hover:text-blue-600"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Filters Dropdown */}
         {showFiltersDropdown && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+          <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
             <SearchFilters
               filters={selectedFilters}
               onFiltersChange={setSelectedFilters}

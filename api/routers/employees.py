@@ -42,15 +42,13 @@ async def search_employees(
                         "multi_match": {
                             "query": q,
                             "fields": [
-                                "employee_data.name^3",
-                                "employee_data.title^2", 
-                                "employee_data.department^2",
-                                "employee_data.email",
-                                "employee_data.location",
-                                "employee_data.search_text^2",
-                                "title^3",  # Fallback to document title
-                                "content",
-                                "summary"
+                                "name^3",
+                                "title^2", 
+                                "department^2",
+                                "email",
+                                "location",
+                                "skills",
+                                "bio"
                             ],
                             "type": "best_fields",
                             "fuzziness": "AUTO"
@@ -58,7 +56,7 @@ async def search_employees(
                     },
                     {
                         "wildcard": {
-                            "employee_data.name.keyword": f"*{q}*"
+                            "name.keyword": f"*{q}*"
                         }
                     }
                 ],
@@ -69,32 +67,25 @@ async def search_employees(
         # Add filters
         filters = []
         if department:
-            filters.append({"term": {"employee_data.department.keyword": department}})
+            filters.append({"term": {"department.keyword": department}})
         if location:
-            filters.append({"term": {"employee_data.location.keyword": location}})
+            filters.append({"term": {"location.keyword": location}})
         if level is not None:
-            filters.append({"term": {"employee_data.level": level}})
+            filters.append({"term": {"level": level}})
         
-        if filters:
-            query["bool"]["filter"] = filters
-        
-        # Execute search on employees index with employee filter
+        # Build the complete search body with proper bool query structure
         search_body = {
             "query": {
                 "bool": {
-                    "must": [
-                        query["bool"]  # The original query
-                    ],
-                    "filter": [
-                        {"term": {"content_type": "employee"}}  # Only get employees
-                    ]
+                    "must": [query],  # Pass the complete query object
+                    "filter": filters if filters else []
                 }
             },
             "size": size,
             "sort": [
-                {"employee_data.level": {"order": "asc", "missing": "_last"}},
+                {"level": {"order": "asc", "missing": "_last"}},
                 {"_score": {"order": "desc"}},
-                {"employee_data.name.keyword": {"order": "asc", "missing": "_last"}}
+                {"name.keyword": {"order": "asc", "missing": "_last"}}
             ]
         }
         
@@ -104,18 +95,10 @@ async def search_employees(
         employees = []
         for hit in result['hits']['hits']:
             source = hit['_source']
-            # Extract employee data from the employees structure
-            if 'employee_data' in source:
-                employee = source['employee_data'].copy()
-                employee['id'] = employee.get('id', hit['_id'])
-                employee['score'] = hit['_score']
-                employees.append(employee)
-            else:
-                # Fallback for older format
-                employee = source.copy()
-                employee['id'] = hit['_id']
-                employee['score'] = hit['_score']
-                employees.append(employee)
+            # The employee data is directly in the source for employees index
+            employee = source.copy()
+            employee['score'] = hit['_score']
+            employees.append(employee)
         
         return {
             "success": True,
@@ -140,12 +123,7 @@ async def get_employee(employee_id: str):
         # Search for employee in employees index
         search_body = {
             "query": {
-                "bool": {
-                    "must": [
-                        {"term": {"content_type": "employee"}},
-                        {"term": {"employee_data.id": employee_id}}
-                    ]
-                }
+                "term": {"id": employee_id}
             },
             "size": 1
         }
@@ -158,12 +136,8 @@ async def get_employee(employee_id: str):
         hit = result['hits']['hits'][0]
         source = hit['_source']
         
-        if 'employee_data' in source:
-            employee_data = source['employee_data'].copy()
-        else:
-            employee_data = source.copy()
-        
-        employee_data['id'] = employee_data.get('id', hit['_id'])
+        # For employees index, data is directly in source
+        employee_data = source.copy()
         
         return {
             "success": True,
@@ -186,12 +160,7 @@ async def get_employee_hierarchy(employee_id: str):
         # Get the employee from employees
         search_body = {
             "query": {
-                "bool": {
-                    "must": [
-                        {"term": {"content_type": "employee"}},
-                        {"term": {"employee_data.id": employee_id}}
-                    ]
-                }
+                "term": {"id": employee_id}
             },
             "size": 1
         }
@@ -204,20 +173,16 @@ async def get_employee_hierarchy(employee_id: str):
         hit = employee_result['hits']['hits'][0]
         source = hit['_source']
         
-        if 'employee_data' in source:
-            employee = source['employee_data'].copy()
-        else:
-            employee = source.copy()
-        
-        employee['id'] = employee.get('id', hit['_id'])
+        # For employees index, data is directly in source
+        employee = source.copy()
         
         # Get all employees to build hierarchy
         all_employees_result = es.search(
             index="employees",
             body={
-                "query": {"term": {"content_type": "employee"}},
+                "query": {"match_all": {}},
                 "size": 1000,
-                "_source": ["employee_data", "title"]
+                "_source": ["id", "name", "title", "manager_id", "reports"]
             }
         )
         
@@ -304,11 +269,11 @@ async def get_departments():
         result = es.search(
             index="employees",
             body={
-                "query": {"term": {"content_type": "employee"}},
+                "query": {"match_all": {}},
                 "aggs": {
                     "departments": {
                         "terms": {
-                            "field": "employee_data.department.keyword",
+                            "field": "department.keyword",
                             "size": 100
                         }
                     }
@@ -341,11 +306,11 @@ async def get_locations():
         result = es.search(
             index="employees",
             body={
-                "query": {"term": {"content_type": "employee"}},
+                "query": {"match_all": {}},
                 "aggs": {
                     "locations": {
                         "terms": {
-                            "field": "employee_data.location.keyword",
+                            "field": "location.keyword",
                             "size": 100
                         }
                     }
