@@ -1,13 +1,19 @@
 // src/components/Layout/Layout.tsx
 import React, { useState } from 'react';
 import Header from './Header';
+import { Footer } from './Footer';
 import { SearchSection } from '../Search';
 import { UnifiedDocumentsPage } from '../Documents';
 import DocumentChatPage from '../Chat/DocumentChatPage';
+import DocumentSummaryPage from '../Summary/DocumentSummaryPage';
+import { useSearch } from '../../contexts/SearchContext';
 
 const Layout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'main' | 'chat'>('main');
   const [chatDocument, setChatDocument] = useState<any>(null);
+  const [showSummary, setShowSummary] = useState(false);
+  const [summaryDocument, setSummaryDocument] = useState<any>(null);
+  const { searchResults, searchQuery } = useSearch();
 
   const navigateToChat = (document?: any) => {
     setChatDocument(document);
@@ -17,6 +23,16 @@ const Layout: React.FC = () => {
   const navigateToMain = () => {
     setCurrentPage('main');
     setChatDocument(null);
+  };
+
+  const navigateToSummary = (document?: any) => {
+    setSummaryDocument(document);
+    setShowSummary(true);
+  };
+
+  const closeSummary = () => {
+    setShowSummary(false);
+    setSummaryDocument(null);
   };
 
   if (currentPage === 'chat') {
@@ -52,18 +68,32 @@ const Layout: React.FC = () => {
         </div>
       </div>
 
+      {/* Footer */}
+      <Footer />
+
       {/* AI Chat icon at bottom left */}
-      <div className="fixed bottom-8 left-8 z-50">
+      <div className="fixed bottom-20 left-8 z-50">
         <button
           onClick={() => navigateToChat()}
           className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
-          title="🤖 AI Assistant - Ask me anything!"
+          title="🤖 AI Chat - Ask me anything!"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </button>
       </div>
+
+      {/* Removed AI Summary icon at bottom left */}
+
+      {/* Summary Modal */}
+      <DocumentSummaryPage
+        isOpen={showSummary}
+        onClose={closeSummary}
+        initialDocument={summaryDocument}
+        searchResults={searchResults}
+        searchQuery={searchQuery}
+      />
     </div>
   );
 };
