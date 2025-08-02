@@ -8,7 +8,7 @@ from datetime import datetime
 router = APIRouter(prefix="/employees", tags=["employees"])
 
 # Initialize Elasticsearch client
-def get_unified_es_client():
+def get_es_client():
     """Get Elasticsearch client using settings from config"""
     try:
         # Parse URL from settings
@@ -32,7 +32,7 @@ async def search_employees(
     Search employees with optional filters
     """
     try:
-        es = get_unified_es_client()
+        es = get_es_client()
         
         # Build the search query
         query = {
@@ -78,7 +78,7 @@ async def search_employees(
         if filters:
             query["bool"]["filter"] = filters
         
-        # Execute search on employees index with employee filter
+        # Execute search on enterprise_documents index with employee filter
         search_body = {
             "query": {
                 "bool": {
@@ -98,13 +98,13 @@ async def search_employees(
             ]
         }
         
-        result = es.search(index="employees", body=search_body)
+        result = es.search(index="enterprise_documents", body=search_body)
         
         # Format results
         employees = []
         for hit in result['hits']['hits']:
             source = hit['_source']
-            # Extract employee data from the employees structure
+            # Extract employee data from the enterprise_documents structure
             if 'employee_data' in source:
                 employee = source['employee_data'].copy()
                 employee['id'] = employee.get('id', hit['_id'])
@@ -135,9 +135,9 @@ async def get_employee(employee_id: str):
     Get employee by ID
     """
     try:
-        es = get_unified_es_client()
+        es = get_es_client()
         
-        # Search for employee in employees index
+        # Search for employee in enterprise_documents index
         search_body = {
             "query": {
                 "bool": {
@@ -150,7 +150,7 @@ async def get_employee(employee_id: str):
             "size": 1
         }
         
-        result = es.search(index="employees", body=search_body)
+        result = es.search(index="enterprise_documents", body=search_body)
         
         if result['hits']['total']['value'] == 0:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -181,9 +181,9 @@ async def get_employee_hierarchy(employee_id: str):
     Get employee hierarchy (org chart centered on the employee)
     """
     try:
-        es = get_unified_es_client()
+        es = get_es_client()
         
-        # Get the employee from employees
+        # Get the employee from enterprise_documents
         search_body = {
             "query": {
                 "bool": {
@@ -196,7 +196,7 @@ async def get_employee_hierarchy(employee_id: str):
             "size": 1
         }
         
-        employee_result = es.search(index="employees", body=search_body)
+        employee_result = es.search(index="enterprise_documents", body=search_body)
         
         if employee_result['hits']['total']['value'] == 0:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -213,7 +213,7 @@ async def get_employee_hierarchy(employee_id: str):
         
         # Get all employees to build hierarchy
         all_employees_result = es.search(
-            index="employees",
+            index="enterprise_documents",
             body={
                 "query": {"term": {"content_type": "employee"}},
                 "size": 1000,
@@ -299,10 +299,10 @@ async def get_departments():
     Get list of all departments
     """
     try:
-        es = get_unified_es_client()
+        es = get_es_client()
         
         result = es.search(
-            index="employees",
+            index="enterprise_documents",
             body={
                 "query": {"term": {"content_type": "employee"}},
                 "aggs": {
@@ -336,10 +336,10 @@ async def get_locations():
     Get list of all locations
     """
     try:
-        es = get_unified_es_client()
+        es = get_es_client()
         
         result = es.search(
-            index="employees",
+            index="enterprise_documents",
             body={
                 "query": {"term": {"content_type": "employee"}},
                 "aggs": {
