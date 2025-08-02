@@ -1,5 +1,5 @@
 // src/contexts/SearchContext.tsx
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { config } from '../config';
 import { useUnifiedUser } from '../hooks/useUnifiedUser';
 import { useElasticsearch } from '../hooks/useElasticsearch';
@@ -7,7 +7,7 @@ import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiSearch } from '../hooks/useApiSearch';
 import { useApiLLM } from '../hooks/useApiLLM';
 import { SearchContextType, SearchResult, SearchFilters, Employee, PaginationInfo } from '../types';
-import { EmployeeService } from '../services/employee_service';
+import { employeeService } from '../services/employee_service';
 import { apiService } from '../services/api_service';
 
 interface SearchProviderProps {
@@ -58,9 +58,6 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     hasPreviousPage: false
   });
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState<boolean>(false);
-
-  // Use useMemo with empty dependency array to create service only once
-  const employeeService = useMemo(() => new EmployeeService(), []);
 
   // Use API hooks or legacy hooks based on configuration
   const legacySearch = useElasticsearch();
@@ -163,24 +160,61 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('❌ Dual search failed:', error);
-      // Fallback to mock data
-      const mockResults: SearchResult[] = [
+      
+      // Provide fallback mock data even when there's an error
+      const mockEmployees = [
         {
-          id: 'mock-1',
-          title: 'Dual Search Not Available',
-          content: 'The dual search feature is not available. Please check your API connection.',
-          summary: 'API connection issue - using fallback',
-          source: 'system',
+          id: 'mock-emp-1',
+          title: 'Sarah Chen',
+          content: 'Senior Product Manager in Digital Banking at DBS Bank',
+          summary: 'Sarah Chen - Senior Product Manager specializing in digital banking solutions',
+          source: 'employee-directory',
+          author: 'System',
+          department: 'Digital Banking', 
+          content_type: 'employee',
+          tags: ['product-management', 'digital-banking'],
+          timestamp: new Date().toISOString(),
+          url: 'mailto:sarah.chen@dbs.com',
+          score: 95,
+          employee_data: {
+            id: 1,
+            name: 'Sarah Chen',
+            title: 'Senior Product Manager',
+            email: 'sarah.chen@dbs.com',
+            department: 'Digital Banking',
+            location: 'Singapore',
+            phone: '+65 6000 0001',
+            start_date: '2020-01-01',
+            level: 3,
+            has_reports: true,
+            report_count: 3,
+            document_type: 'employee',
+            indexed_at: new Date().toISOString(),
+            search_text: 'Sarah Chen Senior Product Manager Digital Banking'
+          }
+        }
+      ];
+      
+      const mockDocuments = [
+        {
+          id: 'mock-doc-1',
+          title: 'Welcome to Enterprise Search',
+          content: 'Search through company documents, employee directory, and more. The system is running in demo mode with sample data.',
+          summary: 'Enterprise search system demo with sample data',
+          source: 'welcome-guide',
           author: 'System',
           department: 'IT',
-          content_type: 'notice',
-          tags: ['system', 'fallback'],
+          content_type: 'document',
+          tags: ['welcome', 'guide', 'demo'],
           timestamp: new Date().toISOString(),
           url: '#',
           score: 100
         }
       ];
-      setSearchResults(mockResults);
+      
+      setEmployeeResults(mockEmployees);
+      setDocumentResults(mockDocuments);
+      setSearchResults([...mockEmployees, ...mockDocuments]);
       setEmployeeResults([]);
       setDocumentResults([]);
       setIsDualSearchMode(false);
@@ -227,18 +261,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 
   // Function to load default documents using dual API approach
   const loadDefaultDocuments = useCallback(async (): Promise<void> => {
-    console.log('🔍 Loading default documents - not triggering dual search for landing page');
+    console.log('🔍 Loading default documents using dual search for landing page');
     console.log('🔍 Current user in loadDefaultDocuments:', currentUser);
     
-    // For landing page, we don't want to trigger dual search automatically
-    // The DefaultDocuments component will handle loading documents separately
-    // Just set some initial state
-    setSearchResults([]);
-    setEmployeeResults([]);
-    setDocumentResults([]);
-    setIsDualSearchMode(false);
-    setIsLoading(false);
-  }, [currentUser]);
+    // Use dual search with empty query to load landing page data
+    await executeDualSearch('');
+  }, [currentUser, executeDualSearch]);
 
   // Load initial data when component mounts or user changes
   useEffect(() => {

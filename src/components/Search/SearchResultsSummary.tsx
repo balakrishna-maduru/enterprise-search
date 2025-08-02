@@ -23,12 +23,12 @@ export const SearchResultsSummary: React.FC<SearchResultsSummaryProps> = ({
       <div className="max-w-7xl mx-auto">
         <h3 className="text-lg font-bold text-red-800">🔍 SEARCH RESULTS SUMMARY TEST</h3>
         <p className="text-sm text-gray-700">
-          Search: "{searchQuery}" | Active: {isSearchActive ? 'Yes' : 'No'} | Total: {totalResults} | Employees: {employeeCount} | Documents: {documentCount}
+          Search: "{searchQuery}" | Active: {isSearchActive ? 'Yes' : 'No'} | Total: {totalResults} | Employees: {employeeCount} | Content: {documentCount}
         </p>
         <div className="flex gap-2 mt-2">
           <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">All {totalResults}</span>
           <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">People {employeeCount}</span>
-          <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">Docs {documentCount}</span>
+          <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">Content {documentCount}</span>
         </div>
       </div>
     </div>

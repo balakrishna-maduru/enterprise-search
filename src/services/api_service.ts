@@ -1,5 +1,6 @@
 // src/services/api_service.ts
 import { SearchResult, Employee } from '../types';
+import { availableUsers } from '../data/users';
 
 export interface SearchRequest {
   query: string;
@@ -458,7 +459,83 @@ export class ApiService {
     currentUser?: any,
     from: number = 0
   ): Promise<{results: SearchResult[], total: number}> {
-    return this.searchWithApi(query, size, currentUser, ['document', 'ticket'], from);
+    try {
+      // Use the document search API endpoint: /api/v1/search
+      const isWildcardQuery = query === '*' || query.trim() === '';
+      
+      const searchRequest: SearchRequest = {
+        query: isWildcardQuery ? '' : query,
+        filters: {
+          source: [],
+          content_type: [], // Let the backend filter out employees
+          date_range: 'all',
+          author: [],
+          tags: [],
+          exclude_content_type: ['employee'] // Explicitly exclude employees
+        },
+        size,
+        from_: from,
+        semantic_enabled: !isWildcardQuery,
+        hybrid_weight: isWildcardQuery ? 0 : 0.7
+      };
+
+      const url = `${this.baseUrl}/search`; // Document search endpoint
+      console.log('🔍 Making document search API request:', { url, query, searchRequest });
+      
+      const headers = await this.getAuthHeaders(currentUser);
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(searchRequest)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Document API Response Error:', { 
+          status: response.status, 
+          statusText: response.statusText,
+          body: errorText 
+        });
+        throw new Error(`Document API Error: ${response.status}`);
+      }
+      
+      const apiResponse = await response.json();
+      console.log('✅ Document Search API Response:', apiResponse);
+
+      let results = [];
+      let total = 0;
+      
+      if (apiResponse.results) {
+        results = apiResponse.results;
+        total = apiResponse.total || results.length;
+      } else if (apiResponse.success && apiResponse.data && apiResponse.data.results) {
+        results = apiResponse.data.results;
+        total = apiResponse.data.total || results.length;
+      }
+
+      // Transform to SearchResult format
+      const transformedResults = results.map((result: any) => ({
+        id: result.id || `doc_${Math.random()}`,
+        title: result.title || 'Untitled Document',
+        content: result.content || '',
+        summary: result.summary || '',
+        source: result.source || 'search',
+        author: result.author || 'System',
+        department: result.department || 'Unknown',
+        content_type: result.content_type || 'document',
+        tags: result.tags || [],
+        timestamp: result.timestamp || result.date || new Date().toISOString(),
+        url: result.url || '#',
+        score: result.score || result.relevance_score || 100,
+        highlights: result.highlights
+      }));
+      
+      return { results: transformedResults, total };
+    } catch (error) {
+      console.error('❌ Failed to search documents:', error);
+      return { results: [], total: 0 };
+    }
   }
 
   // New method: Search documents with filters
@@ -575,7 +652,100 @@ export class ApiService {
     currentUser?: any,
     from: number = 0
   ): Promise<{results: SearchResult[], total: number}> {
-    return this.searchWithApi(query, size, currentUser, ['employee'], from);
+    try {
+      // Use the employee search API endpoint: /api/v1/employees/search
+      const url = `${this.baseUrl}/employees/search`;
+      
+      // Build query parameters for the employee search endpoint
+      const params = new URLSearchParams();
+      if (query.trim()) {
+        params.append('q', query);
+      } else {
+        params.append('q', '*'); // Search all employees
+      }
+      params.append('size', size.toString());
+      
+      const fullUrl = query.trim() ? `${url}?${params.toString()}` : `${url}?q=*&size=${size}`;
+      console.log('👥 Making employee search API request:', { fullUrl, query });
+      
+      const headers = await this.getAuthHeaders(currentUser);
+      delete headers['Content-Type']; // GET request doesn't need Content-Type
+      
+      const response = await fetch(fullUrl, {
+        method: 'GET',
+        headers
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Employee API Response Error:', { 
+          status: response.status, 
+          statusText: response.statusText,
+          body: errorText 
+        });
+        throw new Error(`Employee API Error: ${response.status}`);
+      }
+      
+      const apiResponse = await response.json();
+      console.log('✅ Employee Search API Response:', apiResponse);
+
+      let employees = [];
+      let total = 0;
+      
+      if (apiResponse.data && apiResponse.data.employees) {
+        employees = apiResponse.data.employees;
+        total = apiResponse.data.total || employees.length;
+      } else if (apiResponse.employees) {
+        employees = apiResponse.employees;
+        total = apiResponse.total || employees.length;
+      }
+
+      // Transform employee data to SearchResult format
+      const transformedResults = employees.map((emp: any) => {
+        const employee_data: Employee = {
+          id: emp.id || parseInt(emp._id) || 0,
+          name: emp.name || emp.title || 'Unknown',
+          title: emp.title || emp.position || '',
+          email: emp.email || '',
+          department: emp.department || '',
+          location: emp.location || '',
+          phone: emp.phone || '',
+          start_date: emp.start_date || emp.startDate || '',
+          manager_id: emp.manager_id || emp.managerId,
+          level: emp.level || 1,
+          has_reports: emp.has_reports || emp.hasReports || false,
+          report_count: emp.report_count || emp.reportCount || 0,
+          document_type: 'employee',
+          indexed_at: emp.indexed_at || emp.indexedAt || new Date().toISOString(),
+          search_text: emp.search_text || `${emp.name} ${emp.title} ${emp.department}`
+        };
+
+        return {
+          id: emp.id || emp._id || `emp_${Math.random()}`,
+          title: emp.name || emp.title || 'Unknown Employee',
+          content: `${emp.title || 'Employee'} in ${emp.department || 'Unknown Department'}${emp.location ? ` - ${emp.location}` : ''}`,
+          summary: `${emp.name || 'Unknown'} - ${emp.title || 'Employee'} in ${emp.department || 'Unknown Department'}`,
+          source: 'employee-directory',
+          author: 'HR System',
+          department: emp.department || 'Unknown',
+          content_type: 'employee',
+          tags: [
+            emp.department?.toLowerCase().replace(/\s+/g, '-'),
+            emp.title?.toLowerCase().replace(/\s+/g, '-'),
+            'employee'
+          ].filter(Boolean),
+          timestamp: emp.start_date || emp.indexed_at || new Date().toISOString(),
+          url: emp.email ? `mailto:${emp.email}` : '#',
+          score: emp.score || emp._score || 100,
+          employee_data
+        } as SearchResult;
+      });
+      
+      return { results: transformedResults, total };
+    } catch (error) {
+      console.error('❌ Failed to search employees:', error);
+      return { results: [], total: 0 };
+    }
   }
 
   // New method: Dual search - returns both employees and documents separately
@@ -591,6 +761,45 @@ export class ApiService {
     documents: {results: SearchResult[], total: number}
   }> {
     try {
+      // Check if API is available
+      const isApiAvailable = await this.healthCheck();
+      
+      if (!isApiAvailable) {
+        console.log('⚠️ API not available, using mock search results...');
+        
+        // Filter mock data based on query if provided
+        const mockEmployees = this.createMockSearchResults();
+        const mockDocuments = this.createMockDocuments();
+        
+        let filteredEmployees = mockEmployees;
+        let filteredDocuments = mockDocuments;
+        
+        if (query.trim()) {
+          const queryLower = query.toLowerCase();
+          filteredEmployees = mockEmployees.filter(emp => 
+            emp.title.toLowerCase().includes(queryLower) ||
+            emp.content.toLowerCase().includes(queryLower) ||
+            emp.department.toLowerCase().includes(queryLower)
+          );
+          filteredDocuments = mockDocuments.filter(doc => 
+            doc.title.toLowerCase().includes(queryLower) ||
+            doc.content.toLowerCase().includes(queryLower) ||
+            doc.department.toLowerCase().includes(queryLower)
+          );
+        }
+        
+        return {
+          employees: {
+            results: filteredEmployees.slice(employeeFrom, employeeFrom + employeeSize),
+            total: filteredEmployees.length
+          },
+          documents: {
+            results: filteredDocuments.slice(documentFrom, documentFrom + documentSize),
+            total: filteredDocuments.length
+          }
+        };
+      }
+      
       // Execute both searches in parallel
       const [employeeResponse, documentResponse] = await Promise.all([
         this.searchEmployeesOnly(query, employeeSize, currentUser, employeeFrom),
@@ -625,6 +834,28 @@ export class ApiService {
   }> {
     try {
       console.log('🚀 Loading landing page data with dual API calls...');
+      
+      // Check if API is available
+      const isApiAvailable = await this.healthCheck();
+      
+      if (!isApiAvailable) {
+        console.log('⚠️ API not available, using mock data...');
+        
+        // Return mock data when API is not available
+        const mockEmployees = this.createMockSearchResults();
+        const mockDocuments = this.createMockDocuments();
+        
+        return {
+          employees: {
+            results: mockEmployees.slice(0, employeeSize),
+            total: mockEmployees.length
+          },
+          documents: {
+            results: mockDocuments.slice(0, documentSize),
+            total: mockDocuments.length
+          }
+        };
+      }
       
       // For landing page, we want:
       // 1. Either the logged-in user only OR top employees
@@ -674,6 +905,101 @@ export class ApiService {
     } catch {
       return false;
     }
+  }
+
+  // Fallback method to create mock data when API is not available
+  private createMockSearchResults(): SearchResult[] {
+    return availableUsers.slice(0, 5).map((user, index) => ({
+      id: user.id,
+      title: user.name,
+      content: `${user.position} in ${user.department} at ${user.company}`,
+      summary: `${user.name} - ${user.position} specializing in ${user.department}`,
+      source: 'user-directory',
+      author: 'System',
+      department: user.department,
+      content_type: 'employee',
+      tags: [user.department.toLowerCase().replace(/\s+/g, '-'), user.role],
+      timestamp: new Date().toISOString(),
+      url: `mailto:${user.email}`,
+      score: 95 - (index * 5),
+      employee_data: {
+        id: index + 1,
+        name: user.name,
+        title: user.position,
+        email: user.email,
+        department: user.department,
+        location: 'Singapore',
+        phone: '+65 6000 0000',
+        start_date: '2020-01-01',
+        manager_id: index > 0 ? 1 : undefined,
+        level: index === 0 ? 3 : 2,
+        has_reports: index === 0,
+        report_count: index === 0 ? 4 : 0,
+        document_type: 'employee',
+        indexed_at: new Date().toISOString(),
+        search_text: `${user.name} ${user.position} ${user.department}`
+      }
+    }));
+  }
+
+  private createMockDocuments(): SearchResult[] {
+    const mockDocs = [
+      {
+        title: 'Q4 Financial Report 2024',
+        content: 'Comprehensive financial analysis and performance metrics for the fourth quarter of 2024.',
+        source: 'finance-reports',
+        author: 'Finance Team',
+        department: 'Finance',
+        content_type: 'document'
+      },
+      {
+        title: 'Employee Handbook 2025',
+        content: 'Updated employee policies, procedures, and benefits information for the new year.',
+        source: 'hr-documents',
+        author: 'HR Department',
+        department: 'Human Resources',
+        content_type: 'document'
+      },
+      {
+        title: 'Product Roadmap - Digital Banking',
+        content: 'Strategic roadmap for digital banking initiatives and upcoming feature releases.',
+        source: 'product-docs',
+        author: 'Product Team',
+        department: 'Product Management',
+        content_type: 'document'
+      },
+      {
+        title: 'Security Guidelines 2025',
+        content: 'Updated cybersecurity protocols and best practices for all employees.',
+        source: 'security-docs',
+        author: 'Security Team',
+        department: 'IT Security',
+        content_type: 'document'
+      },
+      {
+        title: 'Training Materials - API Development',
+        content: 'Comprehensive training resources for API development and best practices.',
+        source: 'training-docs',
+        author: 'Engineering Team',
+        department: 'Engineering',
+        content_type: 'document'
+      }
+    ];
+
+    return mockDocs.map((doc, index) => ({
+      id: `doc_${index + 1}`,
+      title: doc.title,
+      content: doc.content,
+      summary: doc.content.substring(0, 100) + '...',
+      source: doc.source,
+      author: doc.author,
+      department: doc.department,
+      content_type: doc.content_type,
+      tags: [doc.department.toLowerCase().replace(/\s+/g, '-'), 'documentation'],
+      timestamp: new Date(Date.now() - (index * 24 * 60 * 60 * 1000)).toISOString(),
+      url: `#/document/${index + 1}`,
+      score: 90 - (index * 3)
+    }));
   }
 }
 

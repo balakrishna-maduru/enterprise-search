@@ -35,9 +35,8 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
-  const [isSummarizing, setIsSummarizing] = useState(false);
   
-  const resultsPerPage = 10;
+  const resultsPerPage = 20;
   const pagination = usePagination(totalResults, resultsPerPage);
 
   const loadData = useCallback(async () => {
@@ -83,48 +82,24 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     pagination.reset();
   }, [searchQuery, selectedFilters]);
 
-    const handleDocumentClick = useCallback((document: SearchResult) => {
+  const handleDocumentClick = (document: SearchResult) => {
     if (onNavigateToChat) {
       onNavigateToChat(document);
     }
-  }, [onNavigateToChat]);
-
-  const handleSummarize = useCallback(async (document: SearchResult) => {
-    setIsSummarizing(true);
-    try {
-      // TODO: Call actual summarization API
-      console.log('Summarizing document:', document.title);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // For now, just navigate to chat with summary context
-      if (onNavigateToChat) {
-        onNavigateToChat({
-          type: 'summary',
-          document: document,
-          title: `Summary of ${document.title}`
-        });
-      }
-    } catch (error) {
-      console.error('Error generating summary:', error);
-    } finally {
-      setIsSummarizing(false);
-    }
-  }, [onNavigateToChat]);
+  };
 
   const getHeaderTitle = () => {
     if (searchQuery.trim()) {
       return `Search Results for "${searchQuery}"`;
     }
-    return 'Available Content';
+    return '📄 Recent Documents';
   };
 
   const getHeaderSubtitle = () => {
     if (searchQuery.trim()) {
-      return 'Showing relevant content and team members';
+      return 'Showing relevant documents and employees';
     }
-    return 'Browse the latest content from across your organization';
+    return 'Browse the latest documents from across your organization';
   };
 
   if (error) {
@@ -173,17 +148,11 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
       )}
 
       {/* Documents Grid */}
-      <div className="flex justify-center">
-        <div className="w-full max-w-4xl">
-          <DocumentGrid
-            documents={documents}
-            onDocumentClick={handleDocumentClick}
-            onSummarizeDocument={handleSummarize}
-            onChatWithDocument={(doc: SearchResult) => onNavigateToChat?.(doc)}
-            isLoading={isLoading}
-          />
-        </div>
-      </div>
+      <DocumentGrid
+        documents={documents}
+        onDocumentClick={handleDocumentClick}
+        isLoading={isLoading}
+      />
 
       {/* Pagination */}
       {totalResults > resultsPerPage && (
@@ -213,3 +182,5 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     </div>
   );
 };
+
+export default UnifiedDocumentsPage;

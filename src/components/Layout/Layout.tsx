@@ -1,7 +1,7 @@
 // src/components/Layout/Layout.tsx
 import React, { useState } from 'react';
 import Header from './Header';
-import SearchSection from '../Search/SearchSection';
+import { SearchSection } from '../Search';
 import { UnifiedDocumentsPage } from '../Documents';
 import DocumentChatPage from '../Chat/DocumentChatPage';
 
@@ -56,7 +56,7 @@ const Layout: React.FC = () => {
       <div className="fixed bottom-8 left-8 z-50">
         <button
           onClick={() => navigateToChat()}
-          className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
+          className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
           title="🤖 AI Assistant - Ask me anything!"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
