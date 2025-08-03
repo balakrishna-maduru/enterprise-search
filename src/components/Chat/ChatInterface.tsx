@@ -130,7 +130,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     {chat.messages.length} messages
                   </p>
                   <p className="text-xs text-gray-400">
-                    {chat.updatedAt.toLocaleDateString()}
+                    {new Date(chat.updatedAt).toLocaleDateString()}
                   </p>
                 </div>
                 <button
@@ -234,7 +234,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     <p className={`text-xs mt-1 ${
                       message.isUser ? 'text-red-100' : 'text-gray-500'
                     }`}>
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                 </div>
