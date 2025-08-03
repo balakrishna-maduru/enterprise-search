@@ -182,63 +182,60 @@ async def get_employee_hierarchy(employee_id: str):
             body={
                 "query": {"match_all": {}},
                 "size": 1000,
-                "_source": ["id", "name", "title", "manager_id", "reports"]
+                "_source": ["id", "name", "title", "department", "email", "level", "manager_id", "reports"]
             }
         )
         
-        # Build employee dict using employee_data.id as the key
+        # Build employee dict using the source data directly
         all_employees = {}
         for emp_doc in all_employees_result['hits']['hits']:
             emp_source = emp_doc['_source']
-            if 'employee_data' in emp_source:
-                emp_data = emp_source['employee_data'].copy()
-                emp_id = str(emp_data.get('id', emp_doc['_id']))
-                emp_data['id'] = emp_id
-                all_employees[emp_id] = emp_data
+            emp_data = emp_source.copy()
+            emp_id = str(emp_data.get('id', emp_doc['_id']))
+            emp_data['id'] = emp_id
+            all_employees[emp_id] = emp_data
         
-        # Build hierarchy tree
-        def build_hierarchy_node(emp_id: str, employees_dict: Dict[str, Any]) -> Dict[str, Any]:
-            if emp_id not in employees_dict:
-                return None
-                
-            emp = employees_dict[emp_id]
-            
-            # Find direct reports
-            reports = []
-            for other_id, other_emp in employees_dict.items():
-                if str(other_emp.get('manager_id', '')) == str(emp_id):
-                    report_node = build_hierarchy_node(other_id, employees_dict)
-                    if report_node:
-                        reports.append(report_node)
-            
-            return {
-                "id": emp['id'],
-                "name": emp['name'],
-                "title": emp['title'],
-                "department": emp['department'],
-                "email": emp['email'],
-                "level": emp.get('level', 0),
-                "reports": reports,
-                "is_target": emp_id == employee_id
-            }
+        # Build hierarchy tree - simplified version
+        # Just show the target employee with their direct reports
+        target_emp = all_employees.get(employee_id, employee)
         
-        # Find the root of the tree (top-level manager)
-        current_emp = employee
-        while current_emp.get('manager_id') and str(current_emp['manager_id']) in all_employees:
-            current_emp = all_employees[str(current_emp['manager_id'])]
+        # Find direct reports
+        direct_reports = []
+        for emp_id, emp_data in all_employees.items():
+            if str(emp_data.get('manager_id', '')) == employee_id:
+                direct_reports.append({
+                    "id": emp_data.get('id', emp_id),
+                    "name": emp_data.get('name', 'Unknown'),
+                    "title": emp_data.get('title', 'Unknown Title'),
+                    "department": emp_data.get('department', target_emp.get('department', 'Unknown Department')),
+                    "email": emp_data.get('email', f"{emp_data.get('name', 'unknown').lower().replace(' ', '.')}@company.com"),
+                    "level": emp_data.get('level', target_emp.get('level', 0) + 1),
+                    "reports": [],
+                    "is_target": False
+                })
         
-        # Build the complete hierarchy from the root
-        hierarchy_tree = build_hierarchy_node(str(current_emp['id']), all_employees)
+        # Create hierarchy tree with target employee and their reports
+        hierarchy_tree = {
+            "id": target_emp.get('id', employee_id),
+            "name": target_emp.get('name', 'Unknown'),
+            "title": target_emp.get('title', 'Unknown Title'),
+            "department": target_emp.get('department', employee.get('department', 'Unknown Department')),
+            "email": target_emp.get('email', employee.get('email', f"{target_emp.get('name', 'unknown').lower().replace(' ', '.')}@company.com")),
+            "level": target_emp.get('level', employee.get('level', 0)),
+            "reports": direct_reports,
+            "is_target": True
+        }
         
         # Get management chain for the target employee
         management_chain = []
-        current_emp = employee
+        # Start with the target employee from all_employees dict
+        current_emp = all_employees.get(employee_id, employee)
         while current_emp.get('manager_id') and str(current_emp['manager_id']) in all_employees:
             manager = all_employees[str(current_emp['manager_id'])]
             management_chain.append({
-                "id": manager['id'],
-                "name": manager['name'],
-                "title": manager['title'],
+                "id": manager.get('id', str(current_emp['manager_id'])),
+                "name": manager.get('name', 'Unknown Manager'),
+                "title": manager.get('title', 'Unknown Title'),
                 "level": manager.get('level', 0)
             })
             current_emp = manager
@@ -254,6 +251,9 @@ async def get_employee_hierarchy(employee_id: str):
         }
         
     except Exception as e:
+        import traceback
+        error_traceback = traceback.format_exc()
+        print(f"ERROR in get_employee_hierarchy: {error_traceback}")
         if "not_found" in str(e).lower():
             raise HTTPException(status_code=404, detail="Employee not found")
         raise HTTPException(status_code=500, detail=f"Failed to get hierarchy: {str(e)}")
