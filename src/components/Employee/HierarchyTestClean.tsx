@@ -73,7 +73,7 @@ const HierarchyTest: React.FC = () => {
         <div className="bg-blue-50 rounded-lg p-4">
           <h3 className="text-sm font-semibold text-blue-900 mb-2">API Endpoint Test</h3>
           <p className="text-sm text-blue-700">
-            Testing: <code className="bg-blue-100 px-1 rounded">GET /api/v1/employees/{employeeId}/hierarchy</code>
+          Development: <code className="bg-blue-100 px-1 rounded">GET /api/v1/employees/{employeeId}/hierarchy</code>
           </p>
           <p className="text-xs text-blue-600 mt-1">
             This will fetch the complete organizational tree from CEO down to the selected employee.

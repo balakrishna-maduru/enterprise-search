@@ -6,7 +6,6 @@ import { SearchSection } from '../Search';
 import { UnifiedDocumentsPage } from '../Documents';
 import DocumentChatPage from '../Chat/DocumentChatPage';
 import DocumentSummaryPage from '../Summary/DocumentSummaryPage';
-import { UITestComponents } from '../UI/TestComponents';
 import { useSearch } from '../../contexts/SearchContext';
 
 const Layout: React.FC = () => {
@@ -105,9 +104,6 @@ const Layout: React.FC = () => {
         searchResults={searchResults}
         searchQuery={searchQuery}
       />
-
-      {/* UI Test Components */}
-      <UITestComponents />
     </div>
   );
 };

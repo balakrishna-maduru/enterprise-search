@@ -170,7 +170,7 @@ class EmployeeDataGenerator:
                 "level": 1,
                 "has_reports": False,
                 "report_count": 0,
-                "skills": ["Python", "FastAPI", "Database Design", "Testing"],
+                "skills": ["Python", "FastAPI", "Database Design", "Development"],
                 "bio": "Software engineer specializing in API development and testing"
             },
             {

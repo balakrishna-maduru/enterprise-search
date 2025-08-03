@@ -1,33 +1,12 @@
 // src/components/UI/TestComponents.tsx
-import React, { useState } from 'react';
+import React from 'react';
 
 export const UITestComponents: React.FC = () => {
-  const [showTest, setShowTest] = useState(false);
-
-  if (!showTest) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <button
-          onClick={() => setShowTest(true)}
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all duration-200 hover:scale-105"
-        >
-          🧪 Test Components
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">🧪 Debug Panel</h2>
-          <button
-            onClick={() => setShowTest(false)}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ✕
-          </button>
         </div>
 
         <div className="space-y-4">

@@ -137,12 +137,6 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     return 'Available Content';
   };
 
-  const getHeaderSubtitle = () => {
-    if (searchQuery.trim()) {
-      return 'Showing relevant content and team members';
-    }
-    return 'Browse the latest content from across your organization';
-  };
 
   if (error) {
     return (
@@ -165,7 +159,6 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
       {/* Header */}
       <SearchHeader
         title={getHeaderTitle()}
-        subtitle={getHeaderSubtitle()}
         totalResults={totalResults}
       />
 
