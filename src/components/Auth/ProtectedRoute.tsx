@@ -24,6 +24,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     console.log('🔍 ProtectedRoute useEffect triggered:', { token: !!token, user: !!user });
     
+    // Check if user explicitly logged out
+    const logoutRequested = localStorage.getItem('logout_requested');
+    if (logoutRequested) {
+      console.log('🚪 User logged out, not auto-authenticating');
+      return;
+    }
+    
     if (!token || !user) {
       console.log('🔧 Development Mode: Auto-authenticating with real API...');
       setIsAuthenticating(true);
@@ -60,6 +67,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           
           localStorage.setItem('access_token', data.access_token);
           localStorage.setItem('user', JSON.stringify(enhancedUser));
+          localStorage.removeItem('logout_requested'); // Clear logout flag on successful auth
           
           console.log('🚀 Auto-login successful, reloading...');
           setTimeout(() => {

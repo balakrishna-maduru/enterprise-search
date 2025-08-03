@@ -21,7 +21,7 @@ const CompanyLogo: React.FC = () => {
           }}
         />
         <div 
-          className="h-12 w-auto min-w-[60px] px-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hidden"
+          className="h-12 w-auto min-w-[60px] px-4 bg-gradient-to-r from-red-600 to-red-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hidden"
           style={{ display: 'none' }}
         >
           <span className="bg-gradient-to-r from-white to-gray-100 bg-clip-text text-transparent">DBS</span>

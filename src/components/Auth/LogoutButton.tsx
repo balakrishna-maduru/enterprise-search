@@ -18,6 +18,9 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
     
+    // Set a flag to prevent auto-login after logout
+    localStorage.setItem('logout_requested', 'true');
+    
     // Redirect to login
     navigate('/login');
   };

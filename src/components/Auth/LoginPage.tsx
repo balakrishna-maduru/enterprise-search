@@ -1,9 +1,6 @@
 // src/components/Auth/LoginPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CompanyLogo from '../Common/CompanyLogo';
-import { useEmployeeApi } from '../../hooks/useEmployeeApi';
-import { formatEmployeesFromApi } from '../../utils/employeeFormatter';
 
 interface Employee {
   id: string;
@@ -18,72 +15,59 @@ interface Employee {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { searchEmployees, loading, error } = useEmployeeApi();
-  const [email, setEmail] = useState('');
   const [selectedUser, setSelectedUser] = useState<Employee | null>(null);
   const [demoUsers, setDemoUsers] = useState<Employee[]>([]);
-  const [searchQuery, setSearchQuery] = useState('manager');
 
-  // Fetch demo users from API on component mount
+  // Set up demo users on component mount
   useEffect(() => {
-    fetchDemoUsers();
+    const defaultUsers = [
+      {
+        id: '1',
+        name: 'John Smith',
+        email: 'john.smith@company.com',
+        title: 'Senior Manager',
+        department: 'Engineering',
+        location: 'New York',
+        level: 3
+      },
+      {
+        id: '2',
+        name: 'Sarah Johnson',
+        email: 'sarah.johnson@company.com',
+        title: 'Product Manager',
+        department: 'Product',
+        location: 'San Francisco',
+        level: 3
+      },
+      {
+        id: '3',
+        name: 'Mike Chen',
+        email: 'mike.chen@company.com',
+        title: 'Software Engineer',
+        department: 'Engineering',
+        location: 'Seattle',
+        level: 2
+      },
+      {
+        id: '23',
+        name: 'Anna Parker',
+        email: 'anna.parker@company.com',
+        title: 'Software Engineer',
+        department: 'Technology',
+        location: 'San Francisco',
+        level: 4
+      }
+    ];
+    setDemoUsers(defaultUsers);
   }, []);
-
-  // Fetch users when search query changes
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      fetchDemoUsers();
-    }
-  }, [searchQuery]);
-
-  const fetchDemoUsers = async () => {
-    try {
-      const searchTerm = searchQuery.trim() || 'manager';
-      const result = await searchEmployees(searchTerm, { size: 10 });
-      
-      // Use the formatter utility to ensure consistent data structure
-      const users = formatEmployeesFromApi(result.employees);
-      setDemoUsers(users);
-    } catch (error) {
-      console.error('Error fetching demo users:', error);
-      
-      // Fallback demo users
-      setDemoUsers([
-        {
-          id: '1',
-          name: 'John Smith',
-          email: 'john.smith@company.com',
-          title: 'Senior Manager',
-          department: 'Engineering',
-          location: 'New York',
-          level: 3
-        },
-        {
-          id: '2',
-          name: 'Sarah Johnson',
-          email: 'sarah.johnson@company.com',
-          title: 'Product Manager',
-          department: 'Product',
-          location: 'San Francisco',
-          level: 3
-        },
-        {
-          id: '3',
-          name: 'Mike Chen',
-          email: 'mike.chen@company.com',
-          title: 'Software Engineer',
-          department: 'Engineering',
-          location: 'Seattle',
-          level: 2
-        }
-      ]);
-    }
-  };
 
   const handleLogin = async () => {
     if (!selectedUser) return;
 
     try {
+      // Clear logout flag on successful login
+      localStorage.removeItem('logout_requested');
+      
       // Store user data in localStorage
       localStorage.setItem('access_token', 'demo-token-' + selectedUser.id);
       localStorage.setItem('user', JSON.stringify(selectedUser));
@@ -96,11 +80,36 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f3f4f6' fill-opacity='0.4'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+    }}>
+      <div className="max-w-md w-full space-y-8 bg-white shadow-2xl rounded-2xl p-8 border border-gray-100">
         <div>
-          <div className="mx-auto h-12 w-auto flex justify-center">
-            <CompanyLogo />
+          <div className="mx-auto h-16 w-auto flex justify-center mb-4">
+            <img
+              className="h-16 w-auto object-contain drop-shadow-sm"
+              src="/dbs-logo-1968.jpg"
+              alt="DBS Bank"
+              onLoad={() => console.log('DBS logo loaded successfully')}
+              onError={(e) => {
+                console.log('JPG logo failed, trying SVG');
+                const target = e.currentTarget;
+                target.src = '/dbs-logo.svg';
+                target.onerror = () => {
+                  console.log('SVG logo also failed, trying PNG');
+                  target.src = '/dbs-logo-official.png';
+                  target.onerror = () => {
+                    console.log('All logos failed, showing fallback');
+                    target.style.display = 'none';
+                    // Show fallback text with DBS red branding
+                    const fallback = document.createElement('div');
+                    fallback.className = 'h-16 px-6 bg-gradient-to-r from-red-600 to-red-700 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg';
+                    fallback.textContent = 'DBS Bank';
+                    target.parentNode?.appendChild(fallback);
+                  };
+                };
+              }}
+            />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to Enterprise Search
@@ -113,94 +122,55 @@ const LoginPage: React.FC = () => {
         <div className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700">
-                Search for employees
-              </label>
-              <input
-                id="search"
-                name="search"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Search by name, department, or title"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Enter email or select from demo users"
-              />
-            </div>
-
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {loading ? 'Loading Users...' : 'Available Users'}
+                Available Demo Users
               </label>
-              {error && (
-                <div className="mb-2 text-sm text-amber-600 bg-amber-50 p-2 rounded">
-                  {error}
-                </div>
-              )}
-              <div className="space-y-2">
-                {loading ? (
-                  <div className="p-3 border border-gray-200 rounded-lg">
-                    <div className="animate-pulse">
-                      <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-3/4 mb-1"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {demoUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    onClick={() => setSelectedUser(user)}
+                    className={`p-3 rounded-md border cursor-pointer transition-colors shadow-sm ${
+                      selectedUser?.id === user.id
+                        ? 'border-red-500 bg-red-50 shadow-md'
+                        : 'border-gray-300 hover:border-red-300 hover:bg-gray-50 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium text-gray-900">{user.name}</div>
+                        <div className="text-sm text-gray-500">{user.title}</div>
+                        <div className="text-xs text-gray-400">{user.department}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-gray-400">{user.location}</div>
+                        <div className="text-xs text-gray-500">Level {user.level}</div>
+                      </div>
                     </div>
                   </div>
-                ) : (
-                  demoUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setEmail(user.email);
-                      }}
-                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                        selectedUser?.id === user.id
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="font-medium text-gray-900">{user.name}</div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
-                      <div className="text-xs text-gray-400">{user.title} • {user.department}</div>
-                      {user.location && (
-                        <div className="text-xs text-gray-400">📍 {user.location}</div>
-                      )}
-                    </div>
-                  ))
-                )}
+                ))}
               </div>
             </div>
           </div>
 
-          <div>
+          <div className="mt-6">
             <button
               onClick={handleLogin}
               disabled={!selectedUser}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white shadow-lg transition-all duration-200 ${
+                selectedUser
+                  ? 'bg-red-600 hover:bg-red-700 hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
+                  : 'bg-gray-400 cursor-not-allowed'
+              }`}
             >
-              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <svg className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                </svg>
-              </span>
-              Sign in
+              {selectedUser ? `Sign in as ${selectedUser.name}` : 'Select a user to continue'}
             </button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              🔧 Development Mode - Select any demo user to access the application
+            </p>
           </div>
         </div>
       </div>

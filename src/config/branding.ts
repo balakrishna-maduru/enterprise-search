@@ -38,7 +38,7 @@ export const DBS_THEME = {
     description: "DBS Bank's AI-powered knowledge discovery platform"
   },
   logo: {
-    url: '/dbs-logo-1968.jpg',
+    url: '/dbs-logo.svg',
     alt: 'DBS Bank Logo'
   }
 } as const;

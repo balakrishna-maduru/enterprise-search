@@ -68,7 +68,7 @@ const Header: React.FC = () => {
                 onClick={() => setShowUserMenu(!showUserMenu)}
               >
                 <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center ring-2 ring-blue-100">
+                  <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center ring-2 ring-red-100">
                     <span className="text-white font-semibold text-sm">
                       {currentUser?.name?.charAt(0)?.toUpperCase() || 'U'}
                     </span>
@@ -94,7 +94,7 @@ const Header: React.FC = () => {
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
                   {/* User Info Header */}
-                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3">
+                  <div className="bg-gradient-to-r from-red-600 to-red-700 px-4 py-3">
                     <div className="flex items-center space-x-3">
                       <div className="relative">
                         <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white/30">
@@ -106,8 +106,8 @@ const Header: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-white font-semibold text-base">{currentUser?.name || 'User'}</h3>
-                        <p className="text-blue-100 text-sm">{currentUser?.position || 'Employee'}</p>
-                        <p className="text-blue-200 text-xs">{currentUser?.email || 'user@company.com'}</p>
+                        <p className="text-red-100 text-sm">{currentUser?.position || 'Employee'}</p>
+                        <p className="text-red-200 text-xs">{currentUser?.email || 'user@company.com'}</p>
                       </div>
                     </div>
                   </div>
@@ -115,7 +115,7 @@ const Header: React.FC = () => {
                   {/* User Details */}
                   <div className="p-4 border-b border-gray-100">
                     <h4 className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       Profile Details
@@ -146,25 +146,25 @@ const Header: React.FC = () => {
                   {/* Quick Actions */}
                   <div className="p-4">
                     <h4 className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                       Quick Actions
                     </h4>
                     <div className="grid grid-cols-2 gap-2">
-                      <button className="flex items-center justify-center px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                      <button className="flex items-center justify-center px-3 py-2 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         My Docs
                       </button>
-                      <button className="flex items-center justify-center px-3 py-2 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                      <button className="flex items-center justify-center px-3 py-2 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         History
                       </button>
-                      <button className="flex items-center justify-center px-3 py-2 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+                      <button className="flex items-center justify-center px-3 py-2 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                         </svg>

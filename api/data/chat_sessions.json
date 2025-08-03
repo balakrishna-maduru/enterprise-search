@@ -20,11 +20,23 @@
         "content": "That's an interesting company-related question! Let me help you with information specific to our organization.",
         "isUser": false,
         "timestamp": "2025-08-03T05:25:03.610Z"
+      },
+      {
+        "id": "1754211265141",
+        "content": "happy",
+        "isUser": true,
+        "timestamp": "2025-08-03T08:54:25.141Z"
+      },
+      {
+        "id": "1754211266644",
+        "content": "I'm glad you asked about that! This is an area where I can provide you with comprehensive information and different perspectives.",
+        "isUser": false,
+        "timestamp": "2025-08-03T08:54:26.643Z"
       }
     ],
     "createdAt": "2025-08-03T05:24:54.533Z",
-    "updatedAt": "2025-08-03T05:25:03.610Z",
-    "updated_at": "2025-08-03T13:25:03.627219"
+    "updatedAt": "2025-08-03T08:54:26.643Z",
+    "updated_at": "2025-08-03T16:54:26.654415"
   },
   {
     "id": "1754192152363",
@@ -75,6 +87,6 @@
     ],
     "createdAt": "2025-08-03T03:35:52.363Z",
     "updatedAt": "2025-08-03T05:23:53.263Z",
-    "updated_at": "2025-08-03T13:25:03.627234"
+    "updated_at": "2025-08-03T16:54:26.654556"
   }
 ]
