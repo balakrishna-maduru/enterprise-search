@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { EmployeeHierarchy, HierarchyNode } from '../../types';
+import ModernOrgChart from './ModernOrgChart';
 
 interface EmployeeHierarchyTreeProps {
   hierarchy: EmployeeHierarchy;
+  viewMode?: 'modern' | 'classic';
 }
 
 interface TreeNodeProps {
@@ -101,7 +103,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   );
 };
 
-const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy }) => {
+const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy, viewMode = 'modern' }) => {
   // Safety check for hierarchy data
   if (!hierarchy || !hierarchy.employee || !hierarchy.hierarchy_tree) {
     return (
@@ -111,9 +113,16 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
     );
   }
 
+  // Use modern org chart by default
+  if (viewMode === 'modern') {
+    return <ModernOrgChart hierarchy={hierarchy} />;
+  }
+
+  // Classic tree view (existing implementation)
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
     new Set([hierarchy.hierarchy_tree.id])
   );
+  const [currentViewMode, setCurrentViewMode] = useState<'modern' | 'classic'>(viewMode);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -157,76 +166,113 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
 
   return (
     <div className="space-y-6">
-      {/* Employee Info Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
-        <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-            {hierarchy.employee.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">{hierarchy.employee.name}</h3>
-            <p className="text-gray-600">{hierarchy.employee.title}</p>
-            <p className="text-sm text-gray-500">{hierarchy.employee.department} • {hierarchy.employee.location}</p>
+      {/* View Mode Toggle */}
+      <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+        <h4 className="text-lg font-semibold text-gray-900">Organization Structure</h4>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">View:</span>
+          <div className="flex bg-white rounded-lg p-1 shadow-sm">
+            <button
+              onClick={() => setCurrentViewMode('modern')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                currentViewMode === 'modern' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Modern
+            </button>
+            <button
+              onClick={() => setCurrentViewMode('classic')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                currentViewMode === 'classic' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Classic
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Hierarchy Tree */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">Organization Structure</h4>
-        {hierarchy.hierarchy_tree ? renderNode(hierarchy.hierarchy_tree) : (
-          <div className="text-center py-4 text-gray-500">
-            No hierarchy data available
+      {/* Render based on current view mode */}
+      {currentViewMode === 'modern' ? (
+        <ModernOrgChart hierarchy={hierarchy} />
+      ) : (
+        <div className="space-y-6">
+          {/* Employee Info Header */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                {hierarchy.employee.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{hierarchy.employee.name}</h3>
+                <p className="text-gray-600">{hierarchy.employee.title}</p>
+                <p className="text-sm text-gray-500">{hierarchy.employee.department} • {hierarchy.employee.location}</p>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Management Chain */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">Management Chain</h4>
-        
-        <div className="flex flex-wrap items-center gap-2">
-          {hierarchy.management_chain && hierarchy.management_chain.length > 0 ? (
-            hierarchy.management_chain.map((node, index) => (
-              node && node.id ? (
-                <React.Fragment key={node.id}>
-                  <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
-                    <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
-                      {node.name ? node.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{node.name || 'Unknown'}</div>
-                      <div className="text-xs text-gray-500">{node.title || 'Unknown Title'}</div>
-                    </div>
-                  </div>
-                  
-                  {index < hierarchy.management_chain.length - 1 && (
-                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  )}
-                </React.Fragment>
-              ) : null
-            ))
-          ) : (
-            <div className="text-gray-500 text-sm">No management chain available</div>
-          )}
-        </div>
-      </div>
+          {/* Classic Hierarchy Tree */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">Organization Structure</h4>
+            {hierarchy.hierarchy_tree ? renderNode(hierarchy.hierarchy_tree) : (
+              <div className="text-center py-4 text-gray-500">
+                No hierarchy data available
+              </div>
+            )}
+          </div>
 
-      {/* Stats */}
-      <div className="bg-gray-50 rounded-lg p-4">
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-bold text-blue-600">{hierarchy.total_employees}</div>
-            <div className="text-sm text-gray-600">Total Employees</div>
+          {/* Management Chain */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">Management Chain</h4>
+            
+            <div className="flex flex-wrap items-center gap-2">
+              {hierarchy.management_chain && hierarchy.management_chain.length > 0 ? (
+                hierarchy.management_chain.map((node, index) => (
+                  node && node.id ? (
+                    <React.Fragment key={node.id}>
+                      <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
+                        <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                          {node.name ? node.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{node.name || 'Unknown'}</div>
+                          <div className="text-xs text-gray-500">{node.title || 'Unknown Title'}</div>
+                        </div>
+                      </div>
+                      
+                      {index < hierarchy.management_chain.length - 1 && (
+                        <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      )}
+                    </React.Fragment>
+                  ) : null
+                ))
+              ) : (
+                <div className="text-gray-500 text-sm">No management chain available</div>
+              )}
+            </div>
           </div>
-          <div>
-            <div className="text-2xl font-bold text-green-600">{hierarchy.management_chain.length}</div>
-            <div className="text-sm text-gray-600">Management Levels</div>
+
+          {/* Stats */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-blue-600">{hierarchy.total_employees}</div>
+                <div className="text-sm text-gray-600">Total Employees</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-green-600">{hierarchy.management_chain.length}</div>
+                <div className="text-sm text-gray-600">Management Levels</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

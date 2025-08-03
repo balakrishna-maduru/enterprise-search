@@ -195,57 +195,75 @@ async def get_employee_hierarchy(employee_id: str):
             emp_data['id'] = emp_id
             all_employees[emp_id] = emp_data
         
-        # Build hierarchy tree - simplified version
-        # Just show the target employee with their direct reports
-        target_emp = all_employees.get(employee_id, employee)
-        
-        # Find direct reports
-        direct_reports = []
+        # Find the CEO (employee with no manager_id or manager_id is null/empty)
+        ceo = None
         for emp_id, emp_data in all_employees.items():
-            if str(emp_data.get('manager_id', '')) == employee_id:
-                direct_reports.append({
-                    "id": emp_data.get('id', emp_id),
-                    "name": emp_data.get('name', 'Unknown'),
-                    "title": emp_data.get('title', 'Unknown Title'),
-                    "department": emp_data.get('department', target_emp.get('department', 'Unknown Department')),
-                    "email": emp_data.get('email', f"{emp_data.get('name', 'unknown').lower().replace(' ', '.')}@company.com"),
-                    "level": emp_data.get('level', target_emp.get('level', 0) + 1),
-                    "reports": [],
-                    "is_target": False
-                })
+            manager_id = emp_data.get('manager_id')
+            if not manager_id or str(manager_id) == 'null' or str(manager_id) == '':
+                ceo = emp_data
+                break
         
-        # Create hierarchy tree with target employee and their reports
-        hierarchy_tree = {
-            "id": target_emp.get('id', employee_id),
-            "name": target_emp.get('name', 'Unknown'),
-            "title": target_emp.get('title', 'Unknown Title'),
-            "department": target_emp.get('department', employee.get('department', 'Unknown Department')),
-            "email": target_emp.get('email', employee.get('email', f"{target_emp.get('name', 'unknown').lower().replace(' ', '.')}@company.com")),
-            "level": target_emp.get('level', employee.get('level', 0)),
-            "reports": direct_reports,
-            "is_target": True
-        }
+        if not ceo:
+            # Fallback: use the employee with the lowest level
+            ceo = min(all_employees.values(), key=lambda x: x.get('level', 999))
         
-        # Get management chain for the target employee
+        # Build complete hierarchy tree starting from CEO
+        def build_hierarchy_node(emp_data, target_employee_id):
+            emp_id = str(emp_data.get('id'))
+            
+            # Find direct reports
+            direct_reports = []
+            for other_emp_id, other_emp_data in all_employees.items():
+                if str(other_emp_data.get('manager_id', '')) == emp_id:
+                    direct_reports.append(build_hierarchy_node(other_emp_data, target_employee_id))
+            
+            return {
+                "id": emp_id,
+                "name": emp_data.get('name', 'Unknown'),
+                "title": emp_data.get('title', 'Unknown Title'),
+                "department": emp_data.get('department', 'Unknown Department'),
+                "email": emp_data.get('email', f"{emp_data.get('name', 'unknown').lower().replace(' ', '.')}@company.com"),
+                "level": emp_data.get('level', 0),
+                "reports": direct_reports,
+                "is_target": emp_id == target_employee_id
+            }
+        
+        # Build the complete hierarchy tree from CEO
+        hierarchy_tree = build_hierarchy_node(ceo, employee_id)
+        
+        # Build management chain for the target employee
         management_chain = []
-        # Start with the target employee from all_employees dict
         current_emp = all_employees.get(employee_id, employee)
-        while current_emp.get('manager_id') and str(current_emp['manager_id']) in all_employees:
-            manager = all_employees[str(current_emp['manager_id'])]
-            management_chain.append({
-                "id": manager.get('id', str(current_emp['manager_id'])),
-                "name": manager.get('name', 'Unknown Manager'),
-                "title": manager.get('title', 'Unknown Title'),
-                "level": manager.get('level', 0)
+        
+        # Build chain from target employee up to CEO
+        chain_path = []
+        while current_emp:
+            chain_path.append({
+                "id": str(current_emp.get('id', current_emp.get('manager_id', 'unknown'))),
+                "name": current_emp.get('name', 'Unknown Manager'),
+                "title": current_emp.get('title', 'Unknown Title'),
+                "department": current_emp.get('department', 'Unknown Department'),
+                "email": current_emp.get('email', f"{current_emp.get('name', 'unknown').lower().replace(' ', '.')}@company.com"),
+                "level": current_emp.get('level', 0),
+                "is_target": str(current_emp.get('id')) == employee_id,
+                "reports": []
             })
-            current_emp = manager
+            
+            manager_id = current_emp.get('manager_id')
+            if manager_id and str(manager_id) in all_employees:
+                current_emp = all_employees[str(manager_id)]
+            else:
+                current_emp = None
+        
+        # Reverse to get CEO -> ... -> Target Employee order
+        management_chain = list(reversed(chain_path))
         
         return {
             "success": True,
             "data": {
                 "employee": employee,
                 "hierarchy_tree": hierarchy_tree,
-                "management_chain": list(reversed(management_chain)),
+                "management_chain": management_chain,
                 "total_employees": len(all_employees)
             }
         }
