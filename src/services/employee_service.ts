@@ -113,41 +113,12 @@ export class EmployeeService {
       // Transform API response to match frontend expectations
       const data = apiResponse.data;
       const employee = data.employee;
-      const managers = data.managers || [];
-      const reports = data.reports || [];
       
-      // Create hierarchy_tree (target employee with direct reports)
-      const hierarchy_tree: HierarchyNode = {
-        id: employee.id.toString(),
-        name: employee.name,
-        title: employee.title,
-        department: employee.department || 'Human Resources',
-        email: employee.email || `${employee.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
-        level: employee.level,
-        is_target: true,
-        reports: reports.map((report: any): HierarchyNode => ({
-          id: report.id.toString(),
-          name: report.name,
-          title: report.title,
-          department: report.department || employee.department || 'Human Resources',
-          email: report.email || `${report.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
-          level: report.level,
-          is_target: false,
-          reports: []
-        }))
-      };
-
-      // Create management_chain (reverse to get CEO -> ... -> Manager order)
-      const management_chain: HierarchyNode[] = managers.reverse().map((manager: any): HierarchyNode => ({
-        id: manager.id.toString(),
-        name: manager.name,
-        title: manager.title,
-        department: manager.department || 'Executive',
-        email: manager.email || `${manager.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
-        level: manager.level,
-        is_target: false,
-        reports: []
-      }));
+      // Use the complete hierarchy tree from API (starts from CEO)
+      const hierarchy_tree = data.hierarchy_tree;
+      
+      // Use the management chain from API
+      const management_chain = data.management_chain || [];
 
       const transformedHierarchy: EmployeeHierarchy = {
         employee: {
@@ -161,15 +132,15 @@ export class EmployeeService {
           start_date: employee.start_date || '2019-11-15',
           manager_id: employee.manager_id,
           level: employee.level,
-          has_reports: reports.length > 0,
-          report_count: reports.length,
+          has_reports: employee.reports?.length > 0 || false,
+          report_count: employee.reports?.length || 0,
           document_type: 'employee',
           indexed_at: new Date().toISOString(),
           search_text: `${employee.name} ${employee.title}`
         },
         hierarchy_tree,
         management_chain,
-        total_employees: 1 + managers.length + reports.length
+        total_employees: data.total_employees || 1
       };
 
       console.log('✅ Transformed hierarchy data for UI:', transformedHierarchy);

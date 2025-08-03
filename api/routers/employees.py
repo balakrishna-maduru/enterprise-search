@@ -207,15 +207,37 @@ async def get_employee_hierarchy(employee_id: str):
             # Fallback: use the employee with the lowest level
             ceo = min(all_employees.values(), key=lambda x: x.get('level', 999))
         
-        # Build complete hierarchy tree starting from CEO
-        def build_hierarchy_node(emp_data, target_employee_id):
+        # Build focused hierarchy tree showing only:
+        # 1. Management chain from CEO to target employee
+        # 2. Target employee's direct reports (not their sub-reports)
+        def build_focused_hierarchy_node(emp_data, target_employee_id, management_chain_ids):
             emp_id = str(emp_data.get('id'))
             
-            # Find direct reports
+            # Find direct reports, but only include them if:
+            # - This is the target employee (show their direct reports)
+            # - This employee is in the management chain (show path to target)
             direct_reports = []
-            for other_emp_id, other_emp_data in all_employees.items():
-                if str(other_emp_data.get('manager_id', '')) == emp_id:
-                    direct_reports.append(build_hierarchy_node(other_emp_data, target_employee_id))
+            
+            if emp_id == target_employee_id:
+                # For target employee: show all direct reports (but not sub-reports)
+                for other_emp_id, other_emp_data in all_employees.items():
+                    if str(other_emp_data.get('manager_id', '')) == emp_id:
+                        direct_reports.append({
+                            "id": other_emp_id,
+                            "name": other_emp_data.get('name', 'Unknown'),
+                            "title": other_emp_data.get('title', 'Unknown Title'),
+                            "department": other_emp_data.get('department', 'Unknown Department'),
+                            "email": other_emp_data.get('email', f"{other_emp_data.get('name', 'unknown').lower().replace(' ', '.')}@company.com"),
+                            "level": other_emp_data.get('level', 0),
+                            "reports": [],  # Don't show sub-reports
+                            "is_target": False
+                        })
+            elif emp_id in management_chain_ids:
+                # For management chain: only show the direct report that leads to target employee
+                for other_emp_id, other_emp_data in all_employees.items():
+                    if str(other_emp_data.get('manager_id', '')) == emp_id and other_emp_id in management_chain_ids:
+                        direct_reports.append(build_focused_hierarchy_node(other_emp_data, target_employee_id, management_chain_ids))
+                        break  # Only show the one report that's in the management chain
             
             return {
                 "id": emp_id,
@@ -228,24 +250,24 @@ async def get_employee_hierarchy(employee_id: str):
                 "is_target": emp_id == target_employee_id
             }
         
-        # Build the complete hierarchy tree from CEO
-        hierarchy_tree = build_hierarchy_node(ceo, employee_id)
-        
-        # Build management chain for the target employee
+        # First, build the management chain to get all IDs in the path
         management_chain = []
         current_emp = all_employees.get(employee_id, employee)
+        management_chain_ids = set()
         
         # Build chain from target employee up to CEO
         chain_path = []
         while current_emp:
+            emp_id = str(current_emp.get('id'))
+            management_chain_ids.add(emp_id)
             chain_path.append({
-                "id": str(current_emp.get('id', current_emp.get('manager_id', 'unknown'))),
+                "id": emp_id,
                 "name": current_emp.get('name', 'Unknown Manager'),
                 "title": current_emp.get('title', 'Unknown Title'),
                 "department": current_emp.get('department', 'Unknown Department'),
                 "email": current_emp.get('email', f"{current_emp.get('name', 'unknown').lower().replace(' ', '.')}@company.com"),
                 "level": current_emp.get('level', 0),
-                "is_target": str(current_emp.get('id')) == employee_id,
+                "is_target": emp_id == employee_id,
                 "reports": []
             })
             
@@ -258,13 +280,16 @@ async def get_employee_hierarchy(employee_id: str):
         # Reverse to get CEO -> ... -> Target Employee order
         management_chain = list(reversed(chain_path))
         
+        # Build the focused hierarchy tree from CEO
+        hierarchy_tree = build_focused_hierarchy_node(ceo, employee_id, management_chain_ids)
+
         return {
             "success": True,
             "data": {
                 "employee": employee,
                 "hierarchy_tree": hierarchy_tree,
                 "management_chain": management_chain,
-                "total_employees": len(all_employees)
+                "total_employees": len(management_chain) + len(all_employees.get(employee_id, {}).get('reports', []))
             }
         }
         

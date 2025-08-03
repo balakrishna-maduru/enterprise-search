@@ -14,19 +14,17 @@ interface OrgNodeProps {
 }
 
 const OrgNode: React.FC<OrgNodeProps> = ({ node, isTarget = false, level, onNodeClick }) => {
-  // Always expand nodes for the first 4 levels to show the complete hierarchy
-  const [isExpanded, setIsExpanded] = useState(true); // Always start expanded for debugging
-  
+  const [isExpanded, setIsExpanded] = useState(true); // Always start expanded
   const hasReports = node.reports && node.reports.length > 0;
 
-  // Debug logging
-  console.log(`🌳 OrgNode rendering:`, {
-    name: node.name,
+  // Debug logging for this node
+  console.log(`🎯 OrgNode ${node.name}:`, {
     level,
+    isTarget,
     hasReports,
+    isExpanded,
     reportsCount: node.reports?.length || 0,
-    isTarget: node.is_target,
-    isExpanded
+    reports: node.reports?.map(r => r.name) || []
   });
 
   const getLevelConfig = (level: number) => {
@@ -128,13 +126,33 @@ const OrgNode: React.FC<OrgNodeProps> = ({ node, isTarget = false, level, onNode
             <span className="truncate">{node.department}</span>
           </div>
 
-          {/* Reports Count - No expand/collapse for now */}
+          {/* Reports Count with Expand/Collapse */}
           {hasReports && (
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-              </svg>
-              <span>{node.reports.length} Direct Report{node.reports.length !== 1 ? 's' : ''}</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+                <span>{node.reports.length} Direct Report{node.reports.length !== 1 ? 's' : ''}</span>
+              </div>
+              
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(!isExpanded);
+                }}
+                className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                title={isExpanded ? 'Collapse' : 'Expand'}
+              >
+                <svg 
+                  className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7 7" />
+                </svg>
+              </button>
             </div>
           )}
 
@@ -151,7 +169,7 @@ const OrgNode: React.FC<OrgNodeProps> = ({ node, isTarget = false, level, onNode
       </div>
 
       {/* Connection Lines and Children */}
-      {hasReports && node.reports && node.reports.length > 0 && (
+      {hasReports && isExpanded && node.reports && node.reports.length > 0 && (
         <div className="mt-4 flex flex-col items-center">
           {/* Vertical line down */}
           <div className="w-px h-8 bg-gray-300"></div>
@@ -239,19 +257,6 @@ const ModernOrgChart: React.FC<ModernOrgChartProps> = ({ hierarchy }) => {
 
   return (
     <div className="w-full">
-      {/* Debug Info */}
-      <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm">
-        <strong>🐛 Debug:</strong> Showing hierarchy for {hierarchy.employee.name}. 
-        Root: {ceoNode.name} with {ceoNode.reports?.length || 0} direct reports.
-        
-        <details className="mt-2">
-          <summary className="cursor-pointer font-semibold">View Tree Structure</summary>
-          <div className="mt-2 bg-yellow-50 p-2 rounded max-h-64 overflow-auto">
-            <SimpleHierarchyView node={ceoNode} />
-          </div>
-        </details>
-      </div>
-
       {/* Header */}
       <div className="mb-8 text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Organization Chart</h2>
@@ -259,35 +264,6 @@ const ModernOrgChart: React.FC<ModernOrgChartProps> = ({ hierarchy }) => {
           Showing hierarchy for <span className="font-semibold text-blue-600">{hierarchy.employee.name}</span>
         </p>
       </div>
-
-      {/* Management Chain Breadcrumb */}
-      {hierarchy.management_chain && hierarchy.management_chain.length > 0 && (
-        <div className="mb-8">
-          <div className="bg-blue-50 rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-blue-900 mb-3">Management Chain</h3>
-            <div className="flex flex-wrap items-center gap-2">
-              {hierarchy.management_chain.map((manager, index) => (
-                <React.Fragment key={manager.id}>
-                  <div className="flex items-center space-x-2 bg-white rounded-lg px-3 py-2 shadow-sm">
-                    <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-semibold">
-                      {manager.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{manager.name}</div>
-                      <div className="text-xs text-gray-500">{manager.title}</div>
-                    </div>
-                  </div>
-                  {index < hierarchy.management_chain.length - 1 && (
-                    <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Org Chart */}
       <div 
