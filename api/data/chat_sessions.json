@@ -1,5 +1,32 @@
 [
   {
+    "id": "1754198694533",
+    "title": "New Chat",
+    "messages": [
+      {
+        "id": "1",
+        "content": "Hello! I'm your AI assistant. How can I help you today?",
+        "isUser": false,
+        "timestamp": "2025-08-03T05:24:54.533Z"
+      },
+      {
+        "id": "1754198702108",
+        "content": "hi",
+        "isUser": true,
+        "timestamp": "2025-08-03T05:25:02.108Z"
+      },
+      {
+        "id": "1754198703611",
+        "content": "That's an interesting company-related question! Let me help you with information specific to our organization.",
+        "isUser": false,
+        "timestamp": "2025-08-03T05:25:03.610Z"
+      }
+    ],
+    "createdAt": "2025-08-03T05:24:54.533Z",
+    "updatedAt": "2025-08-03T05:25:03.610Z",
+    "updated_at": "2025-08-03T13:25:03.627219"
+  },
+  {
     "id": "1754192152363",
     "title": "Chat about: Design cybersecurity user interface",
     "document": {
@@ -32,10 +59,22 @@
         "content": "Hello! I'm here to help you with questions about the document \"Design cybersecurity user interface\". What would you like to know?",
         "isUser": false,
         "timestamp": "2025-08-03T03:35:52.363Z"
+      },
+      {
+        "id": "1754198631762",
+        "content": "Test",
+        "isUser": true,
+        "timestamp": "2025-08-03T05:23:51.762Z"
+      },
+      {
+        "id": "1754198633264",
+        "content": "According to our company's documentation, this information is quite relevant to our operations. Would you like me to elaborate on any specific section?",
+        "isUser": false,
+        "timestamp": "2025-08-03T05:23:53.263Z"
       }
     ],
     "createdAt": "2025-08-03T03:35:52.363Z",
-    "updatedAt": "2025-08-03T03:35:52.363Z",
-    "updated_at": "2025-08-03T11:35:52.377733"
+    "updatedAt": "2025-08-03T05:23:53.263Z",
+    "updated_at": "2025-08-03T13:25:03.627234"
   }
 ]

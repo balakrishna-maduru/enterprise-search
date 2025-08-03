@@ -56,12 +56,6 @@ const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30 flex flex-col relative">
-      {/* Debug Banner - Very Visible */}
-      <div className="bg-purple-600 text-white px-4 py-3 text-center font-bold text-lg">
-        🔧 DEBUG: Layout Component Loaded | Page: {currentPage} | Results: {searchResults?.length || 0} | Query: "{searchQuery}"
-      </div>
-      
-      {/* Background Pattern */}
       <div className="absolute inset-0 opacity-40">
         <div className="absolute inset-0 bg-white/60"></div>
         <div className="absolute inset-0" style={{
@@ -77,7 +71,10 @@ const Layout: React.FC = () => {
           
           {/* Unified Documents Page - handles both landing and search */}
           <div className="mt-8">
-            <UnifiedDocumentsPage onNavigateToChat={navigateToChat} />
+            <UnifiedDocumentsPage 
+              onNavigateToChat={navigateToChat} 
+              onNavigateToSummary={navigateToSummary}
+            />
           </div>
         </div>
       </div>
