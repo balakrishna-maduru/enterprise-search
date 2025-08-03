@@ -128,16 +128,25 @@ export class ApiService {
     };
 
     try {
-      // Try to get token from currentUser first
-      if (currentUser?.token) {
+      // Try to get token from localStorage first (most reliable)
+      const storedToken = localStorage.getItem('access_token');
+      if (storedToken && !storedToken.startsWith('demo-token-')) {
+        headers['Authorization'] = `Bearer ${storedToken}`;
+        console.log('🔑 Using stored token for auth');
+        return headers;
+      }
+
+      // Try to get token from currentUser
+      if (currentUser?.token && !currentUser.token.startsWith('demo-token-')) {
         headers['Authorization'] = `Bearer ${currentUser.token}`;
         console.log('🔑 Using currentUser token for auth');
-      } else {
-        // Get JWT token for API access
-        const token = await this.getAuthToken();
-        headers['Authorization'] = `Bearer ${token}`;
-        console.log('🔑 Using API service token for auth');
+        return headers;
       }
+
+      // Get JWT token for API access
+      const token = await this.getAuthToken();
+      headers['Authorization'] = `Bearer ${token}`;
+      console.log('🔑 Using API service token for auth');
     } catch (error) {
       console.warn('⚠️ Could not get auth token:', error);
       // Continue without auth - let the API return 401 if needed

@@ -42,6 +42,15 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   const resultsPerPage = 10;
   const pagination = usePagination(totalResults, resultsPerPage);
 
+  // Add immediate visual feedback
+  console.log('🏗️ UnifiedDocumentsPage rendered with:', {
+    searchQuery,
+    currentUser: currentUser?.name,
+    documents: documents.length,
+    employees: employees.length,
+    isLoading
+  });
+
   const loadData = useCallback(async () => {
     if (!currentUser) return;
     
@@ -152,6 +161,7 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
 
   return (
     <div className={`space-y-8 ${className}`}>
+      
       {/* Header */}
       <SearchHeader
         title={getHeaderTitle()}

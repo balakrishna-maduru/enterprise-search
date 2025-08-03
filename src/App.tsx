@@ -1,6 +1,6 @@
 // src/App.tsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { SearchProvider } from './contexts/SearchContext';
 import { BrandingProvider } from './contexts/BrandingContext';
@@ -10,6 +10,8 @@ import { Layout } from './components/Layout';
 import './globals.css';
 
 const App: React.FC = () => {
+  console.log('🎯 APP COMPONENT RENDERING...');
+  
   return (
     <Router>
       <AuthProvider>

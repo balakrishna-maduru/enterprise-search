@@ -1,32 +1,37 @@
-// src/hooks/useEmployeeApi.js
+// src/hooks/useEmployeeApi.ts
 import { useState, useCallback } from 'react';
+import { apiClient, Employee } from '../services/api_client';
+
+interface EmployeeFilters {
+  size?: number;
+  department?: string;
+  location?: string;
+  level?: string;
+}
+
+interface EmployeeSearchResult {
+  employees: Employee[];
+  total: number;
+  success: boolean;
+}
 
 export const useEmployeeApi = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const searchEmployees = useCallback(async (query, filters = {}) => {
+  const searchEmployees = useCallback(async (query: string, filters: EmployeeFilters = {}): Promise<EmployeeSearchResult> => {
     try {
       setLoading(true);
       setError(null);
 
-      const params = new URLSearchParams({
-        q: query,
+      const response = await apiClient.searchEmployees(query, {
         size: filters.size || 20,
         ...(filters.department && { department: filters.department }),
         ...(filters.location && { location: filters.location }),
         ...(filters.level && { level: filters.level })
       });
-
-      const response = await fetch(`/api/v1/employees/search?${params}`);
       
-      if (!response.ok) {
-        throw new Error(`Failed to search employees: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success && data.data && data.data.employees) {
+      if (response.success && response.data && response.data.employees) {
         return {
           employees: data.data.employees,
           total: data.data.total,

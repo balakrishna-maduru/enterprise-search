@@ -6,6 +6,7 @@ import { SearchSection } from '../Search';
 import { UnifiedDocumentsPage } from '../Documents';
 import DocumentChatPage from '../Chat/DocumentChatPage';
 import DocumentSummaryPage from '../Summary/DocumentSummaryPage';
+import { UITestComponents } from '../UI/TestComponents';
 import { useSearch } from '../../contexts/SearchContext';
 
 const Layout: React.FC = () => {
@@ -14,6 +15,14 @@ const Layout: React.FC = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [summaryDocument, setSummaryDocument] = useState<any>(null);
   const { searchResults, searchQuery } = useSearch();
+
+  // Debug logging
+  console.log('🏗️ Layout component rendered:', {
+    currentPage,
+    searchResults: searchResults?.length || 0,
+    searchQuery,
+    showSummary
+  });
 
   const navigateToChat = (document?: any) => {
     setChatDocument(document);
@@ -47,6 +56,11 @@ const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30 flex flex-col relative">
+      {/* Debug Banner - Very Visible */}
+      <div className="bg-purple-600 text-white px-4 py-3 text-center font-bold text-lg">
+        🔧 DEBUG: Layout Component Loaded | Page: {currentPage} | Results: {searchResults?.length || 0} | Query: "{searchQuery}"
+      </div>
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-40">
         <div className="absolute inset-0 bg-white/60"></div>
@@ -94,6 +108,9 @@ const Layout: React.FC = () => {
         searchResults={searchResults}
         searchQuery={searchQuery}
       />
+
+      {/* UI Test Components */}
+      <UITestComponents />
     </div>
   );
 };

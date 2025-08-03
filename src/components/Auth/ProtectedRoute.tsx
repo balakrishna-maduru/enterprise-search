@@ -1,5 +1,5 @@
 // src/components/Auth/ProtectedRoute.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 interface ProtectedRouteProps {
@@ -7,14 +7,129 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const token = localStorage.getItem('access_token');
   const user = localStorage.getItem('user');
 
+  console.log('🔍 ProtectedRoute render:', { 
+    hasToken: !!token, 
+    hasUser: !!user, 
+    isAuthenticating,
+    authError,
+    tokenPreview: token ? token.substring(0, 20) + '...' : 'none'
+  });
+
+  // Auto-login for development mode
+  useEffect(() => {
+    console.log('🔍 ProtectedRoute useEffect triggered:', { token: !!token, user: !!user });
+    
+    if (!token || !user) {
+      console.log('🔧 Development Mode: Auto-authenticating with real API...');
+      setIsAuthenticating(true);
+      setAuthError(null);
+      
+      // Get real JWT token from API
+      fetch('http://localhost:8000/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: 'balu@mymail.com',
+          password: 'test'
+        })
+      })
+      .then(response => {
+        console.log('🔍 Auth response status:', response.status);
+        return response.json();
+      })
+      .then(data => {
+        console.log('🔍 Auth response data:', data);
+        if (data.access_token && data.user) {
+          console.log('✅ Real JWT token obtained:', data.access_token.substring(0, 20) + '...');
+          
+          const enhancedUser = {
+            ...data.user,
+            token: data.access_token,
+            position: data.user.position || 'System Administrator',
+            department: data.user.department || 'Engineering',
+            role: data.user.role || 'admin',
+            company: data.user.company || 'DBS Bank'
+          };
+          
+          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('user', JSON.stringify(enhancedUser));
+          
+          console.log('🚀 Auto-login successful, reloading...');
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+        } else {
+          console.error('❌ Authentication failed:', data);
+          setAuthError('Authentication failed: ' + (data.detail || 'Unknown error'));
+          setIsAuthenticating(false);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Auth request failed:', error);
+        setAuthError('Authentication request failed: ' + error.message);
+        setIsAuthenticating(false);
+      });
+    }
+  }, [token, user]);
+
+  // Show loading while authenticating
+  if (isAuthenticating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-red-800 font-medium">🔧 Setting up development environment...</p>
+          <p className="text-red-600 text-sm mt-2">Getting real authentication token from API...</p>
+          {authError && (
+            <div className="mt-4 p-3 bg-red-100 border border-red-200 rounded text-red-700 text-sm max-w-md">
+              {authError}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // Check if user is authenticated
   if (!token || !user) {
+    if (authError) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+          <div className="text-center max-w-md">
+            <h2 className="text-2xl font-bold text-red-800 mb-4">Authentication Error</h2>
+            <div className="p-4 bg-red-100 border border-red-200 rounded text-red-700 mb-4">
+              {authError}
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mr-2"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload(); 
+              }}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+            >
+              Clear & Retry
+            </button>
+          </div>
+        </div>
+      );
+    }
     return <Navigate to="/login" replace />;
   }
 
+  console.log('✅ ProtectedRoute: User authenticated, rendering children');
   return <>{children}</>;
 };
 

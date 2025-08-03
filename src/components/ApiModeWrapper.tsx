@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { config } from '../config';
-import { AuthProvider } from '../hooks/useAuth';
+// Remove the conflicting AuthProvider import
 import { ApiUserProvider } from '../contexts/ApiUserContext';
 import { UserProvider } from '../contexts/UserContext';
 
@@ -10,13 +10,11 @@ interface ApiModeWrapperProps {
 
 const ApiModeWrapper: React.FC<ApiModeWrapperProps> = ({ children }) => {
   if (config.api.useApiLayer) {
-    // Use new API layer with authentication
+    // Use new API layer - AuthProvider is already wrapped at App level
     return (
-      <AuthProvider>
-        <ApiUserProvider>
-          {children}
-        </ApiUserProvider>
-      </AuthProvider>
+      <ApiUserProvider>
+        {children}
+      </ApiUserProvider>
     );
   } else {
     // Use legacy direct mode

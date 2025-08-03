@@ -1,5 +1,21 @@
-import { Employee, EmployeeHierarchy, HierarchyNode } from '../types';
+// src/services/employee_service.ts
+import { apiClient, Employee } from './api_client';
+import { EmployeeHierarchy, HierarchyNode } from '../types';
 import { config } from '../config';
+
+export interface EmployeeSearchFilters {
+  size?: number;
+  department?: string;
+  location?: string;
+  level?: string;
+}
+
+export interface EmployeeSearchResult {
+  employees: Employee[];
+  total: number;
+  success: boolean;
+  error?: string;
+}
 
 export class EmployeeService {
   private baseUrl: string;

@@ -83,14 +83,18 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const executeDualSearch = useCallback(async (query?: string): Promise<void> => {
     const searchTerm = query || searchQuery;
     console.log('🔍 Dual search triggered for:', searchTerm);
+    console.log('🔍 Current user:', currentUser);
+    console.log('🔍 API Service available:', !!apiService);
     
     setIsLoading(true);
     setIsDualSearchMode(true);
     
     try {
       if (!searchTerm.trim()) {
+        console.log('🏠 Loading landing page data...');
         // For empty search, load landing page data
         const landingData = await apiService.loadLandingPageData(currentUser, 5, 5);
+        console.log('✅ Landing page data received:', landingData);
         
         setEmployeeResults(landingData.employees.results);
         setDocumentResults(landingData.documents.results);
@@ -121,6 +125,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           totalCombined: totalResults
         });
       } else {
+        console.log('🔍 Executing dual search for:', searchTerm);
         // For search queries, execute dual search
         const dualSearchData = await apiService.dualSearch(
           searchTerm, 
@@ -128,6 +133,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           5, // document results
           currentUser
         );
+        console.log('✅ Dual search data received:', dualSearchData);
         
         setEmployeeResults(dualSearchData.employees.results);
         setDocumentResults(dualSearchData.documents.results);
@@ -161,7 +167,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('❌ Dual search failed:', error);
       
-      // Provide fallback mock data even when there's an error
+      // Provide fallback mock data when API is not available
       const mockEmployees = [
         {
           id: 'mock-emp-1',
@@ -212,12 +218,26 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         }
       ];
       
+      console.log('📋 Using fallback mock data due to API error');
       setEmployeeResults(mockEmployees);
       setDocumentResults(mockDocuments);
-      setSearchResults([...mockEmployees, ...mockDocuments]);
-      setEmployeeResults([]);
-      setDocumentResults([]);
-      setIsDualSearchMode(false);
+      setEmployeeTotal(1);
+      setDocumentTotal(1);
+      
+      // Combine results
+      const combinedResults = [...mockEmployees, ...mockDocuments];
+      setSearchResults(combinedResults);
+      
+      // Update pagination for mock data
+      const newPagination: PaginationInfo = {
+        currentPage: 1,
+        totalPages: 1,
+        totalResults: 2,
+        pageSize: pagination.pageSize || 10,
+        hasNextPage: false,
+        hasPreviousPage: false
+      };
+      setPagination(newPagination);
     } finally {
       setIsLoading(false);
     }

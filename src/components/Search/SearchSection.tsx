@@ -47,6 +47,7 @@ export const SearchSection: React.FC = () => {
 
   return (
     <div className="relative z-20 bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-white/20 p-3 mb-4">
+      
       {/* Search Input Row with Filters Button */}
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3">
