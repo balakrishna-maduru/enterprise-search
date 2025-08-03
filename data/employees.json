@@ -1,0 +1,1075 @@
+{
+  "metadata": {
+    "total_employees": 30,
+    "levels": 5,
+    "created": "2025-08-03T15:29:42.493470",
+    "description": "Clean 5-level employee hierarchy with 30 employees"
+  },
+  "employees": [
+    {
+      "id": "1",
+      "name": "James Wilson",
+      "email": "james.wilson@company.com",
+      "title": "Chief Executive Officer",
+      "department": "Executive",
+      "location": "New York, NY",
+      "phone": "+1-555-8009",
+      "start_date": "2024-12-30",
+      "manager_id": null,
+      "level": 0,
+      "skills": [
+        "Strategic Planning",
+        "Leadership",
+        "Business Development"
+      ],
+      "projects": [
+        "Company Transformation",
+        "Strategic Initiatives"
+      ],
+      "bio": "Experienced chief executive officer with expertise in executive.",
+      "manager_name": "",
+      "reports": [
+        {
+          "id": "2",
+          "name": "Sarah Chen",
+          "title": "Chief Technology Officer"
+        },
+        {
+          "id": "3",
+          "name": "Michael Davis",
+          "title": "Chief Financial Officer"
+        },
+        {
+          "id": "4",
+          "name": "Jennifer Martinez",
+          "title": "VP of Human Resources"
+        },
+        {
+          "id": "5",
+          "name": "Robert Brown",
+          "title": "VP of Sales"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 4,
+      "hierarchy_path": "",
+      "org_level": 0,
+      "tenure_years": 0.6,
+      "last_updated": "2025-08-03T15:29:42.231712"
+    },
+    {
+      "id": "2",
+      "name": "Sarah Chen",
+      "email": "sarah.chen@company.com",
+      "title": "Chief Technology Officer",
+      "department": "Technology",
+      "location": "San Francisco, CA",
+      "phone": "+1-555-7973",
+      "start_date": "2021-12-29",
+      "manager_id": "1",
+      "level": 1,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced chief technology officer with expertise in technology.",
+      "manager_name": "James Wilson",
+      "reports": [
+        {
+          "id": "6",
+          "name": "Lisa Rodriguez",
+          "title": "Director of Engineering"
+        },
+        {
+          "id": "7",
+          "name": "David Kim",
+          "title": "Director of Product"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 2,
+      "hierarchy_path": "",
+      "org_level": 1,
+      "tenure_years": 3.6,
+      "last_updated": "2025-08-03T15:29:42.231732"
+    },
+    {
+      "id": "3",
+      "name": "Michael Davis",
+      "email": "michael.davis@company.com",
+      "title": "Chief Financial Officer",
+      "department": "Finance",
+      "location": "New York, NY",
+      "phone": "+1-555-8246",
+      "start_date": "2023-01-23",
+      "manager_id": "1",
+      "level": 1,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced chief financial officer with expertise in finance.",
+      "manager_name": "James Wilson",
+      "reports": [
+        {
+          "id": "8",
+          "name": "Amanda Johnson",
+          "title": "Director of Finance"
+        },
+        {
+          "id": "9",
+          "name": "Thomas Anderson",
+          "title": "Director of Accounting"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 2,
+      "hierarchy_path": "",
+      "org_level": 1,
+      "tenure_years": 2.5,
+      "last_updated": "2025-08-03T15:29:42.231743"
+    },
+    {
+      "id": "4",
+      "name": "Jennifer Martinez",
+      "email": "jennifer.martinez@company.com",
+      "title": "VP of Human Resources",
+      "department": "Human Resources",
+      "location": "Chicago, IL",
+      "phone": "+1-555-7536",
+      "start_date": "2023-03-07",
+      "manager_id": "1",
+      "level": 1,
+      "skills": [
+        "Talent Management",
+        "Employee Relations",
+        "HR Operations"
+      ],
+      "projects": [
+        "Talent Development",
+        "Culture Enhancement"
+      ],
+      "bio": "Experienced vp of human resources with expertise in human resources.",
+      "manager_name": "James Wilson",
+      "reports": [
+        {
+          "id": "10",
+          "name": "Maria Garcia",
+          "title": "Director of Talent"
+        },
+        {
+          "id": "11",
+          "name": "Kevin Lee",
+          "title": "Director of HR Operations"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 2,
+      "hierarchy_path": "",
+      "org_level": 1,
+      "tenure_years": 2.4,
+      "last_updated": "2025-08-03T15:29:42.231754"
+    },
+    {
+      "id": "5",
+      "name": "Robert Brown",
+      "email": "robert.brown@company.com",
+      "title": "VP of Sales",
+      "department": "Sales",
+      "location": "Austin, TX",
+      "phone": "+1-555-1878",
+      "start_date": "2023-04-17",
+      "manager_id": "1",
+      "level": 1,
+      "skills": [
+        "Client Relations",
+        "Revenue Growth",
+        "Market Development"
+      ],
+      "projects": [
+        "Revenue Growth",
+        "Market Expansion"
+      ],
+      "bio": "Experienced vp of sales with expertise in sales.",
+      "manager_name": "James Wilson",
+      "reports": [
+        {
+          "id": "12",
+          "name": "Jessica Wilson",
+          "title": "Director of Enterprise Sales"
+        },
+        {
+          "id": "13",
+          "name": "Daniel Taylor",
+          "title": "Director of Sales Operations"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 2,
+      "hierarchy_path": "",
+      "org_level": 1,
+      "tenure_years": 2.3,
+      "last_updated": "2025-08-03T15:29:42.231763"
+    },
+    {
+      "id": "6",
+      "name": "Lisa Rodriguez",
+      "email": "lisa.rodriguez@company.com",
+      "title": "Director of Engineering",
+      "department": "Technology",
+      "location": "San Francisco, CA",
+      "phone": "+1-555-5152",
+      "start_date": "2022-02-15",
+      "manager_id": "2",
+      "level": 2,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced director of engineering with expertise in technology.",
+      "manager_name": "Sarah Chen",
+      "reports": [
+        {
+          "id": "14",
+          "name": "Emily Zhang",
+          "title": "Engineering Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 3.5,
+      "last_updated": "2025-08-03T15:29:42.231773"
+    },
+    {
+      "id": "7",
+      "name": "David Kim",
+      "email": "david.kim@company.com",
+      "title": "Director of Product",
+      "department": "Technology",
+      "location": "Seattle, WA",
+      "phone": "+1-555-6859",
+      "start_date": "2021-09-13",
+      "manager_id": "2",
+      "level": 2,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced director of product with expertise in technology.",
+      "manager_name": "Sarah Chen",
+      "reports": [
+        {
+          "id": "15",
+          "name": "Alex Thompson",
+          "title": "Product Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 3.9,
+      "last_updated": "2025-08-03T15:29:42.231782"
+    },
+    {
+      "id": "8",
+      "name": "Amanda Johnson",
+      "email": "amanda.johnson@company.com",
+      "title": "Director of Finance",
+      "department": "Finance",
+      "location": "New York, NY",
+      "phone": "+1-555-3695",
+      "start_date": "2022-09-19",
+      "manager_id": "3",
+      "level": 2,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced director of finance with expertise in finance.",
+      "manager_name": "Michael Davis",
+      "reports": [
+        {
+          "id": "16",
+          "name": "Rachel Green",
+          "title": "Finance Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 2.9,
+      "last_updated": "2025-08-03T15:29:42.231792"
+    },
+    {
+      "id": "9",
+      "name": "Thomas Anderson",
+      "email": "thomas.anderson@company.com",
+      "title": "Director of Accounting",
+      "department": "Finance",
+      "location": "Chicago, IL",
+      "phone": "+1-555-4986",
+      "start_date": "2022-11-23",
+      "manager_id": "3",
+      "level": 2,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced director of accounting with expertise in finance.",
+      "manager_name": "Michael Davis",
+      "reports": [
+        {
+          "id": "17",
+          "name": "Mark Williams",
+          "title": "Accounting Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 2.7,
+      "last_updated": "2025-08-03T15:29:42.231801"
+    },
+    {
+      "id": "10",
+      "name": "Maria Garcia",
+      "email": "maria.garcia@company.com",
+      "title": "Director of Talent",
+      "department": "Human Resources",
+      "location": "Chicago, IL",
+      "phone": "+1-555-1245",
+      "start_date": "2022-05-31",
+      "manager_id": "4",
+      "level": 2,
+      "skills": [
+        "Talent Management",
+        "Employee Relations",
+        "HR Operations"
+      ],
+      "projects": [
+        "Talent Development",
+        "Culture Enhancement"
+      ],
+      "bio": "Experienced director of talent with expertise in human resources.",
+      "manager_name": "Jennifer Martinez",
+      "reports": [
+        {
+          "id": "18",
+          "name": "Sophie Miller",
+          "title": "Talent Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 3.2,
+      "last_updated": "2025-08-03T15:29:42.231812"
+    },
+    {
+      "id": "11",
+      "name": "Kevin Lee",
+      "email": "kevin.lee@company.com",
+      "title": "Director of HR Operations",
+      "department": "Human Resources",
+      "location": "Denver, CO",
+      "phone": "+1-555-8239",
+      "start_date": "2023-08-31",
+      "manager_id": "4",
+      "level": 2,
+      "skills": [
+        "Talent Management",
+        "Employee Relations",
+        "HR Operations"
+      ],
+      "projects": [
+        "Talent Development",
+        "Culture Enhancement"
+      ],
+      "bio": "Experienced director of hr operations with expertise in human resources.",
+      "manager_name": "Jennifer Martinez",
+      "reports": [
+        {
+          "id": "19",
+          "name": "Chris Davis",
+          "title": "HR Operations Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 1.9,
+      "last_updated": "2025-08-03T15:29:42.231820"
+    },
+    {
+      "id": "12",
+      "name": "Jessica Wilson",
+      "email": "jessica.wilson@company.com",
+      "title": "Director of Enterprise Sales",
+      "department": "Sales",
+      "location": "Austin, TX",
+      "phone": "+1-555-4385",
+      "start_date": "2023-05-16",
+      "manager_id": "5",
+      "level": 2,
+      "skills": [
+        "Client Relations",
+        "Revenue Growth",
+        "Market Development"
+      ],
+      "projects": [
+        "Revenue Growth",
+        "Market Expansion"
+      ],
+      "bio": "Experienced director of enterprise sales with expertise in sales.",
+      "manager_name": "Robert Brown",
+      "reports": [
+        {
+          "id": "20",
+          "name": "Nicole Adams",
+          "title": "Sales Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 2.2,
+      "last_updated": "2025-08-03T15:29:42.231829"
+    },
+    {
+      "id": "13",
+      "name": "Daniel Taylor",
+      "email": "daniel.taylor@company.com",
+      "title": "Director of Sales Operations",
+      "department": "Sales",
+      "location": "Dallas, TX",
+      "phone": "+1-555-7126",
+      "start_date": "2022-05-25",
+      "manager_id": "5",
+      "level": 2,
+      "skills": [
+        "Client Relations",
+        "Revenue Growth",
+        "Market Development"
+      ],
+      "projects": [
+        "Revenue Growth",
+        "Market Expansion"
+      ],
+      "bio": "Experienced director of sales operations with expertise in sales.",
+      "manager_name": "Robert Brown",
+      "reports": [
+        {
+          "id": "21",
+          "name": "Brian Clark",
+          "title": "Sales Operations Manager"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 2,
+      "tenure_years": 3.2,
+      "last_updated": "2025-08-03T15:29:42.231837"
+    },
+    {
+      "id": "14",
+      "name": "Emily Zhang",
+      "email": "emily.zhang@company.com",
+      "title": "Engineering Manager",
+      "department": "Technology",
+      "location": "San Francisco, CA",
+      "phone": "+1-555-6555",
+      "start_date": "2022-11-17",
+      "manager_id": "6",
+      "level": 3,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced engineering manager with expertise in technology.",
+      "manager_name": "Lisa Rodriguez",
+      "reports": [
+        {
+          "id": "22",
+          "name": "John Mitchell",
+          "title": "Senior Software Engineer"
+        },
+        {
+          "id": "23",
+          "name": "Anna Parker",
+          "title": "Software Engineer"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 2,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 2.7,
+      "last_updated": "2025-08-03T15:29:42.231846"
+    },
+    {
+      "id": "15",
+      "name": "Alex Thompson",
+      "email": "alex.thompson@company.com",
+      "title": "Product Manager",
+      "department": "Technology",
+      "location": "Seattle, WA",
+      "phone": "+1-555-4246",
+      "start_date": "2024-12-22",
+      "manager_id": "7",
+      "level": 3,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced product manager with expertise in technology.",
+      "manager_name": "David Kim",
+      "reports": [
+        {
+          "id": "24",
+          "name": "Mike Turner",
+          "title": "Product Specialist"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 0.6,
+      "last_updated": "2025-08-03T15:29:42.231855"
+    },
+    {
+      "id": "16",
+      "name": "Rachel Green",
+      "email": "rachel.green@company.com",
+      "title": "Finance Manager",
+      "department": "Finance",
+      "location": "New York, NY",
+      "phone": "+1-555-5959",
+      "start_date": "2024-03-19",
+      "manager_id": "8",
+      "level": 3,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced finance manager with expertise in finance.",
+      "manager_name": "Amanda Johnson",
+      "reports": [
+        {
+          "id": "25",
+          "name": "Linda Cooper",
+          "title": "Senior Financial Analyst"
+        },
+        {
+          "id": "26",
+          "name": "Paul Robinson",
+          "title": "Financial Analyst"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 2,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 1.4,
+      "last_updated": "2025-08-03T15:29:42.231863"
+    },
+    {
+      "id": "17",
+      "name": "Mark Williams",
+      "email": "mark.williams@company.com",
+      "title": "Accounting Manager",
+      "department": "Finance",
+      "location": "Chicago, IL",
+      "phone": "+1-555-4005",
+      "start_date": "2021-06-28",
+      "manager_id": "9",
+      "level": 3,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced accounting manager with expertise in finance.",
+      "manager_name": "Thomas Anderson",
+      "reports": [
+        {
+          "id": "27",
+          "name": "Carol White",
+          "title": "Accountant"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 4.1,
+      "last_updated": "2025-08-03T15:29:42.231872"
+    },
+    {
+      "id": "18",
+      "name": "Sophie Miller",
+      "email": "sophie.miller@company.com",
+      "title": "Talent Manager",
+      "department": "Human Resources",
+      "location": "Chicago, IL",
+      "phone": "+1-555-3581",
+      "start_date": "2024-03-22",
+      "manager_id": "10",
+      "level": 3,
+      "skills": [
+        "Talent Management",
+        "Employee Relations",
+        "HR Operations"
+      ],
+      "projects": [
+        "Talent Development",
+        "Culture Enhancement"
+      ],
+      "bio": "Experienced talent manager with expertise in human resources.",
+      "manager_name": "Maria Garcia",
+      "reports": [
+        {
+          "id": "28",
+          "name": "Steve Martin",
+          "title": "HR Specialist"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 1.4,
+      "last_updated": "2025-08-03T15:29:42.231883"
+    },
+    {
+      "id": "19",
+      "name": "Chris Davis",
+      "email": "chris.davis@company.com",
+      "title": "HR Operations Manager",
+      "department": "Human Resources",
+      "location": "Denver, CO",
+      "phone": "+1-555-3405",
+      "start_date": "2024-06-26",
+      "manager_id": "11",
+      "level": 3,
+      "skills": [
+        "Talent Management",
+        "Employee Relations",
+        "HR Operations"
+      ],
+      "projects": [
+        "Talent Development",
+        "Culture Enhancement"
+      ],
+      "bio": "Experienced hr operations manager with expertise in human resources.",
+      "manager_name": "Kevin Lee",
+      "reports": [
+        {
+          "id": "29",
+          "name": "Lisa Evans",
+          "title": "Recruiter"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 1.1,
+      "last_updated": "2025-08-03T15:29:42.231891"
+    },
+    {
+      "id": "20",
+      "name": "Nicole Adams",
+      "email": "nicole.adams@company.com",
+      "title": "Sales Manager",
+      "department": "Sales",
+      "location": "Austin, TX",
+      "phone": "+1-555-8871",
+      "start_date": "2023-12-25",
+      "manager_id": "12",
+      "level": 3,
+      "skills": [
+        "Client Relations",
+        "Revenue Growth",
+        "Market Development"
+      ],
+      "projects": [
+        "Revenue Growth",
+        "Market Expansion"
+      ],
+      "bio": "Experienced sales manager with expertise in sales.",
+      "manager_name": "Jessica Wilson",
+      "reports": [
+        {
+          "id": "30",
+          "name": "Tom Harris",
+          "title": "Sales Representative"
+        }
+      ],
+      "has_reports": true,
+      "report_count": 1,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 1.6,
+      "last_updated": "2025-08-03T15:29:42.231900"
+    },
+    {
+      "id": "21",
+      "name": "Brian Clark",
+      "email": "brian.clark@company.com",
+      "title": "Sales Operations Manager",
+      "department": "Sales",
+      "location": "Dallas, TX",
+      "phone": "+1-555-9382",
+      "start_date": "2024-01-06",
+      "manager_id": "13",
+      "level": 3,
+      "skills": [
+        "Client Relations",
+        "Revenue Growth",
+        "Market Development"
+      ],
+      "projects": [
+        "Revenue Growth",
+        "Market Expansion"
+      ],
+      "bio": "Experienced sales operations manager with expertise in sales.",
+      "manager_name": "Daniel Taylor",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 3,
+      "tenure_years": 1.6,
+      "last_updated": "2025-08-03T15:29:42.231908"
+    },
+    {
+      "id": "22",
+      "name": "John Mitchell",
+      "email": "john.mitchell@company.com",
+      "title": "Senior Software Engineer",
+      "department": "Technology",
+      "location": "San Francisco, CA",
+      "phone": "+1-555-7394",
+      "start_date": "2022-08-23",
+      "manager_id": "14",
+      "level": 4,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced senior software engineer with expertise in technology.",
+      "manager_name": "Emily Zhang",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 2.9,
+      "last_updated": "2025-08-03T15:29:42.231916"
+    },
+    {
+      "id": "23",
+      "name": "Anna Parker",
+      "email": "anna.parker@company.com",
+      "title": "Software Engineer",
+      "department": "Technology",
+      "location": "San Francisco, CA",
+      "phone": "+1-555-9691",
+      "start_date": "2022-05-18",
+      "manager_id": "14",
+      "level": 4,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced software engineer with expertise in technology.",
+      "manager_name": "Emily Zhang",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 3.2,
+      "last_updated": "2025-08-03T15:29:42.231924"
+    },
+    {
+      "id": "24",
+      "name": "Mike Turner",
+      "email": "mike.turner@company.com",
+      "title": "Product Specialist",
+      "department": "Technology",
+      "location": "Seattle, WA",
+      "phone": "+1-555-5445",
+      "start_date": "2024-02-19",
+      "manager_id": "15",
+      "level": 4,
+      "skills": [
+        "Software Development",
+        "System Architecture",
+        "Cloud Computing"
+      ],
+      "projects": [
+        "Platform Modernization",
+        "Tech Innovation"
+      ],
+      "bio": "Experienced product specialist with expertise in technology.",
+      "manager_name": "Alex Thompson",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 1.5,
+      "last_updated": "2025-08-03T15:29:42.231933"
+    },
+    {
+      "id": "25",
+      "name": "Linda Cooper",
+      "email": "linda.cooper@company.com",
+      "title": "Senior Financial Analyst",
+      "department": "Finance",
+      "location": "New York, NY",
+      "phone": "+1-555-1080",
+      "start_date": "2024-03-04",
+      "manager_id": "16",
+      "level": 4,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced senior financial analyst with expertise in finance.",
+      "manager_name": "Rachel Green",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 1.4,
+      "last_updated": "2025-08-03T15:29:42.231942"
+    },
+    {
+      "id": "26",
+      "name": "Paul Robinson",
+      "email": "paul.robinson@company.com",
+      "title": "Financial Analyst",
+      "department": "Finance",
+      "location": "New York, NY",
+      "phone": "+1-555-7710",
+      "start_date": "2023-05-02",
+      "manager_id": "16",
+      "level": 4,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced financial analyst with expertise in finance.",
+      "manager_name": "Rachel Green",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 2.3,
+      "last_updated": "2025-08-03T15:29:42.231949"
+    },
+    {
+      "id": "27",
+      "name": "Carol White",
+      "email": "carol.white@company.com",
+      "title": "Accountant",
+      "department": "Finance",
+      "location": "Chicago, IL",
+      "phone": "+1-555-9530",
+      "start_date": "2023-03-11",
+      "manager_id": "17",
+      "level": 4,
+      "skills": [
+        "Financial Analysis",
+        "Budget Planning",
+        "Risk Management"
+      ],
+      "projects": [
+        "Financial Optimization",
+        "Cost Management"
+      ],
+      "bio": "Experienced accountant with expertise in finance.",
+      "manager_name": "Mark Williams",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 2.4,
+      "last_updated": "2025-08-03T15:29:42.231957"
+    },
+    {
+      "id": "28",
+      "name": "Steve Martin",
+      "email": "steve.martin@company.com",
+      "title": "HR Specialist",
+      "department": "Human Resources",
+      "location": "Chicago, IL",
+      "phone": "+1-555-9979",
+      "start_date": "2021-12-19",
+      "manager_id": "18",
+      "level": 4,
+      "skills": [
+        "Talent Management",
+        "Employee Relations",
+        "HR Operations"
+      ],
+      "projects": [
+        "Talent Development",
+        "Culture Enhancement"
+      ],
+      "bio": "Experienced hr specialist with expertise in human resources.",
+      "manager_name": "Sophie Miller",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 3.6,
+      "last_updated": "2025-08-03T15:29:42.231966"
+    },
+    {
+      "id": "29",
+      "name": "Lisa Evans",
+      "email": "lisa.evans@company.com",
+      "title": "Recruiter",
+      "department": "Human Resources",
+      "location": "Denver, CO",
+      "phone": "+1-555-8499",
+      "start_date": "2023-11-01",
+      "manager_id": "19",
+      "level": 4,
+      "skills": [
+        "Talent Management",
+        "Employee Relations",
+        "HR Operations"
+      ],
+      "projects": [
+        "Talent Development",
+        "Culture Enhancement"
+      ],
+      "bio": "Experienced recruiter with expertise in human resources.",
+      "manager_name": "Chris Davis",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 1.8,
+      "last_updated": "2025-08-03T15:29:42.231973"
+    },
+    {
+      "id": "30",
+      "name": "Tom Harris",
+      "email": "tom.harris@company.com",
+      "title": "Sales Representative",
+      "department": "Sales",
+      "location": "Austin, TX",
+      "phone": "+1-555-2912",
+      "start_date": "2024-07-12",
+      "manager_id": "20",
+      "level": 4,
+      "skills": [
+        "Client Relations",
+        "Revenue Growth",
+        "Market Development"
+      ],
+      "projects": [
+        "Revenue Growth",
+        "Market Expansion"
+      ],
+      "bio": "Experienced sales representative with expertise in sales.",
+      "manager_name": "Nicole Adams",
+      "reports": [],
+      "has_reports": false,
+      "report_count": 0,
+      "hierarchy_path": "",
+      "org_level": 4,
+      "tenure_years": 1.1,
+      "last_updated": "2025-08-03T15:29:42.231981"
+    }
+  ]
+}
