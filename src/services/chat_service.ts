@@ -106,7 +106,8 @@ export class ChatService {
   generateAIResponse(
     userMessage: string, 
     chatMode: 'company' | 'world', 
-    document?: any
+    document?: any,
+    uploadedFiles?: Array<{ id: string; name: string; content: string; }>
   ): string {
     const aiResponses: Record<string, string[]> = {
       company: document ? [
@@ -138,7 +139,18 @@ export class ChatService {
     };
 
     const responses = aiResponses[chatMode];
-    return responses[Math.floor(Math.random() * responses.length)];
+    let selectedResponse = responses[Math.floor(Math.random() * responses.length)];
+
+    // Add uploaded file context if available
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      const fileContext = uploadedFiles.map(file => 
+        `\n\n📄 **File: ${file.name}**\n${file.content.substring(0, 500)}${file.content.length > 500 ? '...' : ''}`
+      ).join('');
+      
+      selectedResponse = `Based on the uploaded file${uploadedFiles.length > 1 ? 's' : ''} and your question: "${userMessage}"\n\n${selectedResponse}${fileContext}\n\n*This response incorporates context from ${uploadedFiles.length} uploaded file${uploadedFiles.length > 1 ? 's' : ''}.*`;
+    }
+
+    return selectedResponse;
   }
 
   addMessageToSession(

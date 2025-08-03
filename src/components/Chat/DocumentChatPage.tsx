@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ChatInterface from './ChatInterface';
 import { ChatSession, ChatMessage } from '../../services/api_client';
 import { chatService } from '../../services/chat_service';
+import { UploadedFile } from '../../types';
 
 interface DocumentChatPageProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ const DocumentChatPage: React.FC<DocumentChatPageProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [chatMode, setChatMode] = useState<'company' | 'world'>('company');
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   // Get current chat session
   const currentChat = chatSessions.find(chat => chat.id === currentChatId);
@@ -84,6 +86,15 @@ const DocumentChatPage: React.FC<DocumentChatPageProps> = ({
     }
   };
 
+  // File upload handlers
+  const handleFileUpload = (file: UploadedFile) => {
+    setUploadedFiles(prev => [...prev, file]);
+  };
+
+  const handleFileRemove = (fileId: string) => {
+    setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || !currentChatId) return;
 
@@ -108,7 +119,14 @@ const DocumentChatPage: React.FC<DocumentChatPageProps> = ({
       const currentChatSession = updatedSessions.find(chat => chat.id === currentChatId);
       const document = currentChatSession?.document;
       
-      const aiResponseContent = chatService.generateAIResponse(inputMessage, chatMode, document);
+      // Prepare uploaded files context
+      const fileContext = uploadedFiles.map(file => ({
+        id: file.id,
+        name: file.name,
+        content: file.content
+      }));
+      
+      const aiResponseContent = chatService.generateAIResponse(inputMessage, chatMode, document, fileContext);
 
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -165,6 +183,9 @@ const DocumentChatPage: React.FC<DocumentChatPageProps> = ({
       isLoading={isLoading}
       chatMode={chatMode}
       setChatMode={setChatMode}
+      uploadedFiles={uploadedFiles}
+      onFileUpload={handleFileUpload}
+      onFileRemove={handleFileRemove}
       onClose={onClose}
       messagesEndRef={messagesEndRef}
     />

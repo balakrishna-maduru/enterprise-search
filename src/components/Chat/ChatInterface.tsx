@@ -1,4 +1,6 @@
 import React from 'react';
+import FileUploadButton from '../Search/FileUploadButton';
+import { UploadedFile } from '../../types';
 
 interface ChatMessage {
   id: string;
@@ -42,6 +44,11 @@ interface ChatInterfaceProps {
   chatMode: 'company' | 'world';
   setChatMode: (mode: 'company' | 'world') => void;
   
+  // File upload
+  uploadedFiles: UploadedFile[];
+  onFileUpload: (file: UploadedFile) => void;
+  onFileRemove: (fileId: string) => void;
+  
   // Layout
   onClose: () => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
@@ -63,6 +70,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   isLoading,
   chatMode,
   setChatMode,
+  uploadedFiles,
+  onFileUpload,
+  onFileRemove,
   onClose,
   messagesEndRef
 }) => {
@@ -280,52 +290,112 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
         {/* Chat Input */}
         {currentChat && (
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-gray-200 bg-white">
             <div className="max-w-4xl mx-auto">
-              <div className="flex items-end space-x-3">
+              {/* Uploaded Files Display */}
+              {uploadedFiles.length > 0 && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-gray-700 flex items-center">
+                      <svg className="w-4 h-4 mr-1 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Uploaded Files ({uploadedFiles.length})
+                    </h4>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {uploadedFiles.map((file) => (
+                      <div key={file.id} className="flex items-center bg-white border border-gray-200 rounded-md px-3 py-2 text-sm">
+                        <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="text-gray-700 mr-2 truncate max-w-32">{file.name}</span>
+                        <button
+                          onClick={() => onFileRemove(file.id)}
+                          className="text-gray-400 hover:text-red-500 transition-colors"
+                          title="Remove file"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Chat Mode Toggle - Positioned above the input area */}
+              <div className="flex justify-between items-center mb-3">
+                <div className="text-sm text-gray-600 font-medium">
+                  Chat Mode: <span className="text-red-600">{chatMode === 'company' ? 'Company Knowledge' : 'World Knowledge'}</span>
+                </div>
+                <button
+                  onClick={() => setChatMode(chatMode === 'company' ? 'world' : 'company')}
+                  className="relative inline-flex items-center bg-gray-200 rounded-full p-0.5 text-xs font-medium transition-all duration-200 hover:bg-gray-300 shadow-sm"
+                  style={{ width: '100px', height: '28px' }}
+                  title={`Switch to ${chatMode === 'company' ? 'World' : 'Company'} Knowledge`}
+                >
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-12 h-6 bg-red-600 rounded-full shadow-sm transition-transform duration-200 ease-in-out ${
+                      chatMode === 'world' ? 'translate-x-11' : 'translate-x-0'
+                    }`}
+                  />
+                  <span className={`relative z-10 w-12 text-center transition-colors duration-200 text-xs font-semibold ${
+                    chatMode === 'company' ? 'text-white' : 'text-gray-600'
+                  }`}>
+                    Company
+                  </span>
+                  <span className={`relative z-10 w-12 text-center transition-colors duration-200 text-xs font-semibold ${
+                    chatMode === 'world' ? 'text-white' : 'text-gray-600'
+                  }`}>
+                    World
+                  </span>
+                </button>
+              </div>
+
+              {/* Input area with buttons */}
+              <div className="flex items-end space-x-4">
                 <div className="flex-1">
                   <textarea
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message here..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none shadow-sm"
                     rows={2}
                     disabled={isLoading}
                   />
                 </div>
-                <div className="flex flex-col items-end space-y-2">
-                  {/* Sliding Chat Mode Toggle */}
-                  <button
-                    onClick={() => setChatMode(chatMode === 'company' ? 'world' : 'company')}
-                    className="relative inline-flex items-center bg-gray-200 rounded-full p-0.5 text-xs font-medium transition-all duration-200 hover:bg-gray-300"
-                    style={{ width: '80px', height: '24px' }}
-                  >
-                    <div
-                      className={`absolute top-0.5 left-0.5 w-8 h-5 bg-red-600 rounded-full shadow-sm transition-transform duration-200 ease-in-out ${
-                        chatMode === 'world' ? 'translate-x-10' : 'translate-x-0'
-                      }`}
-                    />
-                    <span className={`relative z-10 w-8 text-center transition-colors duration-200 ${
-                      chatMode === 'company' ? 'text-white' : 'text-gray-600'
-                    }`}>
-                      Co
-                    </span>
-                    <span className={`relative z-10 w-8 text-center transition-colors duration-200 ${
-                      chatMode === 'world' ? 'text-white' : 'text-gray-600'
-                    }`}>
-                      Wo
-                    </span>
-                  </button>
+                
+                {/* Action buttons row */}
+                <div className="flex items-center gap-4">
+                  <FileUploadButton
+                    onFileUpload={onFileUpload}
+                    onFileRemove={onFileRemove}
+                    uploadedFiles={uploadedFiles}
+                    maxFileSize={10}
+                    acceptedTypes={['.txt', '.pdf', '.doc', '.docx', '.md']}
+                    disabled={isLoading}
+                    className="flex-shrink-0"
+                  />
                   
                   <button
                     onClick={handleSendMessage}
                     disabled={!inputMessage.trim() || isLoading}
-                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm flex items-center gap-2 flex-shrink-0 min-w-[100px]"
+                    title="Send message"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
+                    {isLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        <span className="text-sm font-medium">Send</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

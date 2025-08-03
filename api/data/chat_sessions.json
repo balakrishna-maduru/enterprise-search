@@ -1,92 +1,97 @@
 [
   {
-    "id": "1754198694533",
+    "id": "1754212280133",
     "title": "New Chat",
     "messages": [
       {
         "id": "1",
         "content": "Hello! I'm your AI assistant. How can I help you today?",
         "isUser": false,
-        "timestamp": "2025-08-03T05:24:54.533Z"
-      },
-      {
-        "id": "1754198702108",
-        "content": "hi",
-        "isUser": true,
-        "timestamp": "2025-08-03T05:25:02.108Z"
-      },
-      {
-        "id": "1754198703611",
-        "content": "That's an interesting company-related question! Let me help you with information specific to our organization.",
-        "isUser": false,
-        "timestamp": "2025-08-03T05:25:03.610Z"
-      },
-      {
-        "id": "1754211265141",
-        "content": "happy",
-        "isUser": true,
-        "timestamp": "2025-08-03T08:54:25.141Z"
-      },
-      {
-        "id": "1754211266644",
-        "content": "I'm glad you asked about that! This is an area where I can provide you with comprehensive information and different perspectives.",
-        "isUser": false,
-        "timestamp": "2025-08-03T08:54:26.643Z"
+        "timestamp": "2025-08-03T09:11:20.133Z"
       }
     ],
-    "createdAt": "2025-08-03T05:24:54.533Z",
-    "updatedAt": "2025-08-03T08:54:26.643Z",
-    "updated_at": "2025-08-03T16:54:26.654415"
+    "createdAt": "2025-08-03T09:11:20.133Z",
+    "updatedAt": "2025-08-03T09:11:20.133Z",
+    "updated_at": "2025-08-03T17:11:20.146781"
   },
   {
-    "id": "1754192152363",
-    "title": "Chat about: Design cybersecurity user interface",
+    "id": "1754212120262",
+    "title": "New Chat",
+    "messages": [
+      {
+        "id": "1",
+        "content": "Hello! I'm your AI assistant. How can I help you today?",
+        "isUser": false,
+        "timestamp": "2025-08-03T09:08:40.262Z"
+      }
+    ],
+    "createdAt": "2025-08-03T09:08:40.262Z",
+    "updatedAt": "2025-08-03T09:08:40.262Z",
+    "updated_at": "2025-08-03T17:11:20.146823"
+  },
+  {
+    "id": "1754212113330",
+    "title": "New Chat",
+    "messages": [
+      {
+        "id": "1",
+        "content": "Hello! I'm your AI assistant. How can I help you today?",
+        "isUser": false,
+        "timestamp": "2025-08-03T09:08:33.330Z"
+      }
+    ],
+    "createdAt": "2025-08-03T09:08:33.330Z",
+    "updatedAt": "2025-08-03T09:08:33.330Z",
+    "updated_at": "2025-08-03T17:11:20.146826"
+  },
+  {
+    "id": "1754212108349",
+    "title": "New Chat",
+    "messages": [
+      {
+        "id": "1",
+        "content": "Hello! I'm your AI assistant. How can I help you today?",
+        "isUser": false,
+        "timestamp": "2025-08-03T09:08:28.349Z"
+      }
+    ],
+    "createdAt": "2025-08-03T09:08:28.349Z",
+    "updatedAt": "2025-08-03T09:08:28.349Z",
+    "updated_at": "2025-08-03T17:11:20.146829"
+  },
+  {
+    "id": "1754212098328",
+    "title": "Chat about: Design customer onboarding user interface",
     "document": {
-      "id": "c8d56fe4-3982-44b3-a3d8-41d056c29646",
-      "title": "Design cybersecurity user interface",
-      "content": "Task details for cybersecurity implementation. Requirements include security compliance, performance optimization, and user experience. Assigned to Sarah Chen (Institutional Banking). Priority: High. Status: In Progress.  Theory young early mention child chance interest. Fight trade bar.\nExperience son sport court our. Form police south media.\nCareer prove sure factor. Best ago join above new. Student region project. Threat up nearly join color development action.",
-      "summary": "Task details for cybersecurity implementation. Requirements include security compliance, performance optimization, and user experience. Assigned to Sa...",
+      "id": "8f82723f-b497-4df7-b6d9-729b6b9a2b96",
+      "title": "Design customer onboarding user interface",
+      "content": "Task details for customer onboarding implementation. Requirements include security compliance, performance optimization, and user experience. Assigned to Ryan Tay (Finance). Priority: Critical. Status: Done.  Word group can charge sing. Little sound foreign detail relationship serious walk.\nNone treat heart media enjoy serve their full. Just in million admit.\nWalk strong mouth necessary. Newspaper finally who. Ability example wrong window trade give to.\nBad including course view whole.",
+      "summary": "Task details for customer onboarding implementation. Requirements include security compliance, performance optimization, and user experience. Assigned...",
       "source": "jira",
-      "author": "Sarah Chen",
+      "author": "Ryan Tay",
       "department": "Unknown",
       "content_type": "ticket",
       "tags": [
-        "story",
-        "high",
-        "cybersecurity",
+        "task",
+        "critical",
+        "customer_onboarding",
         "urgent"
       ],
-      "timestamp": "2025-07-31T21:49:22.248019",
-      "url": "https://company.atlassian.net/browse/CORP-8685",
-      "score": 65,
-      "highlights": {
-        "content": [
-          "Best ago <mark>join</mark> above new. Student region project. Threat up nearly <mark>join</mark> color development action."
-        ]
-      }
+      "timestamp": "2025-08-02T17:30:42.706034",
+      "url": "https://company.atlassian.net/browse/CORP-2671",
+      "score": 10,
+      "highlights": {}
     },
     "messages": [
       {
         "id": "1",
-        "content": "Hello! I'm here to help you with questions about the document \"Design cybersecurity user interface\". What would you like to know?",
+        "content": "Hello! I'm here to help you with questions about the document \"Design customer onboarding user interface\". What would you like to know?",
         "isUser": false,
-        "timestamp": "2025-08-03T03:35:52.363Z"
-      },
-      {
-        "id": "1754198631762",
-        "content": "Test",
-        "isUser": true,
-        "timestamp": "2025-08-03T05:23:51.762Z"
-      },
-      {
-        "id": "1754198633264",
-        "content": "According to our company's documentation, this information is quite relevant to our operations. Would you like me to elaborate on any specific section?",
-        "isUser": false,
-        "timestamp": "2025-08-03T05:23:53.263Z"
+        "timestamp": "2025-08-03T09:08:18.328Z"
       }
     ],
-    "createdAt": "2025-08-03T03:35:52.363Z",
-    "updatedAt": "2025-08-03T05:23:53.263Z",
-    "updated_at": "2025-08-03T16:54:26.654556"
+    "createdAt": "2025-08-03T09:08:18.328Z",
+    "updatedAt": "2025-08-03T09:08:18.328Z",
+    "updated_at": "2025-08-03T17:11:20.146832"
   }
 ]

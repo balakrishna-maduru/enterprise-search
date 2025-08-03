@@ -296,3 +296,13 @@ export interface ApiError {
 export type ConnectionStatus = 'connected' | 'error' | 'testing' | 'unauthenticated';
 export type SearchMode = 'api' | 'demo' | 'live';
 export type UserRole = 'admin' | 'manager' | 'employee' | 'executive';
+
+// File Upload Types
+export interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  content: string;
+  uploadedAt: Date;
+}
