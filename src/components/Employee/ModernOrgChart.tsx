@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { EmployeeHierarchy, HierarchyNode } from '../../types';
+import SimpleHierarchyView from './SimpleHierarchyView';
 
 interface ModernOrgChartProps {
   hierarchy: EmployeeHierarchy;
@@ -13,20 +14,20 @@ interface OrgNodeProps {
 }
 
 const OrgNode: React.FC<OrgNodeProps> = ({ node, isTarget = false, level, onNodeClick }) => {
-  // Expand nodes that are in the path to the target employee or are target themselves
-  const [isExpanded, setIsExpanded] = useState(() => {
-    // Auto-expand if this node or any of its descendants is the target
-    const hasTargetInSubtree = (n: HierarchyNode): boolean => {
-      if (n.is_target) return true;
-      if (n.reports && n.reports.length > 0) {
-        return n.reports.some(child => hasTargetInSubtree(child));
-      }
-      return false;
-    };
-    return hasTargetInSubtree(node) || level <= 2; // Always expand first 3 levels
-  });
+  // Always expand nodes for the first 4 levels to show the complete hierarchy
+  const [isExpanded, setIsExpanded] = useState(true); // Always start expanded for debugging
   
   const hasReports = node.reports && node.reports.length > 0;
+
+  // Debug logging
+  console.log(`🌳 OrgNode rendering:`, {
+    name: node.name,
+    level,
+    hasReports,
+    reportsCount: node.reports?.length || 0,
+    isTarget: node.is_target,
+    isExpanded
+  });
 
   const getLevelConfig = (level: number) => {
     const configs = [
@@ -127,32 +128,13 @@ const OrgNode: React.FC<OrgNodeProps> = ({ node, isTarget = false, level, onNode
             <span className="truncate">{node.department}</span>
           </div>
 
-          {/* Reports Count */}
+          {/* Reports Count - No expand/collapse for now */}
           {hasReports && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-                <span>{node.reports.length} Direct Report{node.reports.length !== 1 ? 's' : ''}</span>
-              </div>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsExpanded(!isExpanded);
-                }}
-                className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <svg 
-                  className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7 7" />
-                </svg>
-              </button>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              </svg>
+              <span>{node.reports.length} Direct Report{node.reports.length !== 1 ? 's' : ''}</span>
             </div>
           )}
 
@@ -169,7 +151,7 @@ const OrgNode: React.FC<OrgNodeProps> = ({ node, isTarget = false, level, onNode
       </div>
 
       {/* Connection Lines and Children */}
-      {hasReports && isExpanded && (
+      {hasReports && node.reports && node.reports.length > 0 && (
         <div className="mt-4 flex flex-col items-center">
           {/* Vertical line down */}
           <div className="w-px h-8 bg-gray-300"></div>
@@ -191,20 +173,28 @@ const OrgNode: React.FC<OrgNodeProps> = ({ node, isTarget = false, level, onNode
               node.reports.length <= 4 ? 'grid-cols-2 xl:grid-cols-4' : 
               'grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'}
           `}>
-            {node.reports.map((child, index) => (
-              <div key={child.id} className="relative">
-                {/* Vertical line up to child */}
-                {node.reports.length > 1 && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-8 bg-gray-300 -mt-8"></div>
-                )}
-                <OrgNode 
-                  node={child} 
-                  isTarget={child.is_target}
-                  level={level + 1}
-                  onNodeClick={onNodeClick}
-                />
-              </div>
-            ))}
+            {node.reports.map((child, index) => {
+              console.log(`🔄 Rendering child ${index}:`, {
+                name: child.name,
+                level: level + 1,
+                hasOwnReports: child.reports?.length || 0,
+                isTarget: child.is_target
+              });
+              return (
+                <div key={child.id} className="relative">
+                  {/* Vertical line up to child */}
+                  {node.reports.length > 1 && (
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-8 bg-gray-300 -mt-8"></div>
+                  )}
+                  <OrgNode 
+                    node={child} 
+                    isTarget={child.is_target || false}
+                    level={level + 1}
+                    onNodeClick={onNodeClick}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -225,9 +215,19 @@ const ModernOrgChart: React.FC<ModernOrgChartProps> = ({ hierarchy }) => {
     );
   }
 
+  // Debug logging
+  console.log(`🌳 ModernOrgChart data:`, {
+    employee: hierarchy.employee.name,
+    hierarchyTree: hierarchy.hierarchy_tree.name,
+    treeReports: hierarchy.hierarchy_tree.reports?.length || 0,
+    managementChain: hierarchy.management_chain.length,
+    totalEmployees: hierarchy.total_employees
+  });
+
   // Find the CEO (root of the tree) by traversing up the management chain
   const findCEO = (): HierarchyNode => {
     // The hierarchy_tree from API already starts from CEO, so we can use it directly
+    console.log(`🏢 CEO Node:`, hierarchy.hierarchy_tree);
     return hierarchy.hierarchy_tree;
   };
 
@@ -239,6 +239,19 @@ const ModernOrgChart: React.FC<ModernOrgChartProps> = ({ hierarchy }) => {
 
   return (
     <div className="w-full">
+      {/* Debug Info */}
+      <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm">
+        <strong>🐛 Debug:</strong> Showing hierarchy for {hierarchy.employee.name}. 
+        Root: {ceoNode.name} with {ceoNode.reports?.length || 0} direct reports.
+        
+        <details className="mt-2">
+          <summary className="cursor-pointer font-semibold">View Tree Structure</summary>
+          <div className="mt-2 bg-yellow-50 p-2 rounded max-h-64 overflow-auto">
+            <SimpleHierarchyView node={ceoNode} />
+          </div>
+        </details>
+      </div>
+
       {/* Header */}
       <div className="mb-8 text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Organization Chart</h2>

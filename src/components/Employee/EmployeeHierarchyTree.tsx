@@ -113,6 +113,15 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
     );
   }
 
+  // Debug logging
+  console.log('🌲 EmployeeHierarchyTree received data:', {
+    viewMode,
+    employee: hierarchy.employee.name,
+    hierarchyTreeRoot: hierarchy.hierarchy_tree.name,
+    hierarchyTreeReports: hierarchy.hierarchy_tree.reports?.length || 0,
+    hierarchyTreeData: hierarchy.hierarchy_tree
+  });
+
   // Use modern org chart by default
   if (viewMode === 'modern') {
     return <ModernOrgChart hierarchy={hierarchy} />;

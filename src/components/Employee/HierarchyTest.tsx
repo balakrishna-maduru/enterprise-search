@@ -1,7 +1,33 @@
 // Test component to check hierarchy functionality
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EmployeeHierarchy, HierarchyNode, Employee } from '../../types';
 import EmployeeHierarchyTree from './EmployeeHierarchyTree';
+import { employeeService } from '../../services/employee_service';
+
+const HierarchyTest: React.FC = () => {
+  const [showHierarchy, setShowHierarchy] = useState(false);
+  const [realHierarchy, setRealHierarchy] = useState<EmployeeHierarchy | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [employeeId, setEmployeeId] = useState('14');
+
+  const testEmployees = [
+    { id: '1', name: 'James Wilson (CEO)' },
+    { id: '14', name: 'Emily Zhang (Manager)' },
+    { id: '22', name: 'John Mitchell (Engineer)' },
+  ];
+
+  const fetchRealHierarchy = async (empId: string) => {
+    setLoading(true);
+    try {
+      const hierarchyData = await employeeService.getEmployeeHierarchy(empId);
+      setRealHierarchy(hierarchyData);
+      setShowHierarchy(true);
+    } catch (error) {
+      console.error('Failed to load real hierarchy:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 // Mock data for testing
 const mockEmployee: Employee = {
@@ -99,40 +125,53 @@ const HierarchyTest: React.FC = () => {
   const [showHierarchy, setShowHierarchy] = useState(false);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto">
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Employee Hierarchy Test</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">🌳 Modern Organization Chart Test</h2>
         <p className="text-gray-600 mb-6">
-          This is a test component to verify that the EmployeeHierarchyTree component works with mock data.
+          Test the new modern org chart visualization with real employee data.
         </p>
         
-        <button
-          onClick={() => setShowHierarchy(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          Show Test Hierarchy
-        </button>
-
-        {/* Mock Employee Card */}
-        <div className="mt-6 bg-gray-50 rounded-lg p-4">
-          <h3 className="font-semibold text-gray-900">Mock Employee Data:</h3>
-          <div className="mt-2 text-sm text-gray-600">
-            <p><strong>Name:</strong> {mockEmployee.name}</p>
-            <p><strong>Title:</strong> {mockEmployee.title}</p>
-            <p><strong>Department:</strong> {mockEmployee.department}</p>
-            <p><strong>Level:</strong> {mockEmployee.level}</p>
-            <p><strong>Has Reports:</strong> {mockEmployee.has_reports ? 'Yes' : 'No'}</p>
+        {/* Employee Selection */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Employee:
+          </label>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {testEmployees.map((emp) => (
+              <button
+                key={emp.id}
+                onClick={() => setEmployeeId(emp.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  employeeId === emp.id
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {emp.name}
+              </button>
+            ))}
           </div>
+          
+          <button
+            onClick={() => fetchRealHierarchy(employeeId)}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Loading...' : 'Load Real Hierarchy'}
+          </button>
         </div>
       </div>
 
-      {/* Hierarchy Modal */}
-      {showHierarchy && (
+      {/* Hierarchy Display */}
+      {showHierarchy && realHierarchy && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-7xl w-full max-h-[95vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Test Employee Hierarchy</h2>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Real Employee Hierarchy - {realHierarchy.employee.name}
+                </h2>
                 <button
                   onClick={() => setShowHierarchy(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -142,7 +181,15 @@ const HierarchyTest: React.FC = () => {
                   </svg>
                 </button>
               </div>
-              <EmployeeHierarchyTree hierarchy={mockHierarchy} />
+              
+              {/* Debug Info */}
+              <div className="mb-4 p-3 bg-gray-100 rounded-lg text-sm">
+                <strong>Debug:</strong> Total: {realHierarchy.total_employees} employees, 
+                Management levels: {realHierarchy.management_chain.length}, 
+                Tree root: {realHierarchy.hierarchy_tree.name}
+              </div>
+              
+              <EmployeeHierarchyTree hierarchy={realHierarchy} viewMode="modern" />
             </div>
           </div>
         </div>
