@@ -1,13 +1,14 @@
 // src/contexts/SearchContext.tsx
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { config } from '../config';
-import { useUnifiedUser } from '../hooks/useUnifiedUser';
 import { useElasticsearch } from '../hooks/useElasticsearch';
 import { useOpenAI } from '../hooks/useOpenAI';
 import { useApiSearch } from '../hooks/useApiSearch';
 import { useApiLLM } from '../hooks/useApiLLM';
 import { SearchContextType, SearchResult, SearchFilters, Employee, PaginationInfo } from '../types';
 import { employeeService } from '../services/employee_service';
+import { getCurrentUserEmail, getCurrentUserName, getCurrentUserDepartment } from '../store/userStore';
+import { useUser } from '../hooks/useUser';
 import { apiService } from '../services/api_service';
 
 interface SearchProviderProps {
@@ -25,7 +26,7 @@ export const useSearch = (): SearchContextType => {
 };
 
 export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
-  const { currentUser } = useUnifiedUser();
+  const { user: currentUser } = useUser();
   const [searchQuery, setSearchQueryState] = useState<string>('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedResults, setSelectedResults] = useState<SearchResult[]>([]);
@@ -180,14 +181,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           content_type: 'employee',
           tags: ['product-management', 'digital-banking'],
           timestamp: new Date().toISOString(),
-          url: 'mailto:sarah.chen@dbs.com',
+          url: `mailto:${getCurrentUserEmail() || 'user@example.com'}`,
           score: 95,
           employee_data: {
             id: 1,
-            name: 'Sarah Chen',
+            name: getCurrentUserName(),
             title: 'Senior Product Manager',
-            email: 'sarah.chen@dbs.com',
-            department: 'Digital Banking',
+            email: getCurrentUserEmail() || 'user@example.com',
+            department: getCurrentUserDepartment() || 'Digital Banking',
             location: 'Singapore',
             phone: '+65 6000 0001',
             start_date: '2020-01-01',
@@ -283,6 +284,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const loadDefaultDocuments = useCallback(async (): Promise<void> => {
     console.log('🔍 Loading default documents using dual search for landing page');
     console.log('🔍 Current user in loadDefaultDocuments:', currentUser);
+    
+    // Wait for user to be available before making API calls
+    if (!currentUser) {
+      console.log('⏳ Waiting for user authentication before loading data...');
+      return;
+    }
     
     // Use dual search with empty query to load landing page data
     await executeDualSearch('');

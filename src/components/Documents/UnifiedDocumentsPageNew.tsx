@@ -1,7 +1,7 @@
 // src/components/Documents/UnifiedDocumentsPage.tsx
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearch } from '../../contexts/SearchContext';
-import { useUnifiedUser } from '../../hooks/useUnifiedUser';
+import { useUser } from '../../hooks/useUser';
 import { usePagination } from '../../hooks/usePagination';
 import { apiService } from '../../services/api_service';
 import { SearchResult } from '../../types';
@@ -27,7 +27,7 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     selectedFilters
   } = useSearch();
   
-  const { currentUser } = useUnifiedUser();
+  const { user: currentUser } = useUser();
   
   // Local state
   const [documents, setDocuments] = useState<SearchResult[]>([]);

@@ -1,21 +1,48 @@
 // src/data/users.ts
 import { User } from '../types';
+import { getCurrentUser } from '../store/userStore';
 
 const getCompanyDomain = (): string => {
   // Return a default domain since it's not in the config anymore
   return 'enterprise-search.com';
 };
 
-export const availableUsers: User[] = [
-  {
-    id: 'balu_user',
-    name: 'Balu',
+// Get the current user with fallback for demo purposes
+export const getCurrentUserData = (): User | null => {
+  const currentUser = getCurrentUser();
+  if (currentUser) {
+    return currentUser;
+  }
+
+  // Fallback demo user for development
+  return {
+    id: 'demo_user',
+    name: 'Demo User',
     position: 'System Administrator',
     department: 'Administration',
     role: 'admin',
     company: 'DBS Bank',
-    avatar: 'BA',
-    email: 'balu@mymail.com',
+    email: process.env.REACT_APP_DEFAULT_USER_EMAIL || 'admin@enterprise.com',
+    preferences: {
+      theme: 'light',
+      notifications: true,
+      searchMode: 'standard'
+    }
+  };
+};
+
+// Available users for demo/testing purposes only
+// These should not be used for authentication or current user data
+export const availableUsers: User[] = [
+  {
+    id: 'admin_user',
+    name: 'Admin User',
+    position: 'System Administrator',
+    department: 'Administration',
+    role: 'admin',
+    company: 'DBS Bank',
+    avatar: 'AU',
+    email: `admin@${getCompanyDomain()}`,
     color: 'bg-red-800',
     preferences: {
       theme: 'light',

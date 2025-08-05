@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import timedelta
 
 from models.user import User
 from middleware.auth import (
-    create_access_token, MOCK_USERS, get_current_user
+    create_access_token, get_current_user
 )
 from config import settings
 
@@ -15,6 +15,12 @@ router = APIRouter()
 
 class LoginRequest(BaseModel):
     email: str
+    # Optional user data that frontend can provide
+    name: Optional[str] = None
+    department: Optional[str] = None
+    position: Optional[str] = None
+    role: Optional[str] = "employee"
+    company: Optional[str] = "Enterprise"
 
 
 class LoginResponse(BaseModel):
@@ -23,27 +29,36 @@ class LoginResponse(BaseModel):
     user: User
 
 
-class UserListResponse(BaseModel):
-    users: List[User]
-
-
 @router.post("/auth/login", response_model=LoginResponse)
 async def login(request: LoginRequest) -> LoginResponse:
     """
     Authenticate user and return JWT token
-    In development, accepts any email from the mock user list
+    Accepts user data from frontend centralized user store
     """
-    user_data = MOCK_USERS.get(request.email)
-    if not user_data:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
+    # Create user data from request (frontend provides user info)
+    user_data = {
+        "id": request.email.split("@")[0],  # Use email prefix as ID
+        "name": request.name or "User",
+        "email": request.email,
+        "department": request.department or "Unknown",
+        "position": request.position or "Employee",
+        "role": request.role or "employee",
+        "company": request.company or "Enterprise"
+    }
     
-    # Create access token
+    # Create access token with user data in payload
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    token_data = {
+        "sub": request.email,
+        "user_id": user_data["id"],
+        "name": user_data["name"],
+        "department": user_data["department"],
+        "position": user_data["position"],
+        "role": user_data["role"],
+        "company": user_data["company"]
+    }
     access_token = create_access_token(
-        data={"sub": request.email}, 
+        data=token_data, 
         expires_delta=access_token_expires
     )
     
@@ -54,16 +69,6 @@ async def login(request: LoginRequest) -> LoginResponse:
         token_type="bearer",
         user=user
     )
-
-
-@router.get("/auth/users", response_model=UserListResponse)
-async def get_available_users() -> UserListResponse:
-    """
-    Get list of available users for development/demo purposes
-    In production, this would be restricted to admin users only
-    """
-    users = [User(**user_data) for user_data in MOCK_USERS.values()]
-    return UserListResponse(users=users)
 
 
 @router.get("/auth/me", response_model=User)
@@ -84,8 +89,17 @@ async def refresh_token(
     Refresh the current user's token
     """
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    token_data = {
+        "sub": current_user.email,
+        "user_id": current_user.id,
+        "name": current_user.name,
+        "department": current_user.department,
+        "position": current_user.position,
+        "role": current_user.role,
+        "company": current_user.company
+    }
     access_token = create_access_token(
-        data={"sub": current_user.email}, 
+        data=token_data, 
         expires_delta=access_token_expires
     )
     

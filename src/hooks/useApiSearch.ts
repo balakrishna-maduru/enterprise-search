@@ -8,35 +8,10 @@ export const useApiSearch = (): UseApiSearchReturn => {
   const [searchMode, setSearchMode] = useState<SearchMode>('api');
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  // Function to get access token by logging in
+  // Function to get access token - simplified (no authentication)
   const getAccessToken = async (): Promise<string> => {
-    if (accessToken) {
-      return accessToken;
-    }
-
-    try {
-      console.log('Getting access token...');
-      const response = await fetch(`${config.api.baseUrl}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: 'balu@mymail.com' }) // Use default user
-      });
-
-      if (!response.ok) {
-        throw new Error(`Login failed: ${response.status}`);
-      }
-
-      const loginResult = await response.json();
-      const token = loginResult.access_token;
-      setAccessToken(token);
-      console.log('✅ Access token obtained successfully');
-      return token;
-    } catch (error) {
-      console.error('❌ Failed to get access token:', error);
-      throw error;
-    }
+    // No authentication needed - return empty string
+    return '';
   };
 
   const testConnection = async (): Promise<void> => {
@@ -119,13 +94,10 @@ export const useApiSearch = (): UseApiSearchReturn => {
 
       console.log('API Request:', requestBody);
 
-      const token = await getAccessToken();
-
       const response = await fetch(`${config.api.baseUrl}/search`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestBody),
         signal: AbortSignal.timeout(config.api.timeout)

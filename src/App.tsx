@@ -1,7 +1,6 @@
 // src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
 import { SearchProvider } from './contexts/SearchContext';
 import { BrandingProvider } from './contexts/BrandingContext';
 import { LoginPage, ProtectedRoute } from './components/Auth';
@@ -14,10 +13,9 @@ const App: React.FC = () => {
   
   return (
     <Router>
-      <AuthProvider>
-        <BrandingProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
+      <BrandingProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
             <Route 
               path="/*" 
               element={
@@ -32,9 +30,8 @@ const App: React.FC = () => {
             />
           </Routes>
         </BrandingProvider>
-      </AuthProvider>
-    </Router>
-  );
-};
+      </Router>
+    );
+  };
 
-export default App;
+  export default App;

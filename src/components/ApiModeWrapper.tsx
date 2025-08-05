@@ -1,29 +1,14 @@
 import React, { ReactNode } from 'react';
-import { config } from '../config';
-// Remove the conflicting AuthProvider import
-import { ApiUserProvider } from '../contexts/ApiUserContext';
-import { UserProvider } from '../contexts/UserContext';
 
 interface ApiModeWrapperProps {
   children: ReactNode;
 }
 
+// This wrapper is now simplified since we use centralized user management
+// All user management is handled by the userStore and useUser hook
 const ApiModeWrapper: React.FC<ApiModeWrapperProps> = ({ children }) => {
-  if (config.api.useApiLayer) {
-    // Use new API layer - AuthProvider is already wrapped at App level
-    return (
-      <ApiUserProvider>
-        {children}
-      </ApiUserProvider>
-    );
-  } else {
-    // Use legacy direct mode
-    return (
-      <UserProvider>
-        {children}
-      </UserProvider>
-    );
-  }
+  // Simply pass through children - user management is now centralized
+  return <>{children}</>;
 };
 
 export default ApiModeWrapper;

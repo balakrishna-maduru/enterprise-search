@@ -54,18 +54,19 @@ export interface User {
   color?: string;
 }
 
-export interface AuthContextType {
-  token: string | null;
-  user: User | null;
-  isAuthenticated: boolean;
-  availableUsers: User[];
-  login: (email: string) => Promise<{ success: boolean; user?: User; error?: string }>;
-  logout: () => void;
-  refreshToken: () => Promise<boolean>;
-  getCurrentUser: () => Promise<User | null>;
-  fetchAvailableUsers: () => Promise<User[]>;
-  getAuthHeaders: () => Record<string, string>;
-}
+// Legacy AuthContextType - can be removed if not used elsewhere
+// export interface AuthContextType {
+//   token: string | null;
+//   user: User | null;
+//   isAuthenticated: boolean;
+//   availableUsers: User[];
+//   login: (email: string) => Promise<{ success: boolean; user?: User; error?: string }>;
+//   logout: () => void;
+//   refreshToken: () => Promise<boolean>;
+//   getCurrentUser: () => Promise<User | null>;
+//   fetchAvailableUsers: () => Promise<User[]>;
+//   getAuthHeaders: () => Record<string, string>;
+// }
 
 // Search Types
 export interface SearchResult {

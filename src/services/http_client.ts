@@ -32,24 +32,11 @@ export class HttpClient {
     console.log(`🚀 HttpClient initialized with baseUrl: ${this.baseUrl}`);
   }
 
-  private getAuthToken(): string | null {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      console.log('🔑 Auth token found and applied');
-    }
-    return token;
-  }
-
   private getHeaders(config?: RequestConfig): Record<string, string> {
     const headers = {
       ...this.defaultHeaders,
       ...config?.headers,
     };
-
-    const token = this.getAuthToken();
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
 
     return headers;
   }

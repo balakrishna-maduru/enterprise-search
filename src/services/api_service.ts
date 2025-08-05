@@ -1,6 +1,5 @@
 // src/services/api_service.ts
 import { SearchResult, Employee } from '../types';
-import { availableUsers } from '../data/users';
 
 export interface SearchRequest {
   query: string;
@@ -84,81 +83,20 @@ export interface ApiEmployeeResponse {
 
 export class ApiService {
   private baseUrl: string;
-  private authToken: string | null = null;
 
   constructor(baseUrl: string = 'http://localhost:8000/api/v1') {
     this.baseUrl = baseUrl;
   }
 
-  private async getAuthToken(): Promise<string> {
-    if (this.authToken) {
-      return this.authToken;
-    }
-
-    try {
-      // Login to get a proper JWT token
-      const loginResponse = await fetch(`${this.baseUrl}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: 'balu@mymail.com',
-          password: 'test' // Using mock user from the auth middleware
-        })
-      });
-
-      if (!loginResponse.ok) {
-        throw new Error(`Login failed: ${loginResponse.status}`);
-      }
-
-      const loginData = await loginResponse.json();
-      this.authToken = loginData.access_token;
-      console.log('✅ Successfully authenticated and got JWT token');
-      return this.authToken!; // We know it's not null here
-    } catch (error) {
-      console.error('❌ Authentication failed:', error);
-      throw new Error('Failed to authenticate with API');
-    }
-  }
-
-  private async getAuthHeaders(currentUser?: any): Promise<Record<string, string>> {
-    const headers: Record<string, string> = {
+  private getHeaders(): Record<string, string> {
+    return {
       'Content-Type': 'application/json'
     };
-
-    try {
-      // Try to get token from localStorage first (most reliable)
-      const storedToken = localStorage.getItem('access_token');
-      if (storedToken && !storedToken.startsWith('demo-token-')) {
-        headers['Authorization'] = `Bearer ${storedToken}`;
-        console.log('🔑 Using stored token for auth');
-        return headers;
-      }
-
-      // Try to get token from currentUser
-      if (currentUser?.token && !currentUser.token.startsWith('demo-token-')) {
-        headers['Authorization'] = `Bearer ${currentUser.token}`;
-        console.log('🔑 Using currentUser token for auth');
-        return headers;
-      }
-
-      // Get JWT token for API access
-      const token = await this.getAuthToken();
-      headers['Authorization'] = `Bearer ${token}`;
-      console.log('🔑 Using API service token for auth');
-    } catch (error) {
-      console.warn('⚠️ Could not get auth token:', error);
-      // Continue without auth - let the API return 401 if needed
-    }
-
-    return headers;
   }
 
   async searchWithApi(
     query: string = '', 
     size: number = 10, 
-    currentUser?: any,
     contentTypes: string[] = [],
     from: number = 0,
     excludeContentTypes: string[] = []
@@ -187,8 +125,8 @@ export class ApiService {
           // Add excluded content types to the request (we'll need to modify the backend to handle this)
           exclude_content_type: excludeContentTypes
         },
-        size,
-        from_: from,
+        size: Number(size),
+        from_: Number(from),
         semantic_enabled: !isWildcardQuery, // Disable semantic search for wildcard queries
         hybrid_weight: isWildcardQuery ? 0 : 0.7
       };
@@ -200,8 +138,8 @@ export class ApiService {
         searchRequest 
       });
       
-      // Get authentication headers
-      const headers = await this.getAuthHeaders(currentUser);
+      // Get headers (no authentication)
+      const headers = this.getHeaders();
       
       const response = await fetch(url, {
         method: 'POST',
@@ -310,7 +248,7 @@ export class ApiService {
       
       const results: SearchResult[] = [];
       
-      // ONLY add the logged-in user (balu) - no other employees on page 1
+      // ONLY add the logged-in user - no other employees on page 1
       if (currentUser) {
         const loggedInUserResult: SearchResult = {
           id: `user_${currentUser.id || 'current'}`,
@@ -363,12 +301,12 @@ export class ApiService {
     }
   }
 
-  async getNonEmployeeDocuments(currentUser?: any, size: number = 10, from: number = 0): Promise<{results: SearchResult[], total: number}> {
+  async getNonEmployeeDocuments(size: number = 10, from: number = 0): Promise<{results: SearchResult[], total: number}> {
     try {
       console.log(`🔍 Getting non-employee documents (page 2+) starting from ${from}...`);
       
       // Get documents and tickets ONLY (positive filter instead of exclude)
-      const documentsResponse = await this.searchWithApi('', size, currentUser, ['document', 'ticket'], from);
+      const documentsResponse = await this.searchWithApi('', size, ['document', 'ticket'], from);
       
       if (documentsResponse && documentsResponse.results) {
         console.log(`✅ Got ${documentsResponse.results.length} non-employee documents, total available: ${documentsResponse.total}`);
@@ -465,7 +403,6 @@ export class ApiService {
   async searchDocumentsOnly(
     query: string = '', 
     size: number = 10, 
-    currentUser?: any,
     from: number = 0
   ): Promise<{results: SearchResult[], total: number}> {
     try {
@@ -482,8 +419,8 @@ export class ApiService {
           tags: [],
           exclude_content_type: ['employee'] // Explicitly exclude employees
         },
-        size,
-        from_: from,
+        size: Number(size),
+        from_: Number(from),
         semantic_enabled: !isWildcardQuery,
         hybrid_weight: isWildcardQuery ? 0 : 0.7
       };
@@ -491,7 +428,7 @@ export class ApiService {
       const url = `${this.baseUrl}/search`; // Document search endpoint
       console.log('🔍 Making document search API request:', { url, query, searchRequest });
       
-      const headers = await this.getAuthHeaders(currentUser);
+      const headers = this.getHeaders();
       
       const response = await fetch(url, {
         method: 'POST',
@@ -551,7 +488,6 @@ export class ApiService {
   async searchDocumentsWithFilters(
     query: string = '', 
     size: number = 10, 
-    currentUser?: any,
     from: number = 0,
     filters?: {
       source?: string[];
@@ -574,8 +510,8 @@ export class ApiService {
           tags: filters?.tags || [],
           exclude_content_type: ['employee'] // Always exclude employees for document search
         },
-        size,
-        from_: from,
+        size: Number(size),
+        from_: Number(from),
         semantic_enabled: !isWildcardQuery,
         hybrid_weight: isWildcardQuery ? 0 : 0.7
       };
@@ -587,7 +523,7 @@ export class ApiService {
         filters: searchRequest.filters
       });
       
-      const headers = await this.getAuthHeaders(currentUser);
+      const headers = this.getHeaders();
       
       const response = await fetch(url, {
         method: 'POST',
@@ -658,7 +594,6 @@ export class ApiService {
   async searchEmployeesOnly(
     query: string = '', 
     size: number = 10, 
-    currentUser?: any,
     from: number = 0
   ): Promise<{results: SearchResult[], total: number}> {
     try {
@@ -677,7 +612,7 @@ export class ApiService {
       const fullUrl = query.trim() ? `${url}?${params.toString()}` : `${url}?q=*&size=${size}`;
       console.log('👥 Making employee search API request:', { fullUrl, query });
       
-      const headers = await this.getAuthHeaders(currentUser);
+      const headers = this.getHeaders();
       delete headers['Content-Type']; // GET request doesn't need Content-Type
       
       const response = await fetch(fullUrl, {
@@ -762,7 +697,6 @@ export class ApiService {
     query: string = '', 
     employeeSize: number = 5, 
     documentSize: number = 5,
-    currentUser?: any,
     employeeFrom: number = 0,
     documentFrom: number = 0
   ): Promise<{
@@ -811,8 +745,8 @@ export class ApiService {
       
       // Execute both searches in parallel
       const [employeeResponse, documentResponse] = await Promise.all([
-        this.searchEmployeesOnly(query, employeeSize, currentUser, employeeFrom),
-        this.searchDocumentsOnly(query, documentSize, currentUser, documentFrom)
+        this.searchEmployeesOnly(query, employeeSize, employeeFrom),
+        this.searchDocumentsOnly(query, documentSize, documentFrom)
       ]);
 
       console.log('✅ Dual search completed:', {
@@ -877,11 +811,11 @@ export class ApiService {
         employeePromise = this.getDefaultRecords(currentUser, 1);
       } else {
         // Get top employees if no user is logged in
-        employeePromise = this.searchEmployeesOnly('', employeeSize, currentUser, 0);
+        employeePromise = this.searchEmployeesOnly('', employeeSize, 0);
       }
       
       // Get recent documents (excluding employees)
-      const documentPromise = this.searchDocumentsOnly('', documentSize, currentUser, 0);
+      const documentPromise = this.searchDocumentsOnly('', documentSize, 0);
       
       // Execute both calls in parallel
       const [employeeResponse, documentResponse] = await Promise.all([
@@ -918,7 +852,29 @@ export class ApiService {
 
   // Fallback method to create mock data when API is not available
   private createMockSearchResults(): SearchResult[] {
-    return availableUsers.slice(0, 5).map((user, index) => ({
+    // Create mock employee data when API is unavailable
+    const mockUsers = [
+      {
+        id: 'mock_1',
+        name: 'Demo User',
+        email: 'demo@example.com',
+        position: 'System Administrator',
+        department: 'IT',
+        company: 'Demo Company',
+        role: 'admin'
+      },
+      {
+        id: 'mock_2',
+        name: 'Test Manager',
+        email: 'manager@example.com',
+        position: 'Team Lead',
+        department: 'Engineering',
+        company: 'Demo Company',
+        role: 'manager'
+      }
+    ];
+
+    return mockUsers.map((user, index) => ({
       id: user.id,
       title: user.name,
       content: `${user.position} in ${user.department} at ${user.company}`,

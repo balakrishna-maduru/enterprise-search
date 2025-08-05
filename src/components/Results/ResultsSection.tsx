@@ -2,7 +2,7 @@
 import React from 'react';
 import { Search, CheckSquare, Square } from 'lucide-react';
 import { useSearch } from '../../contexts/SearchContext';
-import { useUnifiedUser } from "../../hooks/useUnifiedUser";
+import { useUser } from "../../hooks/useUser";
 import { useBranding } from '../../contexts/BrandingContext';
 import EnhancedResultCard from './EnhancedResultCard';
 import EnhancedSummaryButton from './EnhancedSummaryButton';
@@ -38,7 +38,7 @@ const ResultsSection: React.FC = () => {
     previousPage
   } = useSearch();
   
-  const { currentUser } = useUnifiedUser();
+  const { user: currentUser } = useUser();
   const { getColor } = useBranding();
 
   const isAllSelected = searchResults.length > 0 && selectedResults.length === searchResults.length;
@@ -117,7 +117,7 @@ const ResultsSection: React.FC = () => {
               type: 'detailed',
               documentsCount: selectedResults.length,
               generatedAt: new Date(),
-              userLn: currentUser.name,
+              userLn: currentUser?.name || 'Unknown User',
               sources: selectedResults.map((r: SearchResult) => r.title)
             }}
             onClose={() => setShowSummary(false)}
@@ -176,7 +176,7 @@ const ResultsSection: React.FC = () => {
             )}
           </div>
 
-          {hasSelection && (
+          {hasSelection && currentUser && (
             <div className="flex items-center space-x-2">
               <EnhancedSummaryButton
                 selectedResults={selectedResults}

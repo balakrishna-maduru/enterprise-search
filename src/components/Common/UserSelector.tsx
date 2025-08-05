@@ -1,17 +1,21 @@
 // src/components/User/UserSelector.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useUnifiedUser } from '../../hooks/useUnifiedUser';
+import { useUser } from '../../hooks/useUser';
+import { availableUsers } from '../../data/users';
 
 const UserSelector: React.FC = () => {
-  const { 
-    currentUser, 
-    availableUsers, 
-    showUserDropdown, 
-    handleUserSelect, 
-    toggleUserDropdown,
-    setShowUserDropdown
-  } = useUnifiedUser();
+  const { user: currentUser, updateUser } = useUser();
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+
+  const handleUserSelect = (user: any) => {
+    updateUser(user);
+    setShowUserDropdown(false);
+  };
+
+  const toggleUserDropdown = () => {
+    setShowUserDropdown(!showUserDropdown);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -25,7 +29,12 @@ const UserSelector: React.FC = () => {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
-  }, [showUserDropdown, setShowUserDropdown]);
+  }, [showUserDropdown]);
+
+  // Don't render if no current user
+  if (!currentUser) {
+    return null;
+  }
 
   return (
     <div className="relative user-dropdown-container">

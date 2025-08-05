@@ -1,6 +1,6 @@
 // src/components/Employee/EmployeeProfile.tsx
 import React, { useState } from 'react';
-import { useUnifiedUser } from '../../hooks/useUnifiedUser';
+import { useUser } from '../../hooks/useUser';
 import { SearchResult } from '../../types';
 
 interface EmployeeProfileProps {
@@ -8,7 +8,7 @@ interface EmployeeProfileProps {
 }
 
 const EmployeeProfile: React.FC<EmployeeProfileProps> = ({ className = '' }) => {
-  const { currentUser } = useUnifiedUser();
+  const { user: currentUser } = useUser();
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!currentUser) {

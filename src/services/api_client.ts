@@ -102,8 +102,16 @@ export interface SummaryResponse {
 
 export class ApiClient {
   // Authentication
-  async login(username: string, password: string): Promise<ApiResponse<{ access_token: string; token_type: string; user: any }>> {
-    return httpClient.post('/auth/login', { username, password });
+  async login(email: string, userData?: { name?: string; department?: string; position?: string; role?: string; company?: string }): Promise<ApiResponse<{ access_token: string; token_type: string; user: any }>> {
+    const loginData = {
+      email,
+      name: userData?.name || 'User',
+      department: userData?.department || 'Unknown',
+      position: userData?.position || 'Employee',
+      role: userData?.role || 'employee',
+      company: userData?.company || 'Enterprise'
+    };
+    return httpClient.post('/auth/login', loginData);
   }
 
   async logout(): Promise<ApiResponse<void>> {

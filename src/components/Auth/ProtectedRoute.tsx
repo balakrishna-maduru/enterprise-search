@@ -1,28 +1,28 @@
 // src/components/Auth/ProtectedRoute.tsx
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useUser } from '../../hooks/useUser';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { user, login, isLoggedIn } = useUser();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const token = localStorage.getItem('access_token');
-  const user = localStorage.getItem('user');
 
   console.log('🔍 ProtectedRoute render:', { 
-    hasToken: !!token, 
-    hasUser: !!user, 
+    hasUser: !!user,
+    isLoggedIn,
     isAuthenticating,
     authError,
-    tokenPreview: token ? token.substring(0, 20) + '...' : 'none'
+    userEmail: user?.email || 'none'
   });
 
   // Auto-login for development mode
   useEffect(() => {
-    console.log('🔍 ProtectedRoute useEffect triggered:', { token: !!token, user: !!user });
+    console.log('🔍 ProtectedRoute useEffect triggered:', { isLoggedIn, user: !!user });
     
     // Check if user explicitly logged out
     const logoutRequested = localStorage.getItem('logout_requested');
@@ -31,10 +31,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       return;
     }
     
-    if (!token || !user) {
+    if (!isLoggedIn || !user) {
       console.log('🔧 Development Mode: Auto-authenticating with real API...');
       setIsAuthenticating(true);
       setAuthError(null);
+      
+      // Use environment variable or config for default user email
+      const defaultEmail = process.env.REACT_APP_DEFAULT_USER_EMAIL || 'admin@enterprise.com';
       
       // Get real JWT token from API
       fetch('http://localhost:8000/api/v1/auth/login', {
@@ -43,8 +46,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          email: 'balu@mymail.com',
-          password: 'test'
+          email: defaultEmail,
+          name: 'Admin User',
+          department: 'Administration',
+          position: 'System Administrator',
+          role: 'admin',
+          company: 'Enterprise'
         })
       })
       .then(response => {
@@ -58,21 +65,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           
           const enhancedUser = {
             ...data.user,
-            token: data.access_token,
             position: data.user.position || 'System Administrator',
             department: data.user.department || 'Engineering',
             role: data.user.role || 'admin',
             company: data.user.company || 'DBS Bank'
           };
           
-          localStorage.setItem('access_token', data.access_token);
-          localStorage.setItem('user', JSON.stringify(enhancedUser));
+          // Use centralized user management
+          login(enhancedUser, data.access_token);
           localStorage.removeItem('logout_requested'); // Clear logout flag on successful auth
           
-          console.log('🚀 Auto-login successful, reloading...');
-          setTimeout(() => {
-            window.location.reload();
-          }, 100);
+          console.log('🚀 Auto-login successful');
+          // Removed automatic reload to test authentication flow
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 100);
         } else {
           console.error('❌ Authentication failed:', data);
           setAuthError('Authentication failed: ' + (data.detail || 'Unknown error'));
@@ -85,7 +92,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         setIsAuthenticating(false);
       });
     }
-  }, [token, user]);
+  }, [isLoggedIn, user, login]);
 
   // Show loading while authenticating
   if (isAuthenticating) {
@@ -106,7 +113,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   // Check if user is authenticated
-  if (!token || !user) {
+  if (!isLoggedIn || !user) {
     if (authError) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
