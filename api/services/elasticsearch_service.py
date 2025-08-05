@@ -34,7 +34,7 @@ class ElasticsearchService:
             headers["Authorization"] = f"ApiKey {self.api_key}"
         return headers
 
-    def _get_role_boosts(self, user: User) -> Dict[str, float]:
+    def _get_role_boosts(self, user: Optional[User] = None) -> Dict[str, float]:
         """Get role-based boosting configuration for search results"""
         role_boosts = {
             "admin": {"priority": 1.5, "department_boost": 1.2},
@@ -42,7 +42,9 @@ class ElasticsearchService:
             "manager": {"priority": 1.3, "department_boost": 1.3},
             "employee": {"priority": 1.0, "department_boost": 1.1}
         }
-        return role_boosts.get(user.role.value, role_boosts["employee"])
+        if user and user.role:
+            return role_boosts.get(user.role.value, role_boosts["employee"])
+        return role_boosts["employee"]
 
     async def test_connection(self) -> Dict[str, Any]:
         """Test Elasticsearch connection and configuration"""
@@ -97,7 +99,7 @@ class ElasticsearchService:
             logger.error(f"Elasticsearch connection test failed: {e}")
             raise
 
-    async def search(self, request: SearchRequest, user: User) -> SearchResponse:
+    async def search(self, request: SearchRequest, user: Optional[User] = None) -> SearchResponse:
         """Perform search using Elasticsearch"""
         try:
             if self.use_search_application and self.search_application:
@@ -108,24 +110,29 @@ class ElasticsearchService:
             logger.error(f"Search failed: {e}")
             raise
 
-    async def _search_with_application(self, request: SearchRequest, user: User) -> SearchResponse:
+    async def _search_with_application(self, request: SearchRequest, user: Optional[User] = None) -> SearchResponse:
         """Search using Elasticsearch Search Application"""
         search_params = {
             "query": request.query,
             "size": request.size,
             "from": request.from_,
-            "user_context": {
-                "user_id": user.id,
-                "department": user.department,
-                "position": user.position,
-                "email": user.email,
-                "role": user.role.value
-            },
             "semantic_enabled": request.semantic_enabled or self.semantic_enabled,
             "semantic_model": self.semantic_model,
             "semantic_field_prefix": self.semantic_field_prefix,
             "hybrid_weight": request.hybrid_weight or self.hybrid_weight
         }
+        
+        # Add user context if user is provided
+        if user:
+            search_params["user_context"] = {
+                "user_id": user.id,
+                "department": user.department,
+                "position": user.position,
+                "email": user.email,
+                "role": user.role.value
+            }
+            # Add role-based boosting
+            search_params["boost_config"] = self._get_role_boosts(user)
 
         # Add filters
         if request.filters.source:
@@ -134,9 +141,6 @@ class ElasticsearchService:
             search_params["content_type_filter"] = request.filters.content_type
         if request.filters.date_range and request.filters.date_range != "all":
             search_params["date_range"] = request.filters.date_range
-
-        # Add role-based boosting
-        search_params["boost_config"] = self._get_role_boosts(user)
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -149,7 +153,7 @@ class ElasticsearchService:
 
         return self._process_search_response(data, request)
 
-    async def _search_direct(self, request: SearchRequest, user: User) -> SearchResponse:
+    async def _search_direct(self, request: SearchRequest, user: Optional[User] = None) -> SearchResponse:
         """Direct Elasticsearch query"""
         search_body = self._build_search_body(request, user)
 
@@ -164,7 +168,7 @@ class ElasticsearchService:
 
         return self._process_search_response(data, request)
 
-    def _build_search_body(self, request: SearchRequest, user: User) -> Dict[str, Any]:
+    def _build_search_body(self, request: SearchRequest, user: Optional[User] = None) -> Dict[str, Any]:
         """Build Elasticsearch query body"""
         semantic_enabled = request.semantic_enabled or self.semantic_enabled
         hybrid_weight = request.hybrid_weight or self.hybrid_weight
@@ -247,13 +251,13 @@ class ElasticsearchService:
 
         # Add filters
         filters = []
-        if request.filters.source:
+        if request.filters.source and len(request.filters.source) > 0:
             filters.append({"terms": {"source": request.filters.source}})
-        if request.filters.content_type:
+        if request.filters.content_type and len(request.filters.content_type) > 0:
             filters.append({"terms": {"content_type": request.filters.content_type}})
-        if request.filters.author:
+        if request.filters.author and len(request.filters.author) > 0:
             filters.append({"terms": {"author": request.filters.author}})
-        if request.filters.tags:
+        if request.filters.tags and len(request.filters.tags) > 0:
             filters.append({"terms": {"tags": request.filters.tags}})
         
         # Add exclude content type filter
@@ -267,7 +271,7 @@ class ElasticsearchService:
                 filters.append(date_filter)
 
         # Add user context boosting (boost documents from user's department)
-        if user.department:
+        if user and user.department:
             query["bool"]["should"] = query["bool"].get("should", [])
             query["bool"]["should"].append({
                 "term": {
@@ -285,8 +289,8 @@ class ElasticsearchService:
         # Build the complete search body
         search_body = {
             "query": query,
-            "size": request.size,
-            "from": request.from_,
+            "size": request.size or 20,
+            "from": request.from_ if request.from_ is not None else 0,
             "sort": [
                 # Sort by score first, then by timestamp for documents with same score
                 {"_score": {"order": "desc"}},
