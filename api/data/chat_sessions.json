@@ -1,63 +1,21 @@
 [
   {
-    "id": "1754415583451",
+    "id": "1754422356094",
     "title": "New Chat",
     "messages": [
       {
         "id": "1",
         "content": "Hello! I'm your AI assistant. How can I help you today?",
         "isUser": false,
-        "timestamp": "2025-08-05T17:39:43.451Z"
+        "timestamp": "2025-08-05T19:32:36.094Z"
       }
     ],
-    "createdAt": "2025-08-05T17:39:43.451Z",
-    "updatedAt": "2025-08-05T17:39:43.451Z",
-    "updated_at": "2025-08-06T01:39:43.471825"
+    "createdAt": "2025-08-05T19:32:36.094Z",
+    "updatedAt": "2025-08-05T19:32:36.094Z",
+    "updated_at": "2025-08-06T03:32:36.105702"
   },
   {
-    "id": "1754412394523",
-    "title": "New Chat",
-    "messages": [
-      {
-        "id": "1",
-        "content": "Hello! I'm your AI assistant. How can I help you today?",
-        "isUser": false,
-        "timestamp": "2025-08-05T16:46:34.523Z"
-      }
-    ],
-    "createdAt": "2025-08-05T16:46:34.523Z",
-    "updatedAt": "2025-08-05T16:46:34.523Z",
-    "updated_at": "2025-08-06T01:39:43.472015"
-  },
-  {
-    "id": "1754213751202",
-    "title": "New Chat",
-    "messages": [
-      {
-        "id": "1",
-        "content": "Hello! I'm your AI assistant. How can I help you today?",
-        "isUser": false,
-        "timestamp": "2025-08-03T09:35:51.202Z"
-      },
-      {
-        "id": "1754213766610",
-        "content": "add",
-        "isUser": true,
-        "timestamp": "2025-08-03T09:36:06.610Z"
-      },
-      {
-        "id": "1754213768113",
-        "content": "Based on the uploaded file and your question: \"add\"\n\nAs your internal AI assistant, I can help you navigate our company's information and resources. What would you like to explore?\n\n\ud83d\udcc4 **File: 25034743_20250322_RM_25 (1).pdf**\n[PDF Content] - File: 25034743_20250322_RM_25 (1).pdf\nNote: PDF content extraction not yet implemented. Please convert to text format for now.\n\n*This response incorporates context from 1 uploaded file.*",
-        "isUser": false,
-        "timestamp": "2025-08-03T09:36:08.112Z"
-      }
-    ],
-    "createdAt": "2025-08-03T09:35:51.202Z",
-    "updatedAt": "2025-08-03T09:36:08.112Z",
-    "updated_at": "2025-08-06T01:39:43.472018"
-  },
-  {
-    "id": "1754213736611",
+    "id": "1754422354572",
     "title": "Chat about: Design customer onboarding user interface",
     "document": {
       "id": "8f82723f-b497-4df7-b6d9-729b6b9a2b96",
@@ -84,11 +42,11 @@
         "id": "1",
         "content": "Hello! I'm here to help you with questions about the document \"Design customer onboarding user interface\". What would you like to know?",
         "isUser": false,
-        "timestamp": "2025-08-03T09:35:36.611Z"
+        "timestamp": "2025-08-05T19:32:34.572Z"
       }
     ],
-    "createdAt": "2025-08-03T09:35:36.611Z",
-    "updatedAt": "2025-08-03T09:35:36.611Z",
-    "updated_at": "2025-08-06T01:39:43.472020"
+    "createdAt": "2025-08-05T19:32:34.572Z",
+    "updatedAt": "2025-08-05T19:32:34.572Z",
+    "updated_at": "2025-08-06T03:32:36.105726"
   }
 ]

@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from datetime import timedelta
+from elasticsearch import Elasticsearch
 
 from models.user import User
 from middleware.auth import (
@@ -15,12 +16,6 @@ router = APIRouter()
 
 class LoginRequest(BaseModel):
     email: str
-    # Optional user data that frontend can provide
-    name: Optional[str] = None
-    department: Optional[str] = None
-    position: Optional[str] = None
-    role: Optional[str] = "employee"
-    company: Optional[str] = "Enterprise"
 
 
 class LoginResponse(BaseModel):
@@ -29,21 +24,67 @@ class LoginResponse(BaseModel):
     user: User
 
 
+def get_es_client():
+    """Get Elasticsearch client for employee validation"""
+    try:
+        es_url = settings.ELASTICSEARCH_URL or "http://localhost:9200"
+        es = Elasticsearch([es_url])
+        if not es.ping():
+            raise Exception("Cannot connect to Elasticsearch")
+        return es
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Elasticsearch connection failed: {str(e)}")
+
+
+async def validate_user_email(email: str) -> Optional[Dict]:
+    """Validate user email against Elasticsearch employee data"""
+    try:
+        es = get_es_client()
+        
+        # Search for employee by exact email match
+        search_body = {
+            "query": {
+                "term": {
+                    "email.keyword": email
+                }
+            },
+            "size": 1
+        }
+        
+        result = es.search(index="employees", body=search_body)
+        
+        if result['hits']['total']['value'] > 0:
+            # Return the employee data
+            return result['hits']['hits'][0]['_source']
+        
+        return None
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"User validation failed: {str(e)}")
+
+
 @router.post("/auth/login", response_model=LoginResponse)
 async def login(request: LoginRequest) -> LoginResponse:
     """
-    Authenticate user and return JWT token
-    Accepts user data from frontend centralized user store
+    Authenticate user with email-only login using Elasticsearch employee data
     """
-    # Create user data from request (frontend provides user info)
+    # Validate email against Elasticsearch
+    employee_data = await validate_user_email(request.email)
+    
+    if not employee_data:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email not found in employee directory"
+        )
+    
+    # Create user data from employee data
     user_data = {
-        "id": request.email.split("@")[0],  # Use email prefix as ID
-        "name": request.name or "User",
-        "email": request.email,
-        "department": request.department or "Unknown",
-        "position": request.position or "Employee",
-        "role": request.role or "employee",
-        "company": request.company or "Enterprise"
+        "id": employee_data.get("id", request.email.split("@")[0]),
+        "name": employee_data.get("name", "Unknown User"),
+        "email": employee_data.get("email", request.email),
+        "department": employee_data.get("department", "Unknown"),
+        "position": employee_data.get("title", "Employee"),  # title maps to position
+        "role": "employee",  # Default role for now
+        "company": "Enterprise"
     }
     
     # Create access token with user data in payload
@@ -55,7 +96,14 @@ async def login(request: LoginRequest) -> LoginResponse:
         "department": user_data["department"],
         "position": user_data["position"],
         "role": user_data["role"],
-        "company": user_data["company"]
+        "company": user_data["company"],
+        # Add additional employee data to token
+        "employee_id": employee_data.get("id"),
+        "location": employee_data.get("location"),
+        "level": employee_data.get("level"),
+        "manager_id": employee_data.get("manager_id"),
+        "skills": employee_data.get("skills", []),
+        "start_date": employee_data.get("start_date")
     }
     access_token = create_access_token(
         data=token_data, 

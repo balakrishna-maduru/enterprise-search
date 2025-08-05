@@ -9,6 +9,11 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - cluster.name=enterprise-search-cluster
       - node.name=enterprise-search-node
+      # CORS configuration for browser access
+      - http.cors.enabled=true
+      - http.cors.allow-origin=http://localhost:3000
+      - http.cors.allow-methods=OPTIONS,HEAD,GET,POST,PUT,DELETE
+      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
     ports:
       - "9200:9200"
       - "9300:9300"

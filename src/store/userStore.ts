@@ -3,111 +3,105 @@ import { User } from '../types/index';
 
 class UserStore {
   private currentUser: User | null = null;
-  private listeners: Set<(user: User | null) => void> = new Set();
+  private listeners: Array<(user: User | null) => void> = [];
 
-  // Set current user and notify all listeners
-  setCurrentUser(user: User | null): void {
-    this.currentUser = user;
-    this.notifyListeners();
-    
-    // Update localStorage
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
+  constructor() {
+    // Try to load user from localStorage on initialization
+    this.loadUserFromStorage();
+  }
+
+  private loadUserFromStorage() {
+    try {
+      const token = localStorage.getItem('access_token');
+      const userJson = localStorage.getItem('user');
+      
+      if (token && userJson) {
+        const user = JSON.parse(userJson);
+        this.currentUser = user;
+        console.log('✅ User loaded from localStorage:', user);
+      }
+    } catch (error) {
+      console.error('❌ Error loading user from localStorage:', error);
+      // Clear invalid data
       localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
     }
   }
 
-  // Get current user
   getCurrentUser(): User | null {
-    if (!this.currentUser) {
-      // Try to get from localStorage
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        try {
-          this.currentUser = JSON.parse(savedUser);
-        } catch (error) {
-          console.error('Error parsing saved user:', error);
-          this.clearUser();
-        }
-      }
-    }
     return this.currentUser;
   }
 
-  // Clear user data
-  clearUser(): void {
-    this.currentUser = null;
-    localStorage.removeItem('user');
-    localStorage.removeItem('access_token');
+  setCurrentUser(user: User) {
+    this.currentUser = user;
+    
+    // Save to localStorage
+    localStorage.setItem('user', JSON.stringify(user));
+    
+    // Notify listeners
     this.notifyListeners();
+    console.log('✅ User set in store:', user);
   }
 
-  // Subscribe to user changes
-  subscribe(listener: (user: User | null) => void): () => void {
-    this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
+  clearUser() {
+    this.currentUser = null;
+    
+    // Clear localStorage
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('employee_data');
+    localStorage.setItem('logout_requested', 'true');
+    
+    // Notify listeners
+    this.notifyListeners();
+    console.log('✅ User cleared from store');
   }
 
-  // Notify all listeners of user changes
-  private notifyListeners(): void {
-    this.listeners.forEach(listener => listener(this.currentUser));
-  }
-
-  // Get user email (most commonly used)
-  getCurrentUserEmail(): string | null {
-    const user = this.getCurrentUser();
-    return user?.email || null;
-  }
-
-  // Get user name
-  getCurrentUserName(): string {
-    const user = this.getCurrentUser();
-    return user?.name || 'Unknown User';
-  }
-
-  // Check if user is logged in
   isLoggedIn(): boolean {
-    return !!this.getCurrentUser() && !!localStorage.getItem('access_token');
+    const token = localStorage.getItem('access_token');
+    const logoutRequested = localStorage.getItem('logout_requested');
+    
+    return !!(this.currentUser && token && !logoutRequested);
   }
 
-  // Get user role
-  getCurrentUserRole(): string {
-    const user = this.getCurrentUser();
-    return user?.role || 'employee';
+  subscribe(listener: (user: User | null) => void): () => void {
+    this.listeners.push(listener);
+    
+    // Return unsubscribe function
+    return () => {
+      const index = this.listeners.indexOf(listener);
+      if (index > -1) {
+        this.listeners.splice(index, 1);
+      }
+    };
   }
 
-  // Get user department
-  getCurrentUserDepartment(): string {
-    const user = this.getCurrentUser();
-    return user?.department || '';
-  }
-
-  // Get user position
-  getCurrentUserPosition(): string {
-    const user = this.getCurrentUser();
-    return user?.position || '';
-  }
-
-  // Get user company
-  getCurrentUserCompany(): string {
-    const user = this.getCurrentUser();
-    return user?.company || '';
+  private notifyListeners() {
+    this.listeners.forEach(listener => {
+      try {
+        listener(this.currentUser);
+      } catch (error) {
+        console.error('❌ Error in user store listener:', error);
+      }
+    });
   }
 }
 
-// Create singleton instance
+// Create a singleton instance
 export const userStore = new UserStore();
 
-// Export helper functions for easy access
-export const getCurrentUser = (): User | null => userStore.getCurrentUser();
-export const getCurrentUserEmail = (): string | null => userStore.getCurrentUserEmail();
-export const getCurrentUserName = (): string => userStore.getCurrentUserName();
-export const setCurrentUser = (user: User | null): void => userStore.setCurrentUser(user);
-export const clearCurrentUser = (): void => userStore.clearUser();
-export const isUserLoggedIn = (): boolean => userStore.isLoggedIn();
-export const getCurrentUserRole = (): string => userStore.getCurrentUserRole();
-export const getCurrentUserDepartment = (): string => userStore.getCurrentUserDepartment();
-export const getCurrentUserPosition = (): string => userStore.getCurrentUserPosition();
-export const getCurrentUserCompany = (): string => userStore.getCurrentUserCompany();
+// Helper functions for backward compatibility
+export const getCurrentUserEmail = (): string | null => {
+  const user = userStore.getCurrentUser();
+  return user?.email || null;
+};
+
+export const getCurrentUserName = (): string => {
+  const user = userStore.getCurrentUser();
+  return user?.name || '';
+};
+
+export const getCurrentUserDepartment = (): string => {
+  const user = userStore.getCurrentUser();
+  return user?.department || '';
+};

@@ -1,109 +1,101 @@
 // src/components/Auth/LoginPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  title: string;
-  department: string;
-  location?: string;
-  level?: number;
-  phone?: string;
-}
+import { elasticsearchClient, type Employee } from '../../services/elasticsearch_client';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedUser, setSelectedUser] = useState<Employee | null>(null);
-  const [demoUsers, setDemoUsers] = useState<Employee[]>([]);
+  const [email, setEmail] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
-  // Set up demo users on component mount
-  useEffect(() => {
-    const defaultUsers = [
-      {
-        id: '1',
-        name: 'John Smith',
-        email: 'john.smith@company.com',
-        title: 'Senior Manager',
-        department: 'Engineering',
-        location: 'New York',
-        level: 3
-      },
-      {
-        id: '2',
-        name: 'Sarah Johnson',
-        email: 'sarah.johnson@company.com',
-        title: 'Product Manager',
-        department: 'Product',
-        location: 'San Francisco',
-        level: 3
-      },
-      {
-        id: '3',
-        name: 'Mike Chen',
-        email: 'mike.chen@company.com',
-        title: 'Software Engineer',
-        department: 'Engineering',
-        location: 'Seattle',
-        level: 2
-      },
-      {
-        id: '23',
-        name: 'Anna Parker',
-        email: 'anna.parker@company.com',
-        title: 'Software Engineer',
-        department: 'Technology',
-        location: 'San Francisco',
-        level: 4
-      }
-    ];
-    setDemoUsers(defaultUsers);
-  }, []);
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      setError('Please enter your email address');
+      return;
+    }
 
-  const handleLogin = async () => {
-    if (!selectedUser) return;
+    setIsLoading(true);
+    setError('');
 
     try {
+      console.log('🔍 Validating email with Elasticsearch:', email.trim());
+      
+      // Validate email directly against Elasticsearch
+      const employee = await elasticsearchClient.validateUserEmail(email.trim());
+      
+      if (!employee) {
+        throw new Error('Employee not found in directory');
+      }
+
+      console.log('✅ Employee found:', employee);
+
+      // Convert employee data to user format for the application
+      const user = {
+        id: employee.id || email.split('@')[0],
+        name: employee.name,
+        email: employee.email,
+        department: employee.department,
+        position: employee.title, // title maps to position
+        role: 'employee',
+        company: 'Enterprise'
+      };
+
+      // Create a simple token for authentication
+      const authData = {
+        access_token: `es-token-${user.id}-${Date.now()}`,
+        user: user
+      };
+      
+      // Store authentication data
+      localStorage.setItem('access_token', authData.access_token);
+      localStorage.setItem('user', JSON.stringify(authData.user));
+      localStorage.setItem('employee_data', JSON.stringify(employee));
+      
       // Clear logout flag on successful login
       localStorage.removeItem('logout_requested');
       
-      // Store user data in localStorage
-      localStorage.setItem('access_token', 'demo-token-' + selectedUser.id);
-      localStorage.setItem('user', JSON.stringify(selectedUser));
+      console.log('✅ Login successful:', authData);
       
-      // Redirect to main app
+      // Redirect to main app (which will show documents)
       navigate('/');
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('❌ Login failed:', error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes('CORS') || error.message.includes('fetch')) {
+          setError('Cannot connect to Elasticsearch. Please check CORS configuration.');
+        } else {
+          setError(error.message);
+        }
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{
-      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f3f4f6' fill-opacity='0.4'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-    }}>
-      <div className="max-w-md w-full space-y-8 bg-white shadow-2xl rounded-2xl p-8 border border-gray-100">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white shadow-lg rounded-xl p-8">
         <div>
           <div className="mx-auto h-16 w-auto flex justify-center mb-4">
             <img
-              className="h-16 w-auto object-contain drop-shadow-sm"
+              className="h-16 w-auto object-contain"
               src="/dbs-logo-1968.jpg"
               alt="DBS Bank"
-              onLoad={() => console.log('DBS logo loaded successfully')}
               onError={(e) => {
-                console.log('JPG logo failed, trying SVG');
                 const target = e.currentTarget;
                 target.src = '/dbs-logo.svg';
                 target.onerror = () => {
-                  console.log('SVG logo also failed, trying PNG');
                   target.src = '/dbs-logo-official.png';
                   target.onerror = () => {
-                    console.log('All logos failed, showing fallback');
                     target.style.display = 'none';
-                    // Show fallback text with DBS red branding
                     const fallback = document.createElement('div');
-                    fallback.className = 'h-16 px-6 bg-gradient-to-r from-red-600 to-red-700 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg';
+                    fallback.className = 'h-16 px-6 bg-red-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl';
                     fallback.textContent = 'DBS Bank';
                     target.parentNode?.appendChild(fallback);
                   };
@@ -111,68 +103,71 @@ const LoginPage: React.FC = () => {
               }}
             />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to Enterprise Search
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+            Enterprise Search
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Select a demo user to continue
+            Enter your email to access documents
           </p>
         </div>
 
-        <div className="mt-8 space-y-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Available Demo Users
-              </label>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {demoUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    onClick={() => setSelectedUser(user)}
-                    className={`p-3 rounded-md border cursor-pointer transition-colors shadow-sm ${
-                      selectedUser?.id === user.id
-                        ? 'border-red-500 bg-red-50 shadow-md'
-                        : 'border-gray-300 hover:border-red-300 hover:bg-gray-50 hover:shadow-md'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">{user.title}</div>
-                        <div className="text-xs text-gray-400">{user.department}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs text-gray-400">{user.location}</div>
-                        <div className="text-xs text-gray-500">Level {user.level}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+              placeholder="your.email@company.com"
+              disabled={isLoading}
+            />
           </div>
 
-          <div className="mt-6">
+          {error && (
+            <div className="rounded-md bg-red-50 p-4 border border-red-200">
+              <div className="text-sm text-red-700">
+                {error}
+              </div>
+            </div>
+          )}
+
+          <div>
             <button
-              onClick={handleLogin}
-              disabled={!selectedUser}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white shadow-lg transition-all duration-200 ${
-                selectedUser
-                  ? 'bg-red-600 hover:bg-red-700 hover:shadow-xl transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
-                  : 'bg-gray-400 cursor-not-allowed'
+              type="submit"
+              disabled={isLoading || !email.trim()}
+              className={`w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+                isLoading || !email.trim()
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
               }`}
             >
-              {selectedUser ? `Sign in as ${selectedUser.name}` : 'Select a user to continue'}
+              {isLoading ? (
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Checking...
+                </div>
+              ) : (
+                'Access Documents'
+              )}
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-xs text-gray-500">
-              🔧 Development Mode - Select any demo user to access the application
+              Enter your company email to validate employee access
             </p>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
