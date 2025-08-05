@@ -89,7 +89,7 @@ async def search_employees(
             ]
         }
         
-        result = es.search(index="employees", body=search_body)
+        result = es.search(index="employees", **search_body)
         
         # Format results
         employees = []
@@ -128,7 +128,7 @@ async def get_employee(employee_id: str):
             "size": 1
         }
         
-        result = es.search(index="employees", body=search_body)
+        result = es.search(index="employees", **search_body)
         
         if result['hits']['total']['value'] == 0:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -165,7 +165,7 @@ async def get_employee_hierarchy(employee_id: str):
             "size": 1
         }
         
-        employee_result = es.search(index="employees", body=search_body)
+        employee_result = es.search(index="employees", **search_body)
         
         if employee_result['hits']['total']['value'] == 0:
             raise HTTPException(status_code=404, detail="Employee not found")
@@ -179,11 +179,9 @@ async def get_employee_hierarchy(employee_id: str):
         # Get all employees to build hierarchy
         all_employees_result = es.search(
             index="employees",
-            body={
-                "query": {"match_all": {}},
-                "size": 1000,
-                "_source": ["id", "name", "title", "department", "email", "level", "manager_id", "reports"]
-            }
+            query={"match_all": {}},
+            size=1000,
+            _source=["id", "name", "title", "department", "email", "level", "manager_id", "reports"]
         )
         
         # Build employee dict using the source data directly
@@ -311,18 +309,16 @@ async def get_departments():
         
         result = es.search(
             index="employees",
-            body={
-                "query": {"match_all": {}},
-                "aggs": {
-                    "departments": {
-                        "terms": {
-                            "field": "department.keyword",
-                            "size": 100
-                        }
+            query={"match_all": {}},
+            aggs={
+                "departments": {
+                    "terms": {
+                        "field": "department.keyword",
+                        "size": 100
                     }
-                },
-                "size": 0
-            }
+                }
+            },
+            size=0
         )
         
         departments = [bucket['key'] for bucket in result['aggregations']['departments']['buckets']]
@@ -348,18 +344,16 @@ async def get_locations():
         
         result = es.search(
             index="employees",
-            body={
-                "query": {"match_all": {}},
-                "aggs": {
-                    "locations": {
-                        "terms": {
-                            "field": "location.keyword",
-                            "size": 100
-                        }
+            query={"match_all": {}},
+            aggs={
+                "locations": {
+                    "terms": {
+                        "field": "location.keyword",
+                        "size": 100
                     }
-                },
-                "size": 0
-            }
+                }
+            },
+            size=0
         )
         
         locations = [bucket['key'] for bucket in result['aggregations']['locations']['buckets']]

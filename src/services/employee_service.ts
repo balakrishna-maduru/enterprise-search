@@ -1,7 +1,6 @@
 // src/services/employee_service.ts
-import { apiClient, Employee } from './api_client';
-import { EmployeeHierarchy, HierarchyNode } from '../types';
-import { config } from '../config';
+import { elasticsearchClient } from './elasticsearch_client';
+import { Employee, EmployeeHierarchy, HierarchyNode } from '../types';
 
 export interface EmployeeSearchFilters {
   size?: number;
@@ -17,253 +16,293 @@ export interface EmployeeSearchResult {
   error?: string;
 }
 
+// Define the API response structure for hierarchy
+interface HierarchyApiResponse {
+  success: boolean;
+  data: {
+    employee: Employee;
+    hierarchy_tree: HierarchyNode;
+    management_chain: HierarchyNode[];
+    total_employees: number;
+  };
+}
+
+// Define the API response structure for employee search
+interface EmployeeSearchApiResponse {
+  success: boolean;
+  data: {
+    employees: Employee[];
+    total: number;
+    max_score: number | null;
+  };
+}
+
 export class EmployeeService {
-  private baseUrl: string;
-  private headers: HeadersInit;
+  private readonly apiBaseUrl: string;
 
   constructor() {
-    this.baseUrl = config.api.baseUrl;
-    this.headers = {
-      'Content-Type': 'application/json',
-    };
+    this.apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api/v1';
+    console.log('🏗️ EmployeeService initialized with API backend');
   }
 
-  // Use API layer for employee search
+  // Use backend API for employee search to get consistent Employee type
   async searchEmployees(query: string, size: number = 20): Promise<Employee[]> {
-    if (!config.api.useApiLayer) {
-      console.warn('API layer not enabled, returning empty results');
-      return [];
-    }
-
     try {
-      const url = `${this.baseUrl}/employees/search?q=${encodeURIComponent(query)}&size=${size}`;
+      console.log('🔍 EmployeeService searching employees:', { query, size });
       
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: this.headers,
-      });
-
+      const response = await fetch(`${this.apiBaseUrl}/employees/search?q=${encodeURIComponent(query)}&size=${size}`);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
-      const data = await response.json();
-      const employees = data.data?.employees || [];
-      console.log(`✅ Found ${employees.length} employees for query: "${query}"`);
       
-      return employees;
+      const result: EmployeeSearchApiResponse = await response.json();
+      
+      if (result.success && result.data && result.data.employees) {
+        console.log('✅ EmployeeService search successful:', result.data.employees.length, 'employees found');
+        return result.data.employees;
+      } else {
+        throw new Error('Invalid response from search API');
+      }
     } catch (error) {
-      console.error('❌ Employee search error:', error);
-      return [];
+      console.error('❌ EmployeeService search failed:', error);
+      throw error;
     }
   }
 
   async getEmployeeById(id: string | number): Promise<Employee | null> {
-    if (!config.api.useApiLayer) {
-      console.warn('API layer not enabled, returning null');
-      return null;
-    }
-
     try {
-      const response = await fetch(`${this.baseUrl}/employees/${id}`, {
-        method: 'GET',
-        headers: this.headers,
-      });
-
+      console.log('🔍 EmployeeService getting employee by ID:', id);
+      
+      const response = await fetch(`${this.apiBaseUrl}/employees/${id}`);
+      
       if (!response.ok) {
         if (response.status === 404) {
           return null;
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
-      const data = await response.json();
-      return data.data?.employee || null;
+      
+      const result = await response.json();
+      
+      if (result.success && result.data && result.data.employee) {
+        console.log('✅ EmployeeService getById result:', result.data.employee);
+        return result.data.employee;
+      }
+      
+      return null;
     } catch (error) {
-      console.error('Employee fetch error:', error);
+      console.error('❌ EmployeeService getById failed:', error);
       return null;
     }
   }
 
   async getEmployeeHierarchy(employeeId: string | number): Promise<EmployeeHierarchy | null> {
-    if (!config.api.useApiLayer) {
-      console.warn('API layer not enabled, returning null');
+    try {
+      console.log('🔍 EmployeeService getting hierarchy for:', employeeId);
+      
+      // Use the backend API for hierarchy as it has complex logic
+      const response = await fetch(`${this.apiBaseUrl}/employees/${employeeId}/hierarchy`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result: HierarchyApiResponse = await response.json();
+      
+      if (result.success && result.data) {
+        const hierarchy: EmployeeHierarchy = {
+          employee: result.data.employee,
+          hierarchy_tree: result.data.hierarchy_tree,
+          management_chain: result.data.management_chain,
+          total_employees: result.data.total_employees
+        };
+        
+        console.log('✅ EmployeeService hierarchy result:', hierarchy);
+        return hierarchy;
+      } else {
+        throw new Error('Invalid response from hierarchy API');
+      }
+    } catch (error) {
+      console.error('❌ EmployeeService getHierarchy failed:', error);
       return null;
     }
+  }
 
+  async searchEmployeesWithFilters(
+    query: string, 
+    filters: EmployeeSearchFilters = {}
+  ): Promise<EmployeeSearchResult> {
     try {
-      const response = await fetch(`${this.baseUrl}/employees/${employeeId}/hierarchy`, {
-        method: 'GET',
-        headers: this.headers,
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          return null;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const apiResponse = await response.json();
+      console.log('🔍 EmployeeService searching with filters:', { query, filters });
       
-      if (!apiResponse.success || !apiResponse.data) {
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append('q', query);
+      params.append('size', (filters.size || 20).toString());
+      
+      if (filters.department) {
+        params.append('department', filters.department);
+      }
+      if (filters.location) {
+        params.append('location', filters.location);
+      }
+      if (filters.level) {
+        params.append('level', filters.level);
+      }
+      
+      const response = await fetch(`${this.apiBaseUrl}/employees/search?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result: EmployeeSearchApiResponse = await response.json();
+      
+      if (result.success && result.data) {
+        const searchResult: EmployeeSearchResult = {
+          employees: result.data.employees,
+          total: result.data.total,
+          success: true
+        };
+        
+        console.log('✅ EmployeeService filtered search successful:', searchResult);
+        return searchResult;
+      } else {
+        throw new Error('Invalid response from search API');
+      }
+    } catch (error) {
+      console.error('❌ EmployeeService filtered search failed:', error);
+      
+      return {
+        employees: [],
+        total: 0,
+        success: false,
+        error: error instanceof Error ? error.message : 'Search failed'
+      };
+    }
+  }
+
+  async validateEmployee(email: string): Promise<Employee | null> {
+    try {
+      console.log('🔍 EmployeeService validating employee:', email);
+      
+      // Use direct Elasticsearch for email validation as it's a simple lookup
+      const esEmployee = await elasticsearchClient.validateUserEmail(email);
+      
+      if (!esEmployee) {
         return null;
       }
-
-      // Transform API response to match frontend expectations
-      const data = apiResponse.data;
-      const employee = data.employee;
       
-      // Use the complete hierarchy tree from API (starts from CEO)
-      const hierarchy_tree = data.hierarchy_tree;
-      
-      // Use the management chain from API
-      const management_chain = data.management_chain || [];
-
-      const transformedHierarchy: EmployeeHierarchy = {
-        employee: {
-          id: parseInt(employee.id) || 0,
-          name: employee.name,
-          title: employee.title,
-          email: employee.email || `${employee.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
-          department: employee.department || 'Human Resources',
-          location: employee.location || 'Chicago, IL',
-          phone: employee.phone || '+1-555-0000',
-          start_date: employee.start_date || '2019-11-15',
-          manager_id: employee.manager_id,
-          level: employee.level,
-          has_reports: employee.reports?.length > 0 || false,
-          report_count: employee.reports?.length || 0,
-          document_type: 'employee',
-          indexed_at: new Date().toISOString(),
-          search_text: `${employee.name} ${employee.title}`
-        },
-        hierarchy_tree,
-        management_chain,
-        total_employees: data.total_employees || 1
+      // Convert ES Employee to main Employee type by adding missing properties
+      const employee: Employee = {
+        id: parseInt(esEmployee.id),
+        name: esEmployee.name,
+        title: esEmployee.title,
+        email: esEmployee.email,
+        department: esEmployee.department,
+        location: esEmployee.location || '',
+        phone: esEmployee.phone || '',
+        start_date: esEmployee.start_date || '',
+        manager_id: esEmployee.manager_id ? parseInt(esEmployee.manager_id) : undefined,
+        level: esEmployee.level || 0,
+        has_reports: false, // Default value
+        report_count: 0, // Default value
+        document_type: 'employee', // Default value
+        indexed_at: new Date().toISOString(), // Default value
+        search_text: `${esEmployee.name} ${esEmployee.title} ${esEmployee.department} ${esEmployee.email}` // Generated
       };
-
-      console.log('✅ Transformed hierarchy data for UI:', transformedHierarchy);
-      return transformedHierarchy;
+      
+      console.log('✅ EmployeeService validation result:', employee);
+      return employee;
     } catch (error) {
-      console.error('Employee hierarchy fetch error:', error);
+      console.error('❌ EmployeeService validation failed:', error);
       return null;
     }
   }
 
   async getDirectReports(managerId: number): Promise<Employee[]> {
-    if (!config.api.useApiLayer) {
-      console.warn('API layer not enabled, returning empty results');
-      return [];
-    }
-
     try {
-      const response = await fetch(`${this.baseUrl}/employees/search?manager_id=${managerId}&size=100`, {
-        method: 'GET',
-        headers: this.headers,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.data?.employees || [];
+      console.log('🔍 EmployeeService getting direct reports for:', managerId);
+      
+      // Search for employees with this manager ID
+      const employees = await this.searchEmployees(`manager_id:${managerId}`, 50);
+      console.log('✅ EmployeeService direct reports result:', employees.length, 'reports found');
+      
+      return employees;
     } catch (error) {
-      console.error('Direct reports fetch error:', error);
+      console.error('❌ EmployeeService getDirectReports failed:', error);
       return [];
     }
   }
 
   async getEmployeesByDepartment(department: string): Promise<Employee[]> {
-    if (!config.api.useApiLayer) {
-      console.warn('API layer not enabled, returning empty results');
-      return [];
-    }
-
     try {
-      const response = await fetch(`${this.baseUrl}/employees/search?department=${encodeURIComponent(department)}&size=100`, {
-        method: 'GET',
-        headers: this.headers,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.employees || [];
+      console.log('🔍 EmployeeService getting employees by department:', department);
+      
+      const employees = await this.searchEmployees(department, 100);
+      const filteredEmployees = employees.filter(emp => 
+        emp.department?.toLowerCase().includes(department.toLowerCase())
+      );
+      
+      console.log('✅ EmployeeService department search result:', filteredEmployees.length, 'employees found');
+      return filteredEmployees;
     } catch (error) {
-      console.error('Department employees fetch error:', error);
+      console.error('❌ EmployeeService getEmployeesByDepartment failed:', error);
       return [];
     }
   }
 
-  async getOrgChart(): Promise<HierarchyNode[]> {
-    if (!config.api.useApiLayer) {
-      console.warn('API layer not enabled, returning empty results');
-      return [];
-    }
-
+  // Additional methods for departments and locations (using API)
+  async getDepartments(): Promise<string[]> {
     try {
-      // Get all employees
-      const response = await fetch(`${this.baseUrl}/employees/search?size=1000`, {
-        method: 'GET',
-        headers: this.headers,
-      });
-
+      console.log('🔍 EmployeeService getting departments list');
+      
+      const response = await fetch(`${this.apiBaseUrl}/employees/departments/list`);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
-      const data = await response.json();
-      const employees: Employee[] = data.employees || [];
-
-      // Build hierarchical structure
-      return this.buildOrgChart(employees);
+      
+      const result = await response.json();
+      
+      if (result.success && result.data && result.data.departments) {
+        console.log('✅ EmployeeService departments result:', result.data.departments);
+        return result.data.departments;
+      }
+      
+      return [];
     } catch (error) {
-      console.error('Org chart fetch error:', error);
+      console.error('❌ EmployeeService getDepartments failed:', error);
       return [];
     }
   }
 
-  private buildOrgChart(employees: Employee[]): HierarchyNode[] {
-    const employeeMap = new Map<string, HierarchyNode>();
-    const rootNodes: HierarchyNode[] = [];
-
-    // Create nodes for all employees
-    employees.forEach(employee => {
-      employeeMap.set(employee.id.toString(), {
-        id: employee.id.toString(),
-        name: employee.name,
-        title: employee.title,
-        email: employee.email,
-        department: employee.department,
-        level: employee.level,
-        is_target: false,
-        reports: []
-      });
-    });
-
-    // Build parent-child relationships
-    employees.forEach(employee => {
-      const node = employeeMap.get(employee.id.toString());
-      if (node) {
-        if (employee.manager_id && employeeMap.has(employee.manager_id.toString())) {
-          const parentNode = employeeMap.get(employee.manager_id.toString());
-          if (parentNode && parentNode.reports) {
-            parentNode.reports.push(node);
-          }
-        } else {
-          // Root node (CEO or top-level)
-          rootNodes.push(node);
-        }
+  async getLocations(): Promise<string[]> {
+    try {
+      console.log('🔍 EmployeeService getting locations list');
+      
+      const response = await fetch(`${this.apiBaseUrl}/employees/locations/list`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    });
-
-    return rootNodes;
+      
+      const result = await response.json();
+      
+      if (result.success && result.data && result.data.locations) {
+        console.log('✅ EmployeeService locations result:', result.data.locations);
+        return result.data.locations;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('❌ EmployeeService getLocations failed:', error);
+      return [];
+    }
   }
 }
 
 // Create and export a singleton instance
 export const employeeService = new EmployeeService();
+export default employeeService;
