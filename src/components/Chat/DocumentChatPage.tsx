@@ -3,6 +3,7 @@ import ChatInterface from './ChatInterface';
 import { ChatSession, ChatMessage } from '../../services/api_client';
 import { chatService } from '../../services/chat_service';
 import { UploadedFile } from '../../types';
+import { documentTracker } from '../../services/document_tracking_service';
 
 interface DocumentChatPageProps {
   isOpen: boolean;
@@ -64,7 +65,16 @@ const DocumentChatPage: React.FC<DocumentChatPageProps> = ({
     await chatService.saveChatSessions(sessions);
   };
 
-  const startNewChat = (document?: any) => {
+  const startNewChat = async (document?: any) => {
+    // Track chat interaction if document is provided
+    if (document && document.id && document.title) {
+      try {
+        await documentTracker.trackDocumentView(document.id, document.title, 'chat');
+      } catch (error) {
+        console.error('Failed to track chat interaction:', error);
+      }
+    }
+    
     const newChat = chatService.createNewChatSession(document);
     const updatedSessions = [newChat, ...chatSessions];
     setChatSessions(updatedSessions);

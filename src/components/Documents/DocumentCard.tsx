@@ -2,6 +2,7 @@
 import React from 'react';
 import { SearchResult } from '../../types';
 import { Card, Icon, Button } from '../UI';
+import { documentTracker } from '../../services/document_tracking_service';
 
 interface DocumentCardProps {
   document: SearchResult;
@@ -18,9 +19,46 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
   onChat,
   className = '' 
 }) => {
-  const handleClick = () => {
+  const handleClick = async () => {
+    // Track document view
+    try {
+      await documentTracker.trackDocumentView(document.id, document.title, 'view');
+    } catch (error) {
+      console.error('Failed to track document view:', error);
+    }
+    
     if (onClick) {
       onClick(document);
+    }
+  };
+
+  const handleSummarize = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Track summarize action
+    try {
+      await documentTracker.trackDocumentView(document.id, document.title, 'summarize');
+    } catch (error) {
+      console.error('Failed to track summarize action:', error);
+    }
+    
+    if (onSummarize) {
+      onSummarize(document);
+    }
+  };
+
+  const handleChat = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Track chat action
+    try {
+      await documentTracker.trackDocumentView(document.id, document.title, 'chat');
+    } catch (error) {
+      console.error('Failed to track chat action:', error);
+    }
+    
+    if (onChat) {
+      onChat(document);
     }
   };
 
@@ -111,10 +149,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
             <Button
               variant="primary"
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSummarize(document);
-              }}
+              onClick={handleSummarize}
               className="flex items-center gap-1 text-xs"
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,10 +162,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
             <Button
               variant="secondary"
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onChat(document);
-              }}
+              onClick={handleChat}
               className="flex items-center gap-1 text-xs"
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

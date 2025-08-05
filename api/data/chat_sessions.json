@@ -1,6 +1,6 @@
 [
   {
-    "id": "1754425551304",
+    "id": "1754426283082",
     "title": "Chat about: Design customer onboarding user interface",
     "document": {
       "id": "8f82723f-b497-4df7-b6d9-729b6b9a2b96",
@@ -27,11 +27,46 @@
         "id": "1",
         "content": "Hello! I'm here to help you with questions about the document \"Design customer onboarding user interface\". What would you like to know?",
         "isUser": false,
-        "timestamp": "2025-08-05T20:25:51.304Z"
+        "timestamp": "2025-08-05T20:38:03.082Z"
       }
     ],
-    "createdAt": "2025-08-05T20:25:51.304Z",
-    "updatedAt": "2025-08-05T20:25:51.304Z",
-    "updated_at": "2025-08-06T04:25:51.327877"
+    "createdAt": "2025-08-05T20:38:03.082Z",
+    "updatedAt": "2025-08-05T20:38:03.082Z",
+    "updated_at": "2025-08-06T04:38:03.090390"
+  },
+  {
+    "id": "1754426188006",
+    "title": "Chat about: Design customer onboarding user interface",
+    "document": {
+      "id": "8f82723f-b497-4df7-b6d9-729b6b9a2b96",
+      "title": "Design customer onboarding user interface",
+      "content": "Task details for customer onboarding implementation. Requirements include security compliance, performance optimization, and user experience. Assigned to Ryan Tay (Finance). Priority: Critical. Status: Done.  Word group can charge sing. Little sound foreign detail relationship serious walk.\nNone treat heart media enjoy serve their full. Just in million admit.\nWalk strong mouth necessary. Newspaper finally who. Ability example wrong window trade give to.\nBad including course view whole.",
+      "summary": "Task details for customer onboarding implementation. Requirements include security compliance, performance optimization, and user experience. Assigned...",
+      "source": "jira",
+      "author": "Ryan Tay",
+      "department": "Unknown",
+      "content_type": "ticket",
+      "tags": [
+        "task",
+        "critical",
+        "customer_onboarding",
+        "urgent"
+      ],
+      "timestamp": "2025-08-02T17:30:42.706034",
+      "url": "https://company.atlassian.net/browse/CORP-2671",
+      "score": 10,
+      "highlights": {}
+    },
+    "messages": [
+      {
+        "id": "1",
+        "content": "Hello! I'm here to help you with questions about the document \"Design customer onboarding user interface\". What would you like to know?",
+        "isUser": false,
+        "timestamp": "2025-08-05T20:36:28.006Z"
+      }
+    ],
+    "createdAt": "2025-08-05T20:36:28.006Z",
+    "updatedAt": "2025-08-05T20:36:28.006Z",
+    "updated_at": "2025-08-06T04:38:03.090410"
   }
 ]

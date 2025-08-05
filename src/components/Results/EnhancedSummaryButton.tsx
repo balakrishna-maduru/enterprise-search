@@ -1,18 +1,18 @@
 // src/components/Summary/EnhancedSummaryButton.tsx
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
-  FileText, 
-  Download, 
-  ChevronDown, 
+  Sparkles, 
   Clock, 
-  FileCheck,
-  User,
-  Sparkles,
-  Loader2,
+  FileCheck, 
+  User, 
+  FileText, 
   CheckCircle,
-  AlertCircle
+  Settings,
+  Loader2,
+  ChevronDown
 } from 'lucide-react';
 import { SearchResult, User as UserType } from '../../types';
+import { documentTracker } from '../../services/document_tracking_service';
 
 interface EnhancedSummaryButtonProps {
   selectedResults: SearchResult[];
@@ -94,6 +94,15 @@ const EnhancedSummaryButton: React.FC<EnhancedSummaryButtonProps> = ({
     setShowOptions(false);
 
     try {
+      // Track summary generation for each selected document
+      await Promise.all(selectedResults.map(async document => {
+        try {
+          await documentTracker.trackDocumentView(document.id, document.title, 'summarize');
+        } catch (error) {
+          console.error('Failed to track summarize action:', error);
+        }
+      }));
+
       // Simulate progress
       const progressInterval = setInterval(() => {
         setGenerationProgress(prev => {

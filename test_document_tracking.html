@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Tracking Test</title>
+</head>
+<body>
+    <h1>Document Tracking Test</h1>
+    <button id="testTrackingBtn">Test Document Tracking</button>
+    <div id="output"></div>
+
+    <script>
+        // Simulate the document tracking service
+        class TestDocumentTracker {
+            constructor() {
+                this.baseUrl = 'http://localhost:9200';
+            }
+
+            async initializeIndex() {
+                try {
+                    const indexName = 'document_views';
+                    const url = `${this.baseUrl}/${indexName}`;
+
+                    // Create index with mapping
+                    const mapping = {
+                        mappings: {
+                            properties: {
+                                documentId: { type: 'keyword' },
+                                documentTitle: { type: 'text', fields: { keyword: { type: 'keyword' } } },
+                                userId: { type: 'keyword' },
+                                userName: { type: 'text', fields: { keyword: { type: 'keyword' } } },
+                                userEmail: { type: 'keyword' },
+                                viewTime: { type: 'date' },
+                                action: { type: 'keyword' },
+                                sessionId: { type: 'keyword' },
+                                timestamp: { type: 'long' }
+                            }
+                        }
+                    };
+
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(mapping)
+                    });
+
+                    if (response.ok) {
+                        console.log('✅ Document views index created successfully');
+                        return true;
+                    } else {
+                        console.error('❌ Failed to create document views index:', await response.text());
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error initializing document views index:', error);
+                    return false;
+                }
+            }
+
+            async trackDocumentView(documentId, documentTitle, action = 'view') {
+                try {
+                    const viewEvent = {
+                        documentId,
+                        documentTitle,
+                        userId: 'test_user_123',
+                        userName: 'Test User',
+                        userEmail: 'test.user@company.com',
+                        viewTime: new Date().toISOString(),
+                        action,
+                        sessionId: `session_test_user_123_${Date.now()}`,
+                        timestamp: Date.now()
+                    };
+
+                    const indexName = 'document_views';
+                    const viewEventId = `${viewEvent.documentId}_${viewEvent.timestamp}`;
+                    const url = `${this.baseUrl}/${indexName}/_doc/${viewEventId}`;
+
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(viewEvent)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log(`✅ View event sent to Elasticsearch with ID: ${viewEventId}`, result);
+                    return result;
+                } catch (error) {
+                    console.error('Failed to track document view:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // Test the functionality
+        const tracker = new TestDocumentTracker();
+        
+        document.getElementById('testTrackingBtn').addEventListener('click', async () => {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Testing document tracking...</p>';
+            
+            try {
+                // Initialize index
+                await tracker.initializeIndex();
+                output.innerHTML += '<p>✅ Index initialized</p>';
+                
+                // Test different document actions
+                const testDoc1 = await tracker.trackDocumentView('doc_123', 'Sample Document Title', 'view');
+                output.innerHTML += `<p>✅ Document view tracked: ${testDoc1._id}</p>`;
+                
+                const testDoc2 = await tracker.trackDocumentView('doc_456', 'Another Document', 'summarize');
+                output.innerHTML += `<p>✅ Document summarize tracked: ${testDoc2._id}</p>`;
+                
+                const testDoc3 = await tracker.trackDocumentView('doc_789', 'Chat Document', 'chat');
+                output.innerHTML += `<p>✅ Document chat tracked: ${testDoc3._id}</p>`;
+                
+                output.innerHTML += '<p><strong>🎉 All tests passed!</strong></p>';
+                
+            } catch (error) {
+                output.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+                console.error('Test failed:', error);
+            }
+        });
+    </script>
+</body>
+</html>
