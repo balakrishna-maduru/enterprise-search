@@ -129,11 +129,13 @@ export const useChatApi = () => {
         temperature: 0.01,
         embeddingModelHostType: 'DBS_HOST_EMBEDDING_MODEL',
         size: 20,
-        knowledge_scope: 'world',
         radius: 1,
         collapseField: 'docId',
         rerank_topk: 5,
-        ...chatConfig
+        // Apply any overrides from chatConfig (including knowledge_scope)
+        ...chatConfig,
+        // Ensure knowledge_scope is set, defaulting to 'world' if not provided
+        knowledge_scope: chatConfig?.knowledge_scope || 'world',
       };
 
       const response = await chatApiService.sendMessage(messageData);
