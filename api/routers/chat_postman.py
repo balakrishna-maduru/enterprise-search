@@ -6,62 +6,15 @@ import json
 import os
 import uuid
 
-# Create router that matches Postman collection endpoints exactly
-router = APIRouter(tags=["chat"])
+# Create router for Postman collection format (without prefix)
+router = APIRouter(tags=["chat-postman"])
 
-# Pydantic models matching the Postman collection request format
-class ChatRequest(BaseModel):
-    session_id: Optional[str] = None
-    input: str
-    provider: Optional[str] = "GCP_CLAUDE"
-    provider_id: Optional[str] = "claude-3-5-sonnet@20240620"
-    knnField: Optional[str] = "embeddings"
-    rankWindowSize: Optional[int] = 50
-    rankConstant: Optional[int] = 20
-    k: Optional[int] = 5
-    indexName: Optional[str] = "datasets-datanaut.ekb.qodo.data-ada.sg.uat"
-    embeddingModelType: Optional[str] = "DBS_QUDO_EMBEDDING_MODEL"
-    numberOfCandidates: Optional[int] = 10
-    temperature: Optional[float] = 0.01
-    embeddingModelHostType: Optional[str] = "DBS_HOST_EMBEDDING_MODEL"
-    size: Optional[int] = 20
-    knowledge_scope: Optional[str] = "world"
-    radius: Optional[int] = 1
-    collapseField: Optional[str] = "docId"
-    rerank_topk: Optional[int] = 5
-
-# Simple file-based storage for chat sessions
-CHATS_FILE = "data/chat_sessions.json"
-
-def ensure_data_directory() -> None:
-    """Ensure data directory exists"""
-    os.makedirs("data", exist_ok=True)
-
-def load_chat_sessions() -> List[Dict[str, Any]]:
-    """Load chat sessions from file"""
-    ensure_data_directory()
-    try:
-        if os.path.exists(CHATS_FILE):
-            with open(CHATS_FILE, 'r') as f:
-                return json.load(f)
-        return []
-    except Exception as e:
-        print(f"Error loading chat sessions: {e}")
-        return []
-
-def save_chat_sessions(sessions: List[Dict[str, Any]]) -> None:
-    """Save chat sessions to file"""
-    ensure_data_directory()
-    try:
-        with open(CHATS_FILE, 'w') as f:
-            json.dump(sessions, f, indent=2, default=str)
-    except Exception as e:
-        print(f"Error saving chat sessions: {e}")
+# Import models and functions from chats.py
+from .chats import ChatRequest, load_chat_sessions, save_chat_sessions, ensure_data_directory
 
 
-# ENDPOINT 1: POST /chat - matches Postman collection exactly
 @router.post("/chat")
-async def send_chat_message(request: ChatRequest) -> Dict[str, Any]:
+async def send_chat_message_postman(request: ChatRequest) -> Dict[str, Any]:
     """Send a chat message - matches Postman collection /chat endpoint exactly"""
     try:
         session_id = request.session_id or str(uuid.uuid4())
@@ -147,22 +100,42 @@ async def send_chat_message(request: ChatRequest) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Error sending chat message: {str(e)}")
 
 
-# ENDPOINT 2: GET /messages - matches Postman collection exactly
 @router.get("/messages")
-async def get_messages(session_id: str = Query(..., description="Session ID to get messages for")) -> Dict[str, Any]:
+async def get_messages_postman(session_id: str = Query(..., description="Session ID to get messages for")) -> Dict[str, Any]:
     """Get messages for a session - matches Postman collection /messages endpoint"""
     try:
         sessions = load_chat_sessions()
         
-        # Find the session
+        # Find the session - handle both old and new formats
         for session in sessions:
-            if session.get("session_id") == session_id:
+            session_id_to_check = session.get("session_id") or session.get("id")
+            
+            if session_id_to_check == session_id:
                 messages = session.get("messages", [])
+                
+                # Convert messages to expected format if needed
+                formatted_messages = []
+                for i, msg in enumerate(messages):
+                    if isinstance(msg, dict):
+                        # Handle new format (already has idx, msg_id, content, role, created_at)
+                        if 'msg_id' in msg and 'role' in msg:
+                            formatted_messages.append(msg)
+                        else:
+                            # Convert old format
+                            formatted_msg = {
+                                "idx": i + 1,
+                                "msg_id": msg.get("id", f"msg-{i}"),
+                                "content": msg.get("content", ""),
+                                "role": "assistant" if not msg.get("isUser", True) else "user",
+                                "created_at": msg.get("timestamp", msg.get("created_at", ""))
+                            }
+                            formatted_messages.append(formatted_msg)
+                
                 return {
                     "code": 0,
                     "msg": "success",
                     "trace_id": str(uuid.uuid4()).replace('-', ''),
-                    "data": messages
+                    "data": formatted_messages
                 }
         
         # If session not found, return empty messages
@@ -174,12 +147,14 @@ async def get_messages(session_id: str = Query(..., description="Session ID to g
         }
         
     except Exception as e:
+        print(f"Error in get_messages_postman: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error retrieving messages: {str(e)}")
 
 
-# ENDPOINT 3: GET /sessions - matches Postman collection exactly
 @router.get("/sessions")
-async def get_sessions() -> Dict[str, Any]:
+async def get_sessions_postman() -> Dict[str, Any]:
     """Get all sessions - matches Postman collection /sessions endpoint"""
     try:
         sessions = load_chat_sessions()
@@ -187,15 +162,34 @@ async def get_sessions() -> Dict[str, Any]:
         # Convert to the expected format
         session_list = []
         for session in sessions:
-            session_info = {
-                "session_id": session.get("session_id", ""),
-                "first_message": session.get("first_message", ""), 
-                "created_at": session.get("created_at", "")
-            }
-            session_list.append(session_info)
+            try:
+                # Handle both old format (with 'id', 'title') and new format (with 'session_id', 'first_message')
+                if 'session_id' in session:
+                    # New format from Postman collection
+                    session_info = {
+                        "session_id": session.get("session_id", ""),
+                        "first_message": session.get("first_message", ""), 
+                        "created_at": session.get("created_at", "")
+                    }
+                else:
+                    # Old format - convert to new format
+                    session_info = {
+                        "session_id": session.get("id", ""),
+                        "first_message": session.get("title", ""), 
+                        "created_at": session.get("createdAt", session.get("created_at", ""))
+                    }
+                session_list.append(session_info)
+            except Exception as session_error:
+                print(f"Error processing session: {session}, error: {session_error}")
+                continue
         
         # Sort by created_at descending (newest first)  
-        session_list.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        try:
+            session_list.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        except Exception as sort_error:
+            print(f"Sort error: {sort_error}")
+            # If sorting fails, just return unsorted
+            pass
         
         return {
             "code": 0,
@@ -204,4 +198,8 @@ async def get_sessions() -> Dict[str, Any]:
             "data": session_list
         }
     except Exception as e:
+        print(f"Full error in get_sessions_postman: {e}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error retrieving sessions: {str(e)}")

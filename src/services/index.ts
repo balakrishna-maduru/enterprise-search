@@ -5,7 +5,7 @@ export { apiService } from './api_service';
 export { httpClient, HttpClient } from './http_client';
 export { apiClient, ApiClient } from './api_client';
 export { summaryService, SummaryService } from './summary_service';
-export { chatService, ChatService } from './chat_service';
+export { chatApiService } from './chatApiService';
 export { employeeApiService, EmployeeApiService } from './employee_api_service';
 
 // Export types

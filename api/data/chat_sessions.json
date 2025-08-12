@@ -68,5 +68,307 @@
     "createdAt": "2025-08-05T20:36:28.006Z",
     "updatedAt": "2025-08-05T20:36:28.006Z",
     "updated_at": "2025-08-06T04:38:03.090410"
+  },
+  {
+    "session_id": "7e37b88d-f638-4bab-aaac-48b32fda0edd",
+    "first_message": "What are different Active/Passive methods for Operational Energy efficiency for Lenovo",
+    "created_at": "2025-08-12T23:48:41.555734Z",
+    "updated_at": "2025-08-12T23:48:41.555735Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "246f3e65-f38e-4be2-81d0-e0a84e9662da",
+        "content": "What are different Active/Passive methods for Operational Energy efficiency for Lenovo",
+        "role": "user",
+        "created_at": "2025-08-12T23:48:41.555692Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "0c4b40ba-04ce-4294-9f0e-018eccbcd613",
+        "content": "This is a mock response to your question: What are different Active/Passive methods for Operational Energy efficiency for Lenovo. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:48:41.555731Z"
+      }
+    ]
+  },
+  {
+    "session_id": "fa525189-78b1-470c-8324-a9406799825a",
+    "first_message": "What are different Active/Passive methods for Operational Energy efficiency for Lenovo",
+    "created_at": "2025-08-12T23:49:01.172791Z",
+    "updated_at": "2025-08-12T23:49:01.172843Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "fe352f74-cbc0-49d4-8c60-42faa5c31dfa",
+        "content": "What are different Active/Passive methods for Operational Energy efficiency for Lenovo",
+        "role": "user",
+        "created_at": "2025-08-12T23:49:01.172771Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "c7f68909-ab9d-44cb-969d-658103145779",
+        "content": "This is a mock response to your question: What are different Active/Passive methods for Operational Energy efficiency for Lenovo. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:49:01.172789Z"
+      }
+    ]
+  },
+  {
+    "session_id": "85691a9b-8301-4cd8-9ff6-b3d49fc6d381",
+    "first_message": "Hello, this is a test message for UI integration",
+    "created_at": "2025-08-12T23:51:00.721964Z",
+    "updated_at": "2025-08-12T23:51:00.721965Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "1b0947bf-394a-4de9-8b73-ff0b2e22e1ff",
+        "content": "Hello, this is a test message for UI integration",
+        "role": "user",
+        "created_at": "2025-08-12T23:51:00.721920Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "dbd0d23d-f3d0-4f73-adc2-42b79313d03d",
+        "content": "This is a mock response to your question: Hello, this is a test message for UI integration. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:51:00.721961Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755013944984_36ke0qtrs",
+    "first_message": "Hello",
+    "created_at": "2025-08-12T23:52:31.770785Z",
+    "updated_at": "2025-08-12T23:52:41.325234",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "55fc7ba2-801e-48a2-9c06-20409bbe76c4",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-12T23:52:31.770751Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "89c04f47-9be2-4372-bfe9-0a023a80cd11",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:52:31.770782Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "35d30b0d-2220-41f0-9434-7aae239c100a",
+        "content": "hello 1",
+        "role": "user",
+        "created_at": "2025-08-12T23:52:41.325037Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "19bb6458-9e17-4281-85c6-efaee787553c",
+        "content": "This is a mock response to your question: hello 1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:52:41.325230Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755014192550_wplhxewlu",
+    "first_message": "hello",
+    "created_at": "2025-08-12T23:56:37.954912Z",
+    "updated_at": "2025-08-12T23:57:05.641642",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "c099eacb-03bf-456e-9f23-a893e0d1c855",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-12T23:56:37.954775Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "35008527-eeaa-428d-86e5-ca5857425e9b",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:56:37.954903Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "935e3232-e41f-47a7-bbbf-c1601aea924d",
+        "content": "Hello 1",
+        "role": "user",
+        "created_at": "2025-08-12T23:57:05.641603Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "984055fe-1513-44bf-875e-bc30f4bac7dd",
+        "content": "This is a mock response to your question: Hello 1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:57:05.641639Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755014350803_47co7or2z",
+    "first_message": "add",
+    "created_at": "2025-08-12T23:59:14.983505Z",
+    "updated_at": "2025-08-13T00:06:55.645860",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "24896c59-392a-44ae-b2be-483f432a5db6",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-12T23:59:14.983423Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "42be421a-d61b-4d1a-ad97-5860af848f1b",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:59:14.983500Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "443f53c9-024b-4e11-84ab-10bdcab1b5ef",
+        "content": "test",
+        "role": "user",
+        "created_at": "2025-08-12T23:59:20.198857Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "326f3a0b-fbdf-4e97-b55c-17e1bada60c1",
+        "content": "This is a mock response to your question: test. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-12T23:59:20.198902Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "f14d52cc-8aa5-45b2-bbd1-a4ccec01b12c",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-13T00:01:21.156488Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "51f860cb-5b8c-4cb6-a6f1-aee741174e81",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:01:21.156721Z"
+      },
+      {
+        "idx": 7,
+        "msg_id": "ce6add6e-924a-43a3-9fce-34d27ed8b86c",
+        "content": "test",
+        "role": "user",
+        "created_at": "2025-08-13T00:01:32.400581Z"
+      },
+      {
+        "idx": 8,
+        "msg_id": "6845b803-c647-4ad1-af7b-9f2d524c6e74",
+        "content": "This is a mock response to your question: test. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:01:32.400647Z"
+      },
+      {
+        "idx": 9,
+        "msg_id": "27ced8e3-4b10-45a8-9fbe-cb8ed85517a1",
+        "content": "test",
+        "role": "user",
+        "created_at": "2025-08-13T00:06:55.645699Z"
+      },
+      {
+        "idx": 10,
+        "msg_id": "348f6de3-1b8b-484a-80a1-31388a98c95a",
+        "content": "This is a mock response to your question: test. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:06:55.645848Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755015018233_3gnl4t4b8",
+    "first_message": "hello",
+    "created_at": "2025-08-13T00:10:25.426187Z",
+    "updated_at": "2025-08-13T00:11:30.640092",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "56c6662f-705f-4eac-a9c3-5831a1546c48",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-13T00:10:25.426095Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "09a7f4ce-e961-4c91-a3ac-c0a54d3a46a8",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:10:25.426181Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "2b9c906a-7f8b-4d33-88ea-6d6332d8f8d2",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-13T00:10:40.912272Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "db68b7dc-1db9-4994-922f-2438b79e9a36",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:10:40.912318Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "c11e0562-3dc8-4ef1-9bf2-c5eab0c1e7f3",
+        "content": "123466",
+        "role": "user",
+        "created_at": "2025-08-13T00:11:30.640013Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "91d34766-0040-4126-97ea-52452a648786",
+        "content": "This is a mock response to your question: 123466. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:11:30.640084Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755015288407_a5l3josnz",
+    "first_message": "add",
+    "created_at": "2025-08-13T00:14:53.881522Z",
+    "updated_at": "2025-08-13T00:18:57.379743",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "2df9ca02-5455-4a96-8569-00881cdf5faa",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-13T00:14:53.881422Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "7d556fe8-797d-4ea3-90ae-d8319c095adf",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:14:53.881516Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "47befe72-887e-4cf1-801d-4d5c15598266",
+        "content": "jgj",
+        "role": "user",
+        "created_at": "2025-08-13T00:18:57.379642Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "10e3dbb3-88f0-4b50-8b7e-cee7a3cdb013",
+        "content": "This is a mock response to your question: jgj. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-13T00:18:57.379737Z"
+      }
+    ]
   }
 ]
