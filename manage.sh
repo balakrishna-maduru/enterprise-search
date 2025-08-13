@@ -12,6 +12,9 @@ export PYTHONPYCACHEPREFIX=""
 # Conda Environment Configuration
 CONDA_ENV_NAME="enterprise-search"
 
+USING_CONDA=""
+USING_VENV=""
+
 # Configuration
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 API_DIR="$PROJECT_ROOT/api"
@@ -30,39 +33,48 @@ NC='\033[0m' # No Color
 # Create necessary directories
 mkdir -p "$LOG_DIR" "$PID_DIR"
 
-# Function to activate conda environment
-activate_conda_env() {
-    if command -v conda >/dev/null 2>&1; then
-        print_status "Activating conda environment: $CONDA_ENV_NAME"
-        source "$(conda info --base)/etc/profile.d/conda.sh"
-        conda activate "$CONDA_ENV_NAME" 2>/dev/null || {
-            print_error "Failed to activate conda environment '$CONDA_ENV_NAME'"
-            print_status "Creating conda environment from environment.yml..."
-            conda env create -f environment.yml
-            conda activate "$CONDA_ENV_NAME"
-        }
-    else
-        print_error "Conda not found. Please install Miniconda or Anaconda."
-        exit 1
+# Unified Python environment activation (prefers existing .venv, else conda, else creates .venv)
+activate_python_env() {
+    if [ -n "$VIRTUAL_ENV" ] || [ -n "$CONDA_DEFAULT_ENV" ]; then
+        return 0
     fi
+    if [ -d "$PROJECT_ROOT/.venv" ]; then
+        USING_VENV=1
+        print_status "Activating virtual environment (.venv)"
+        # shellcheck disable=SC1091
+        source "$PROJECT_ROOT/.venv/bin/activate"
+        return 0
+    fi
+    if command -v conda >/dev/null 2>&1; then
+        USING_CONDA=1
+        # shellcheck disable=SC1091
+        source "$(conda info --base)/etc/profile.d/conda.sh"
+        if conda env list | grep -q "^$CONDA_ENV_NAME "; then
+            print_status "Activating conda environment: $CONDA_ENV_NAME"
+            conda activate "$CONDA_ENV_NAME"
+        else
+            print_status "Creating conda environment: $CONDA_ENV_NAME"
+            if [ -f "$PROJECT_ROOT/environment.yml" ]; then
+                conda env create -f "$PROJECT_ROOT/environment.yml" -n "$CONDA_ENV_NAME"
+            else
+                conda create -y -n "$CONDA_ENV_NAME" python=3.11
+            fi
+            conda activate "$CONDA_ENV_NAME"
+        fi
+        return 0
+    fi
+    print_status "Creating Python virtual environment (.venv)"
+    python3 -m venv "$PROJECT_ROOT/.venv"
+    # shellcheck disable=SC1091
+    source "$PROJECT_ROOT/.venv/bin/activate"
+    USING_VENV=1
 }
 
 # Function to print colored output
-print_status() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-print_debug() {
-    echo -e "${BLUE}[DEBUG]${NC} $1"
-}
+print_status() { printf "%b\n" "${GREEN}[INFO]${NC} $1"; }
+print_warning() { printf "%b\n" "${YELLOW}[WARN]${NC} $1"; }
+print_error() { printf "%b\n" "${RED}[ERROR]${NC} $1"; }
+print_debug() { printf "%b\n" "${BLUE}[DEBUG]${NC} $1"; }
 
 # Function to check if a process is running
 is_running() {
@@ -189,7 +201,7 @@ setup_python_env() {
     print_status "Setting up Python environment with Conda..."
     
     # Activate conda environment (create if needed)
-    activate_conda_env
+    activate_python_env
     
     # Install any additional dependencies if needed
     if ! check_python_deps; then
@@ -213,7 +225,7 @@ start_backend() {
     fi
     
     # Activate conda environment
-    activate_conda_env
+    activate_python_env
     
     cd "$API_DIR"
     
@@ -273,7 +285,7 @@ setup_elasticsearch_data() {
     print_status "Setting up Elasticsearch data..."
     
     # Activate conda environment
-    activate_conda_env
+    activate_python_env
     
     cd "$PYTHON_DIR"
     
@@ -477,7 +489,7 @@ case "${1:-}" in
                     # Fresh installation
                     print_status "Starting fresh installation..."
                     conda env create -f environment.yml
-                    activate_conda_env
+                    activate_python_env
                     
                     # Install Python dependencies
                     print_status "Installing Python dependencies..."
@@ -503,7 +515,7 @@ case "${1:-}" in
                 print_status "Installing/updating all dependencies..."
                 
                 # Setup Python environment and dependencies
-                activate_conda_env
+                activate_python_env
                 cd "$API_DIR"
                 pip install --upgrade pip
                 if [ -f "requirements-dev.txt" ]; then
@@ -528,7 +540,7 @@ case "${1:-}" in
                 ;;
             "python")
                 print_status "=== PYTHON ENVIRONMENT SETUP ==="
-                activate_conda_env
+                activate_python_env
                 cd "$API_DIR"
                 pip install --upgrade pip
                 if [ -f "requirements-dev.txt" ]; then
@@ -547,7 +559,7 @@ case "${1:-}" in
                 print_status "Installing everything from scratch (keeping existing environments)..."
                 
                 # Setup Python environment
-                activate_conda_env
+                activate_python_env
                 cd "$API_DIR"
                 pip install --upgrade pip
                 if [ -f "requirements-dev.txt" ]; then
@@ -590,7 +602,7 @@ case "${1:-}" in
         ;;
     "install-deps")
         print_status "Force installing all dependencies..."
-        activate_conda_env
+    activate_python_env
         cd "$API_DIR"
         pip install --upgrade pip
         if [ -f "requirements-dev.txt" ]; then

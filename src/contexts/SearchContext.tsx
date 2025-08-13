@@ -59,6 +59,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     hasPreviousPage: false
   });
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState<boolean>(false);
+  const [hasSearched, setHasSearched] = useState<boolean>(false); // new flag
 
   // Use API hooks or legacy hooks based on configuration
   const legacySearch = useElasticsearch();
@@ -92,47 +93,28 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     
     try {
       if (!searchTerm.trim()) {
-        console.log('🏠 Loading landing page data...');
-        // For empty search, load landing page data
-        const landingData = await apiService.loadLandingPageData(currentUser, 5, 5);
-        console.log('✅ Landing page data received:', landingData);
-        
-        setEmployeeResults(landingData.employees.results);
-        setDocumentResults(landingData.documents.results);
-        setEmployeeTotal(landingData.employees.total);
-        setDocumentTotal(landingData.documents.total);
-        
-        // Combine results for backward compatibility
-        const combinedResults = [...landingData.employees.results, ...landingData.documents.results];
-        setSearchResults(combinedResults);
-        
-        // Update pagination based on combined totals
-        const totalResults = landingData.employees.total + landingData.documents.total;
-        const newPagination: PaginationInfo = {
+        // Empty search: do NOT auto-load content; keep landing empty
+        setEmployeeResults([]);
+        setDocumentResults([]);
+        setEmployeeTotal(0);
+        setDocumentTotal(0);
+        setSearchResults([]);
+        setPagination({
           currentPage: 1,
-          totalPages: Math.ceil(totalResults / (pagination.pageSize || 10)),
-          totalResults: totalResults,
-          pageSize: pagination.pageSize || 10,
-          hasNextPage: totalResults > (pagination.pageSize || 10),
-          hasPreviousPage: false
-        };
-        setPagination(newPagination);
-        
-        console.log('✅ Landing page dual data loaded:', {
-          employees: landingData.employees.results.length,
-          employeesTotal: landingData.employees.total,
-          documents: landingData.documents.results.length,
-          documentsTotal: landingData.documents.total,
-          totalCombined: totalResults
+          totalPages: 1,
+            totalResults: 0,
+            pageSize: pagination.pageSize || 10,
+            hasNextPage: false,
+            hasPreviousPage: false
         });
+        return;
       } else {
         console.log('🔍 Executing dual search for:', searchTerm);
         // For search queries, execute dual search
         const dualSearchData = await apiService.dualSearch(
-          searchTerm, 
-          5, // employee results
-          5, // document results
-          currentUser
+          searchTerm,
+          5,
+          5
         );
         console.log('✅ Dual search data received:', dualSearchData);
         
@@ -270,14 +252,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     const searchTerm = query || searchQuery;
     console.log('🔍 Manual search triggered for:', searchTerm);
     
-    if (!searchTerm.trim()) {
-      // For empty search, use dual search to load landing page
-      await executeDualSearch();
-      return;
+    if (searchTerm.trim()) {
+      await executeDualSearch(searchTerm);
+      setHasSearched(true);
+    } else {
+      // clearing search resets state
+      await executeDualSearch('');
+      setHasSearched(false);
     }
-    
-    // Use dual search for all searches
-    await executeDualSearch(searchTerm);
   }, [searchQuery, executeDualSearch]);
 
   // Function to load default documents using dual API approach
@@ -296,17 +278,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   }, [currentUser, executeDualSearch]);
 
   // Load initial data when component mounts or user changes
+  // Initial effect: do not auto-load documents; just mark provider ready
   useEffect(() => {
-    console.log('🔄 SearchProvider useEffect triggered:', {
-      currentUser,
-      hasInitiallyLoaded
-    });
     if (!hasInitiallyLoaded) {
-      console.log('🚀 Loading initial data...');
-      loadDefaultDocuments();
       setHasInitiallyLoaded(true);
     }
-  }, [currentUser, hasInitiallyLoaded, loadDefaultDocuments]);
+  }, [hasInitiallyLoaded]);
 
   // Pagination function to handle page navigation
   const goToPage = useCallback(async (page: number): Promise<void> => {
@@ -372,6 +349,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const contextValue: SearchContextType = {
     searchQuery,
     setSearchQuery,
+  hasSearched,
+  setHasSearched,
     searchResults,
     setSearchResults,
     selectedResults,

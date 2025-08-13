@@ -1,5 +1,6 @@
 // src/components/Employees/EmployeeSearchResults.tsx
 import React, { useState } from 'react';
+import { Card } from '../UI';
 import { SearchResult, EmployeeHierarchy, Employee, HierarchyNode } from '../../types';
 import { employeeService } from '../../services/employee_service';
 import EmployeeHierarchyTree from '../Employee/EmployeeHierarchyTree';
@@ -12,7 +13,7 @@ interface EmployeeSearchResultsProps {
 
 export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({ 
   employeeResults, 
-  maxInitialDisplay = 2,
+  maxInitialDisplay = 2, // original default initial display
   onContactEmployee 
 }) => {
   const [showAll, setShowAll] = useState(false);
@@ -148,7 +149,7 @@ export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({
 
   return (
     <>
-      <div className="mb-8">
+  <div className="mb-8">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
           <div className="flex items-center gap-2">
@@ -165,7 +166,7 @@ export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({
         </div>
 
       {/* Employee Cards */}
-      <div className="space-y-3">
+  <div className="space-y-4">
         {displayedEmployees.map((employee) => {
           const employeeData = employee.employee_data;
           const name = employee.title || employeeData?.name || 'Unknown';
@@ -178,92 +179,91 @@ export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({
           const avatar = name.split(' ').map(n => n.charAt(0)).join('').toUpperCase().slice(0, 2);
           
           return (
-            <div key={employee.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-3">
-                {/* Avatar */}
-                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">
-                  {avatar}
-                </div>
-                
-                {/* Employee Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {name}
-                      </h3>
-                      <p className="text-sm text-gray-600 truncate">
-                        {position}
-                      </p>
-                      <p className="text-sm text-gray-500 truncate">
-                        {department}
-                      </p>
-                      {location && (
-                        <p className="text-xs text-gray-400 truncate">
-                          📍 {location}
-                        </p>
+            <Card
+              key={employee.id}
+              variant="bordered"
+              hover
+              onClick={() => handleViewHierarchy(employee)}
+              className="w-full"
+            >
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Main Content */}
+                <div className="flex-1 flex gap-4">
+                  {/* Avatar */}
+                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm shrink-0">
+                    {avatar}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">{name}</h3>
+                        <p className="text-gray-600 text-sm mb-2 truncate">{position}</p>
+                      </div>
+                      {employee.score && (
+                        <div className="flex items-center gap-2 ml-4">
+                          <div className="text-xs text-gray-500">Match:</div>
+                          <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                            <div
+                              className="bg-red-600 h-1.5 rounded-full transition-all duration-300"
+                              style={{ width: `${Math.min(employee.score, 100)}%` }}
+                            />
+                          </div>
+                          <div className="text-xs text-gray-500">{Math.round(employee.score)}%</div>
+                        </div>
                       )}
                     </div>
-                    
-                    {/* Score Badge */}
-                    {employee.score && (
-                      <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                        {Math.round(employee.score)}%
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Summary */}
-                  {employee.summary && (
-                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                      {employee.summary}
-                    </p>
-                  )}
-                  
-                  {/* Contact and Action Buttons */}
-                  <div className="mt-3 flex items-center gap-4">
-                    <button
-                      onClick={() => handleContact(employee)}
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      Contact
-                    </button>
-                    
-                    <button
-                      onClick={() => handleViewHierarchy(employee)}
-                      disabled={loadingHierarchy === employee.id}
-                      className="text-sm text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1 disabled:opacity-50"
-                    >
-                      {loadingHierarchy === employee.id ? (
-                        <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                      ) : (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
+                    <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
+                      {department && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-800">🏢 {department}</span>
                       )}
-                      {loadingHierarchy === employee.id ? 'Loading...' : 'View Hierarchy'}
-                    </button>
-                    
-                    {email && (
-                      <span className="text-sm text-gray-500 truncate flex-1">
-                        {email}
-                      </span>
+                      {location && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-800">📍 {location}</span>
+                      )}
+                      {email && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100 text-gray-800 truncate max-w-[160px]">✉️ {email}</span>
+                      )}
+                    </div>
+                    {employee.summary && (
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">{employee.summary}</p>
                     )}
+                    <div className="flex items-center gap-6 text-xs text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 10-6 0 3 3 0 006 0z"/></svg>
+                        <span>{department || 'Employee'}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+                {/* Action Buttons */}
+                <div className="flex sm:flex-col gap-2 justify-center sm:justify-start shrink-0">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleContact(employee); }}
+                    className="px-3 py-2 bg-red-600 text-white hover:bg-red-700 rounded-md text-xs font-medium flex items-center gap-1 shadow-sm transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Contact
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleViewHierarchy(employee); }}
+                    disabled={loadingHierarchy === employee.id}
+                    className="px-3 py-2 bg-gray-800 text-white hover:bg-gray-700 rounded-md text-xs font-medium flex items-center gap-1 disabled:opacity-50 transition-colors"
+                  >
+                    {loadingHierarchy === employee.id ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    )}
+                    Hierarchy
+                  </button>
+                </div>
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>
 
       {/* Load More Button */}
-      {hasMore && !showAll && (
+  {hasMore && !showAll && (
         <div className="mt-4 text-center">
           <button
             onClick={() => setShowAll(true)}

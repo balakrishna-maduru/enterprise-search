@@ -3,14 +3,16 @@ import React from 'react';
 import { useSearch } from '../../contexts/SearchContext';
 import { useDBSTheme } from '../../hooks/useDBSTheme';
 import { useToggle } from '../../hooks/useToggle';
+import { useUser } from '../../hooks/useUser';
 import SearchInput from './SearchInput';
 import SearchFilters from './SearchFilters';
 import { Button, Icon } from '../UI';
 
 export const SearchSection: React.FC = () => {
-  const { searchQuery, setSearchQuery, isLoading, executeSearch, selectedFilters, setSelectedFilters } = useSearch();
+  const { searchQuery, setSearchQuery, isLoading, executeSearch, selectedFilters, setSelectedFilters, hasSearched } = useSearch();
   const { company } = useDBSTheme();
   const { value: showFiltersDropdown, toggle: toggleFiltersDropdown, setFalse: hideFilters } = useToggle(false);
+  const { user } = useUser();
 
   const handleSearchSubmit = () => {
     executeSearch(searchQuery);
@@ -45,10 +47,49 @@ export const SearchSection: React.FC = () => {
 
   const activeFilterLabels = getActiveFilterLabels();
 
+  // Landing page greeting when no search performed
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  if (!hasSearched) {
+    return (
+      <div className="relative z-10 flex flex-col items-center justify-center h-[40vh] mt-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow mb-6 text-center">
+          {getGreeting()}{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
+        </h1>
+        <div className="w-[60vw] max-w-5xl">
+          <div className="bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-white/30 px-4 py-3 flex items-center gap-3 transition-all">
+            <Icon name="search" size="md" className="text-blue-600" />
+            <div className="flex-1">
+              <SearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onSubmit={handleSearchSubmit}
+                isLoading={isLoading}
+                placeholder="Search about what your teammates have been working on"
+                className="!bg-transparent border-0 shadow-none focus:ring-0 focus:outline-none"
+              />
+            </div>
+            <Button
+              onClick={handleSearchSubmit}
+              disabled={isLoading || !searchQuery.trim()}
+              className="rounded-full px-5"
+            >
+              {isLoading ? 'Searching...' : 'Search'}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Post-search (results) layout with filters etc.
   return (
-    <div className="relative z-20 bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-white/20 p-3 mb-4">
-      
-      {/* Search Input Row with Filters Button */}
+    <div className={`relative z-20 bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-white/20 p-3 mb-4 transition-all duration-300 max-w-5xl mx-auto mt-2`}>
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3">
           <div className="flex-1">
@@ -60,7 +101,6 @@ export const SearchSection: React.FC = () => {
               placeholder="Search content, people, or ask me anything..."
             />
           </div>
-          
           <Button
             variant="ghost"
             size="sm"
@@ -77,8 +117,6 @@ export const SearchSection: React.FC = () => {
             )}
           </Button>
         </div>
-
-        {/* Active Filter Labels Row */}
         {activeFilterLabels.length > 0 && (
           <div className="flex items-center gap-2 flex-wrap mt-2 pt-2 border-t border-gray-100">
             {activeFilterLabels.map((label, index) => (
@@ -89,10 +127,8 @@ export const SearchSection: React.FC = () => {
                 {label}
                 <button
                   onClick={() => {
-                    // Handle removing individual filters
                     const [filterType, filterValue] = label.split(': ');
                     const newFilters = { ...selectedFilters };
-                    
                     switch (filterType) {
                       case 'Source':
                         newFilters.source = newFilters.source.filter(s => s !== filterValue);
@@ -101,20 +137,15 @@ export const SearchSection: React.FC = () => {
                         newFilters.contentType = newFilters.contentType.filter(ct => ct !== filterValue);
                         break;
                       case 'Author':
-                        if (newFilters.author) {
-                          newFilters.author = newFilters.author.filter(a => a !== filterValue);
-                        }
+                        if (newFilters.author) newFilters.author = newFilters.author.filter(a => a !== filterValue);
                         break;
                       case 'Tag':
-                        if (newFilters.tags) {
-                          newFilters.tags = newFilters.tags.filter(t => t !== filterValue);
-                        }
+                        if (newFilters.tags) newFilters.tags = newFilters.tags.filter(t => t !== filterValue);
                         break;
                       case 'Date':
                         newFilters.dateRange = 'all';
                         break;
                     }
-                    
                     setSelectedFilters(newFilters);
                   }}
                   className="ml-1 hover:text-blue-600"
@@ -127,8 +158,6 @@ export const SearchSection: React.FC = () => {
             ))}
           </div>
         )}
-
-        {/* Filters Dropdown */}
         {showFiltersDropdown && (
           <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
             <SearchFilters

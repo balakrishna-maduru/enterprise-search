@@ -3,10 +3,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSearch } from '../../contexts/SearchContext';
 import { useUser } from '../../hooks/useUser';
 import { usePagination } from '../../hooks/usePagination';
-import { apiService } from '../../services/api_service';
 import { SearchResult } from '../../types';
 import DocumentGrid from './DocumentGrid';
-import SearchHeader from './SearchHeader';
 import { EmployeeSearchResults } from '../Employee/EmployeeSearchResults';
 import { SearchResultsSummary } from '../Search/SearchResultsSummary';
 import { Button } from '../UI';
@@ -26,7 +24,13 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
 }) => {
   const { 
     searchQuery, 
-    selectedFilters
+    selectedFilters,
+    hasSearched,
+    documentResults,
+    employeeResults,
+    isLoading,
+    documentTotal,
+    employeeTotal
   } = useSearch();
   
   const { user: currentUser } = useUser();
@@ -34,7 +38,6 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   // Local state
   const [documents, setDocuments] = useState<SearchResult[]>([]);
   const [employees, setEmployees] = useState<SearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [isSummarizing, setIsSummarizing] = useState(false);
@@ -51,43 +54,20 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     isLoading
   });
 
-  const loadData = useCallback(async () => {
-    if (!currentUser) return;
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const offset = (pagination.currentPage - 1) * resultsPerPage;
-      
-      if (searchQuery.trim()) {
-        // Search mode - get both documents and employees
-        const [docsResponse, empsResponse] = await Promise.all([
-          apiService.searchDocumentsOnly(searchQuery, resultsPerPage, currentUser, offset),
-          apiService.searchEmployeesOnly(searchQuery, resultsPerPage, currentUser, 0)
-        ]);
-        
-        setDocuments(docsResponse.results);
-        setEmployees(empsResponse.results);
-        setTotalResults(docsResponse.total + empsResponse.total);
-            } else {
-        // Browse mode - get documents only
-        const response = await apiService.searchDocumentsOnly('', resultsPerPage, currentUser, offset);
-        setDocuments(response.results);
-        setEmployees([]);
-        setTotalResults(response.total);
-      }
-    } catch (err) {
-      console.error('❌ Failed to load data:', err);
-      setError('Failed to load data. Please try again.');
-    } finally {
-      setIsLoading(false);
+  const loadData = useCallback(() => {
+    if (!currentUser || !hasSearched || !searchQuery.trim()) {
+      setDocuments([]);
+      setEmployees([]);
+      setTotalResults(0);
+      return;
     }
-  }, [searchQuery, currentUser, selectedFilters, pagination.currentPage, resultsPerPage]);
+    // Use context results populated by executeSearch/dual search
+    setDocuments(documentResults);
+    setEmployees(employeeResults);
+    setTotalResults(documentTotal + employeeTotal);
+  }, [currentUser, hasSearched, searchQuery, documentResults, employeeResults, documentTotal, employeeTotal]);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   // Reset pagination when search changes
   useEffect(() => {
@@ -131,10 +111,8 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   }, [onNavigateToSummary]);
 
   const getHeaderTitle = () => {
-    if (searchQuery.trim()) {
-      return `Search Results for "${searchQuery}"`;
-    }
-    return 'Available Content';
+    if (searchQuery.trim()) return `Search Results for "${searchQuery}"`;
+    return 'Results';
   };
 
 
@@ -156,14 +134,11 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   return (
     <div className={`space-y-8 ${className}`}>
       
-      {/* Header */}
-      <SearchHeader
-        title={getHeaderTitle()}
-        totalResults={totalResults}
-      />
+      {/* Header: hidden until user performs a search */}
+  {/* Header removed per request (hide search title and count) */}
 
-      {/* Search Summary */}
-      {searchQuery.trim() && (
+  {/* Search Summary */}
+  {hasSearched && searchQuery.trim() && (
         <SearchResultsSummary
           totalResults={totalResults}
           documentCount={documents.length}
@@ -172,29 +147,31 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
         />
       )}
 
-      {/* Employee Results */}
-      {employees.length > 0 && (
-        <div className="mb-8">
-                  {employees.length > 0 && (
-          <EmployeeSearchResults 
-            employeeResults={employees}
-          />
-        )}
+  {/* Employee + Document Results Combined Container */}
+
+      {/* Documents Grid or Landing Empty State */}
+      {!hasSearched && !searchQuery.trim() && (
+        <div className="text-center py-24 text-gray-500">
+          <p className="text-lg mb-4">Type a search above to find documents and employees.</p>
+          <p className="text-sm">Your results will appear here after you run your first search.</p>
         </div>
       )}
-
-      {/* Documents Grid */}
-      <div className="flex justify-center">
-        <div className="w-full max-w-4xl">
-          <DocumentGrid
-            documents={documents}
-            onDocumentClick={handleDocumentClick}
-            onSummarizeDocument={handleSummarize}
-            onChatWithDocument={handleChatWithDocument}
-            isLoading={isLoading}
-          />
+      {hasSearched && (
+        <div className="flex justify-center">
+          <div className="w-full max-w-4xl space-y-10">
+            {employees.length > 0 && (
+              <EmployeeSearchResults employeeResults={employees} />
+            )}
+            <DocumentGrid
+              documents={documents}
+              onDocumentClick={handleDocumentClick}
+              onSummarizeDocument={handleSummarize}
+              onChatWithDocument={handleChatWithDocument}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Pagination */}
       {totalResults > resultsPerPage && (

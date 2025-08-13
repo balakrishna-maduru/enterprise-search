@@ -87,8 +87,8 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
   return (
     <Card 
       variant="bordered" 
-      hover 
-      onClick={handleClick}
+      hover={!!onClick}
+      onClick={onClick ? handleClick : undefined}
       className={`${className}`}
     >
       <div className="flex flex-col sm:flex-row gap-4">

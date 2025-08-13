@@ -121,6 +121,8 @@ export interface SearchResponse {
 export interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  hasSearched: boolean; // whether user has performed at least one non-empty search
+  setHasSearched: (v: boolean) => void;
   searchResults: SearchResult[];
   setSearchResults: (results: SearchResult[]) => void;
   selectedResults: SearchResult[];
