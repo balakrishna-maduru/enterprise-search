@@ -1007,7 +1007,7 @@
     "session_id": "session_1755332983044_j02quecem",
     "first_message": "add chuck",
     "created_at": "2025-08-16T16:29:48.921164Z",
-    "updated_at": "2025-08-16T16:31:43.599190",
+    "updated_at": "2025-08-16T16:35:22.298869",
     "messages": [
       {
         "idx": 1,
@@ -1036,6 +1036,42 @@
         "content": "This is a mock response to your question: mee too. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
         "role": "assistant",
         "created_at": "2025-08-16T16:31:43.599186Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "8d1f4fdd-4df2-451d-855a-8418a6735ddb",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:35:22.298812Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "32068dca-5b74-4c8f-9214-3e8d6351e9ea",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:35:22.298864Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-h9oeatsr-1755333337443",
+    "first_message": "Add change 1",
+    "created_at": "2025-08-16T16:35:42.686692Z",
+    "updated_at": "2025-08-16T16:35:42.686695Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "b3d5c989-216c-4616-899a-48695623e3ee",
+        "content": "Add change 1",
+        "role": "user",
+        "created_at": "2025-08-16T16:35:42.686624Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "e4f069e2-a07b-4ae5-b74c-7ac64caef2a3",
+        "content": "This is a mock response to your question: Add change 1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:35:42.686686Z"
       }
     ]
   }

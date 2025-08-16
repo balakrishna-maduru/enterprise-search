@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { EmployeeHierarchy, HierarchyNode } from '../../types';
 import ModernOrgChart from './ModernOrgChart';
 
+type ViewMode = 'modern' | 'classic';
+
 interface EmployeeHierarchyTreeProps {
   hierarchy: EmployeeHierarchy;
-  viewMode?: 'modern' | 'classic';
+  viewMode?: ViewMode;
 }
 
 interface TreeNodeProps {
@@ -105,6 +107,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 
 const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy, viewMode = 'modern' }) => {
   // Safety check for hierarchy data
+  const [currentViewMode, setCurrentViewMode] = useState<ViewMode>(viewMode);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
+    hierarchy && hierarchy.hierarchy_tree ? new Set([hierarchy.hierarchy_tree.id]) : new Set()
+  );
+
   if (!hierarchy || !hierarchy.employee || !hierarchy.hierarchy_tree) {
     return (
       <div className="text-center py-8">
@@ -123,15 +130,9 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
   });
 
   // Use modern org chart by default
-  if (viewMode === 'modern') {
+  if (currentViewMode === 'modern') {
     return <ModernOrgChart hierarchy={hierarchy} />;
   }
-
-  // Classic tree view (existing implementation)
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
-    new Set([hierarchy.hierarchy_tree.id])
-  );
-  const [currentViewMode, setCurrentViewMode] = useState<'modern' | 'classic'>(viewMode);
 
   const toggleNode = (nodeId: string) => {
     setExpandedNodes(prev => {
@@ -184,7 +185,7 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
             <button
               onClick={() => setCurrentViewMode('modern')}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                currentViewMode === 'modern' 
+                (currentViewMode as string) === 'modern' 
                   ? 'bg-blue-500 text-white' 
                   : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -194,10 +195,10 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
             <button
               onClick={() => setCurrentViewMode('classic')}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                currentViewMode === 'classic' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+                  (currentViewMode as string) === 'classic' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               Classic
             </button>
@@ -206,7 +207,7 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
       </div>
 
       {/* Render based on current view mode */}
-      {currentViewMode === 'modern' ? (
+  {(currentViewMode as string) === 'modern' ? (
         <ModernOrgChart hierarchy={hierarchy} />
       ) : (
         <div className="space-y-6">

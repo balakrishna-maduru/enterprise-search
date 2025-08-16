@@ -1,30 +1,19 @@
-// src/components/Layout/Layout.tsx
 import React, { useState } from 'react';
-
 import Header from './Header';
 import { Footer } from './Footer';
-import { SearchSection } from '../Search';
-import { UnifiedDocumentsPage } from '../Documents';
+import { FiChevronLeft, FiChevronRight, FiSearch, FiMessageCircle } from 'react-icons/fi';
+import { SearchSection } from '../Search/SearchSection';
+import { UnifiedDocumentsPage } from '../Documents/UnifiedDocumentsPage';
+import ChatInterface from '../Chat/ChatInterface';
 import DocumentChatPage from '../Chat/DocumentChatPage';
 import DocumentSummaryPage from '../Summary/DocumentSummaryPage';
-import { useSearch } from '../../contexts/SearchContext';
-import { FiSearch, FiMessageCircle, FiChevronRight, FiChevronLeft } from 'react-icons/fi';
 
 const Layout: React.FC = () => {
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [currentPage, setCurrentPage] = useState<'main' | 'chat'>('main');
   const [chatDocument, setChatDocument] = useState<any>(null);
   const [showSummary, setShowSummary] = useState(false);
   const [summaryDocument, setSummaryDocument] = useState<any>(null);
-  const { searchResults, searchQuery } = useSearch();
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-
-  // Debug logging
-  console.log('🏗️ Layout component rendered:', {
-    currentPage,
-    searchResults: searchResults?.length || 0,
-    searchQuery,
-    showSummary
-  });
 
   const navigateToChat = (document?: any, initialQuestion?: string) => {
     setChatDocument(document ? { ...document, initialQuestion } : null);
@@ -56,31 +45,34 @@ const Layout: React.FC = () => {
       </div>
 
       <Header />
-
       <div className="flex flex-1 relative z-10">
         {/* Sidebar */}
-        <div className={`flex flex-col bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ${sidebarExpanded ? 'w-48' : 'w-16'} min-h-full`}>
+            <div className={`flex flex-col bg-white border-r-2 border-red-600 shadow-lg transition-all duration-300 ${sidebarExpanded ? 'w-36' : 'w-10'} min-h-full`}>
           <button
-            className="flex items-center justify-center h-12 w-full hover:bg-gray-100 focus:outline-none"
+            className="flex items-center h-12 w-full hover:bg-red-700 focus:outline-none text-red-600 bg-white border-b border-red-600 px-2 transition-colors duration-150 justify-start"
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
             title={sidebarExpanded ? 'Collapse' : 'Expand'}
           >
             {sidebarExpanded ? <FiChevronLeft size={20} /> : <FiChevronRight size={20} />}
+            {sidebarExpanded && <span className="ml-2 text-sm font-medium">K.U.T.E</span>}
           </button>
           <button
-            className={`flex items-center gap-2 px-2 py-3 w-full hover:bg-gray-100 focus:outline-none ${currentPage === 'main' ? 'bg-gray-200' : ''}`}
+            className={`flex items-center gap-2 px-2 py-3 w-full focus:outline-none transition-colors duration-150 justify-start ${currentPage === 'main' ? 'bg-white text-red-600 border-l-4 border-red-600 font-bold' : 'text-red-600 hover:bg-red-700'} `}
             onClick={() => setCurrentPage('main')}
             title="Search"
           >
-            <FiSearch size={22} />
+            <FiSearch size={22} color={currentPage === 'main' ? '#ED1C24' : '#ED1C24'} />
             {sidebarExpanded && <span className="text-sm">Search</span>}
           </button>
           <button
-            className={`flex items-center gap-2 px-2 py-3 w-full hover:bg-gray-100 focus:outline-none ${currentPage === 'chat' ? 'bg-gray-200' : ''}`}
-            onClick={() => setCurrentPage('chat')}
+            className={`flex items-center gap-2 px-2 py-3 w-full focus:outline-none transition-colors duration-150 justify-start ${currentPage === 'chat' ? 'bg-white text-red-600 border-l-4 border-red-600 font-bold' : 'text-red-600 hover:bg-red-700'} `}
+            onClick={() => {
+              setChatDocument(null);
+              setCurrentPage('chat');
+            }}
             title="Chat"
           >
-            <FiMessageCircle size={22} />
+            <FiMessageCircle size={22} color={currentPage === 'chat' ? '#ED1C24' : '#ED1C24'} />
             {sidebarExpanded && <span className="text-sm">Chat</span>}
           </button>
         </div>
@@ -97,7 +89,12 @@ const Layout: React.FC = () => {
               </div>
             </>
           )}
-          {currentPage === 'chat' && (
+          {currentPage === 'chat' && !chatDocument && (
+            <div className="h-full">
+              <ChatInterface onClose={navigateToMain} />
+            </div>
+          )}
+          {currentPage === 'chat' && chatDocument && (
             <DocumentChatPage 
               isOpen={true}
               onClose={navigateToMain}
