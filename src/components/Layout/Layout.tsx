@@ -49,12 +49,18 @@ const Layout: React.FC = () => {
         {/* Sidebar */}
             <div className={`flex flex-col bg-white border-r-2 border-red-600 shadow-lg transition-all duration-300 ${sidebarExpanded ? 'w-36' : 'w-10'} min-h-full`}>
           <button
-            className="flex items-center h-12 w-full hover:bg-red-700 focus:outline-none text-red-600 bg-white border-b border-red-600 px-2 transition-colors duration-150 justify-start"
+            className="group flex items-center h-12 w-full hover:bg-red-700 focus:outline-none text-red-600 bg-white border-b border-red-600 px-2 transition-colors duration-150 justify-start"
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
             title={sidebarExpanded ? 'Collapse' : 'Expand'}
           >
-            {sidebarExpanded ? <FiChevronLeft size={20} /> : <FiChevronRight size={20} />}
-            {sidebarExpanded && <span className="ml-2 text-sm font-medium">K.U.T.E</span>}
+            {sidebarExpanded
+              ? <FiChevronLeft size={20} className="transition-colors group-hover:text-white" />
+              : <FiChevronRight size={20} className="transition-colors group-hover:text-white" />}
+            {sidebarExpanded && (
+              <span className="ml-2 text-sm font-medium transition-colors px-2 py-1 rounded group-hover:bg-red-700 group-hover:text-white">
+                K.U.T.E
+              </span>
+            )}
           </button>
           <button
             className={`flex items-center gap-2 px-2 py-3 w-full focus:outline-none transition-colors duration-150 justify-start ${currentPage === 'main' ? 'bg-white text-red-600 border-l-4 border-red-600 font-bold' : 'text-red-600 hover:bg-red-700'} `}

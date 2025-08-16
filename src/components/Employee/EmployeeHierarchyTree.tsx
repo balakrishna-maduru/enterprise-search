@@ -24,15 +24,8 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 }) => {
   const hasChildren = node.reports && node.reports.length > 0;
 
-  const getLevelColor = (level: number): string => {
-    const colors = [
-      'bg-purple-500 text-white',      // Level 0 - CEO
-      'bg-blue-500 text-white',        // Level 1 - VPs
-      'bg-green-500 text-white',       // Level 2 - Directors
-      'bg-yellow-500 text-white',      // Level 3 - Managers
-      'bg-gray-500 text-white',        // Level 4+ - Individual Contributors
-    ];
-    return colors[Math.min(level, colors.length - 1)];
+  const getLevelColor = (): string => {
+    return 'bg-red-600 text-white';
   };
 
   return (
@@ -40,8 +33,8 @@ const TreeNode: React.FC<TreeNodeProps> = ({
       {/* Node */}
       <div className={`flex items-center space-x-3 p-3 rounded-lg border transition-all ${
         isSelected 
-          ? 'border-blue-500 bg-blue-50 shadow-md' 
-          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+          ? 'border-red-600 bg-red-50 shadow-md' 
+          : 'border-red-200 bg-white hover:border-red-100 hover:shadow-sm'
       }`}>
         {/* Expand/Collapse Button */}
         {hasChildren && (
@@ -61,7 +54,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         )}
         
         {/* Avatar */}
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${getLevelColor(node.level)}`}>
+  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${getLevelColor()}`}>
           {node.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
         </div>
         
@@ -84,13 +77,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         </div>
 
         {/* Level Badge */}
-        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-          node.level === 0 ? 'bg-purple-100 text-purple-800' :
-          node.level === 1 ? 'bg-blue-100 text-blue-800' :
-          node.level === 2 ? 'bg-green-100 text-green-800' :
-          node.level === 3 ? 'bg-yellow-100 text-yellow-800' :
-          'bg-gray-100 text-gray-800'
-        }`}>
+        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
           L{node.level}
         </span>
 
@@ -115,7 +102,7 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
   if (!hierarchy || !hierarchy.employee || !hierarchy.hierarchy_tree) {
     return (
       <div className="text-center py-8">
-        <div className="text-gray-500">Unable to load hierarchy data</div>
+        <div className="text-red-600">Unable to load hierarchy data</div>
       </div>
     );
   }
@@ -177,17 +164,17 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
   return (
     <div className="space-y-6">
       {/* View Mode Toggle */}
-      <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
-        <h4 className="text-lg font-semibold text-gray-900">Organization Structure</h4>
+  <div className="flex items-center justify-between bg-red-50 rounded-lg p-3 border border-red-200">
+  <h4 className="text-lg font-semibold text-red-700">Organization Structure</h4>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">View:</span>
-          <div className="flex bg-white rounded-lg p-1 shadow-sm">
+          <span className="text-sm text-red-600">View:</span>
+          <div className="flex bg-white rounded-lg p-1 shadow-sm border border-red-100">
             <button
               onClick={() => setCurrentViewMode('modern')}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
                 (currentViewMode as string) === 'modern' 
-                  ? 'bg-blue-500 text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-red-600 text-white' 
+                  : 'text-red-600 hover:text-red-800'
               }`}
             >
               Modern
@@ -196,8 +183,8 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
               onClick={() => setCurrentViewMode('classic')}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
                   (currentViewMode as string) === 'classic' 
-                    ? 'bg-blue-500 text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-red-600 text-white' 
+                    : 'text-red-600 hover:text-red-800'
                 }`}
             >
               Classic
@@ -212,50 +199,50 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
       ) : (
         <div className="space-y-6">
           {/* Employee Info Header */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
+          <div className="bg-red-50 rounded-lg p-4 border border-red-100">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+              <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
                 {hierarchy.employee.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">{hierarchy.employee.name}</h3>
-                <p className="text-gray-600">{hierarchy.employee.title}</p>
-                <p className="text-sm text-gray-500">{hierarchy.employee.department} • {hierarchy.employee.location}</p>
+                <h3 className="text-xl font-bold text-red-700">{hierarchy.employee.name}</h3>
+                <p className="text-red-600">{hierarchy.employee.title}</p>
+                <p className="text-sm text-red-400">{hierarchy.employee.department} • {hierarchy.employee.location}</p>
               </div>
             </div>
           </div>
 
           {/* Classic Hierarchy Tree */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">Organization Structure</h4>
+          <div className="bg-white rounded-lg border border-red-200 p-4">
+            <h4 className="text-lg font-semibold text-red-700 mb-4">Organization Structure</h4>
             {hierarchy.hierarchy_tree ? renderNode(hierarchy.hierarchy_tree) : (
-              <div className="text-center py-4 text-gray-500">
+              <div className="text-center py-4 text-red-400">
                 No hierarchy data available
               </div>
             )}
           </div>
 
           {/* Management Chain */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">Management Chain</h4>
+          <div className="bg-white rounded-lg border border-red-200 p-4">
+            <h4 className="text-lg font-semibold text-red-700 mb-4">Management Chain</h4>
             
             <div className="flex flex-wrap items-center gap-2">
               {hierarchy.management_chain && hierarchy.management_chain.length > 0 ? (
                 hierarchy.management_chain.map((node, index) => (
                   node && node.id ? (
                     <React.Fragment key={node.id}>
-                      <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
-                        <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                      <div className="flex items-center space-x-2 bg-red-50 rounded-lg p-2 border border-red-100">
+                        <div className="w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
                           {node.name ? node.name.split(' ').map(n => n[0]).join('').substring(0, 2) : '??'}
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{node.name || 'Unknown'}</div>
-                          <div className="text-xs text-gray-500">{node.title || 'Unknown Title'}</div>
+                          <div className="text-sm font-medium text-red-700">{node.name || 'Unknown'}</div>
+                          <div className="text-xs text-red-400">{node.title || 'Unknown Title'}</div>
                         </div>
                       </div>
                       
                       {index < hierarchy.management_chain.length - 1 && (
-                        <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                         </svg>
                       )}
@@ -269,15 +256,15 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
           </div>
 
           {/* Stats */}
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-red-50 rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-blue-600">{hierarchy.total_employees}</div>
-                <div className="text-sm text-gray-600">Total Employees</div>
+                <div className="text-2xl font-bold text-red-600">{hierarchy.total_employees}</div>
+                <div className="text-sm text-red-600">Total Employees</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-600">{hierarchy.management_chain.length}</div>
-                <div className="text-sm text-gray-600">Management Levels</div>
+                <div className="text-2xl font-bold text-red-400">{hierarchy.management_chain.length}</div>
+                <div className="text-sm text-red-400">Management Levels</div>
               </div>
             </div>
           </div>
