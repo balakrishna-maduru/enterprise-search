@@ -2,6 +2,14 @@
 import { apiClient, SummaryRequest, SummaryResponse } from './api_client';
 
 export class SummaryService {
+  // Summarize a document by index and docId using the new backend endpoint
+  async summarizeById(index: string, docId: string): Promise<{ success: boolean; data?: string; error?: string }> {
+    // MOCK: Return a fake summary string for now, do not call backend
+    return {
+      success: true,
+      data: `This is a mock summary for document ID ${docId} in index ${index}. (No LLM or backend call made.)`
+    };
+  }
   
   async generateQuickSummary(
     searchResults: any[], 

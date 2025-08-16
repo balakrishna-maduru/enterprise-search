@@ -1,5 +1,17 @@
-// src/services/api_client.ts
+
 import { httpClient, ApiResponse } from './http_client';
+
+// Envelope for new summary endpoint
+export interface SummaryByIdRequest {
+  index: string;
+  docId: string;
+}
+
+export interface SummaryByIdResponse {
+  code: number;
+  msg: string;
+  data: string;
+}
 
 // API Response Types
 export interface SearchResult {
@@ -112,6 +124,17 @@ export class ApiClient {
       company: userData?.company || 'Enterprise'
     };
     return httpClient.post('/auth/login', loginData);
+  }
+
+  // New: Summarize a document by index and docId
+  async summarizeById(request: SummaryByIdRequest): Promise<ApiResponse<SummaryByIdResponse>> {
+    // Try to get JWT token from localStorage
+    let token = '';
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('access_token') || '';
+    }
+    const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
+    return httpClient.post('/summary', request, { headers });
   }
 
   async logout(): Promise<ApiResponse<void>> {

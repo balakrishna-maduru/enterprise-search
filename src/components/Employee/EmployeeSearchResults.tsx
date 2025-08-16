@@ -85,63 +85,7 @@ export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({
     }
   };
 
-  // Helper function to create mock hierarchy for testing
-  const createMockHierarchy = (employee: SearchResult) => {
-    const employeeData = employee.employee_data;
-    const name = employee.title || employeeData?.name || 'Unknown Employee';
-    const position = employeeData?.title || 'Unknown Position';
-    const department = employee.department || employeeData?.department || 'Unknown Department';
-    const email = employeeData?.email || employee.url?.replace('mailto:', '') || 'unknown@company.com';
-    
-    const mockEmployee = {
-      id: Number(employee.id) || 1,
-      name: name,
-      title: position,
-      email: email,
-      department: department,
-      location: employeeData?.location || 'Unknown Location',
-      phone: employeeData?.phone || '+1-555-0000',
-      start_date: employeeData?.start_date || '2020-01-01',
-      manager_id: 2,
-      level: employeeData?.level || 3,
-      has_reports: employeeData?.has_reports || false,
-      report_count: employeeData?.report_count || 0,
-      document_type: "employee",
-      indexed_at: "2024-01-01T00:00:00Z",
-      search_text: `${name} ${position}`
-    };
-
-    const mockHierarchyTree = {
-      id: employee.id,
-      name: name,
-      title: position,
-      department: department,
-      email: email,
-      level: employeeData?.level || 3,
-      is_target: true,
-      reports: []
-    };
-
-    const mockManagementChain = [
-      {
-        id: "manager",
-        name: "Manager Name",
-        title: "Department Manager",
-        department: department,
-        email: "manager@company.com",
-        level: (employeeData?.level || 3) - 1,
-        is_target: false,
-        reports: []
-      }
-    ];
-
-    return {
-      employee: mockEmployee,
-      hierarchy_tree: mockHierarchyTree,
-      management_chain: mockManagementChain,
-      total_employees: 1
-    };
-  };
+  // All hierarchy data must come from API; no mock helpers.
 
   const closeHierarchyView = () => {
     setSelectedEmployeeHierarchy(null);

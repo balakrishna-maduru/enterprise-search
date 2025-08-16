@@ -370,5 +370,673 @@
         "created_at": "2025-08-13T00:18:57.379737Z"
       }
     ]
+  },
+  {
+    "session_id": "doc-summary",
+    "first_message": "hello",
+    "created_at": "2025-08-16T14:57:04.864119Z",
+    "updated_at": "2025-08-16T15:12:53.029011",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "448f1d82-9a3d-4b54-b47d-d95216114a6d",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-16T14:57:04.864057Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "deb07125-c1c4-4f03-8ab6-06829e674fb0",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T14:57:04.864115Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "368e74b5-3df7-4b01-9e75-843da15fecfa",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T14:59:31.693002Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "c12f6c28-0e46-40c9-baf1-177a0b2cbf88",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T14:59:31.693047Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "c8acc9aa-e5c2-4444-ab0b-0e6b8a0f72bf",
+        "content": "Heelo1",
+        "role": "user",
+        "created_at": "2025-08-16T14:59:37.600435Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "6866f566-75d7-46fb-8474-4362b7112d8d",
+        "content": "This is a mock response to your question: Heelo1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T14:59:37.600465Z"
+      },
+      {
+        "idx": 7,
+        "msg_id": "3eb1f9a3-a4fb-496c-b138-3d90084a1137",
+        "content": "Hello3",
+        "role": "user",
+        "created_at": "2025-08-16T14:59:43.765073Z"
+      },
+      {
+        "idx": 8,
+        "msg_id": "ce0e8f7a-3883-4c3b-bb75-746a28b417e2",
+        "content": "This is a mock response to your question: Hello3. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T14:59:43.765097Z"
+      },
+      {
+        "idx": 9,
+        "msg_id": "f1fe8329-975b-45ca-8f8f-855ae1e7a3bc",
+        "content": "Hello 4",
+        "role": "user",
+        "created_at": "2025-08-16T14:59:49.107392Z"
+      },
+      {
+        "idx": 10,
+        "msg_id": "ea4c940c-f1b6-45a8-a071-58418d7efc53",
+        "content": "This is a mock response to your question: Hello 4. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T14:59:49.107429Z"
+      },
+      {
+        "idx": 11,
+        "msg_id": "a2c55294-f5fa-440b-ac1e-f6ea5b9a9a52",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:05:26.021794Z"
+      },
+      {
+        "idx": 12,
+        "msg_id": "68055a20-faa3-4a48-8518-c8f2399367fc",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:05:26.021837Z"
+      },
+      {
+        "idx": 13,
+        "msg_id": "68dfd479-3a28-4530-962c-66f12c2e5067",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:06:56.785908Z"
+      },
+      {
+        "idx": 14,
+        "msg_id": "f0d2ef13-d569-40b2-ac27-86681c760cda",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:06:56.785950Z"
+      },
+      {
+        "idx": 15,
+        "msg_id": "a65fbc19-968d-4a5f-83f5-f98c58ac84d9",
+        "content": "hello 1",
+        "role": "user",
+        "created_at": "2025-08-16T15:07:09.819056Z"
+      },
+      {
+        "idx": 16,
+        "msg_id": "095e6495-5446-4774-9237-02434a94699c",
+        "content": "This is a mock response to your question: hello 1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:07:09.819088Z"
+      },
+      {
+        "idx": 17,
+        "msg_id": "d193f5de-22b1-48bd-a761-73a07fc5ec28",
+        "content": "Symmary of API",
+        "role": "user",
+        "created_at": "2025-08-16T15:11:04.745730Z"
+      },
+      {
+        "idx": 18,
+        "msg_id": "88b6033d-d49b-4d65-8576-0a355024473d",
+        "content": "This is a mock response to your question: Symmary of API. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:11:04.745777Z"
+      },
+      {
+        "idx": 19,
+        "msg_id": "3a30006b-86f1-4eaf-86a4-41cd9aa4ad9f",
+        "content": "add ",
+        "role": "user",
+        "created_at": "2025-08-16T15:12:45.690276Z"
+      },
+      {
+        "idx": 20,
+        "msg_id": "e1205309-b212-44e0-be7c-83aabdac3384",
+        "content": "This is a mock response to your question: add . In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:12:45.690293Z"
+      },
+      {
+        "idx": 21,
+        "msg_id": "1f5330d2-48f0-4eb6-9106-75a80e5d1366",
+        "content": "add 1",
+        "role": "user",
+        "created_at": "2025-08-16T15:12:53.028967Z"
+      },
+      {
+        "idx": 22,
+        "msg_id": "313fe9a3-5ae9-411b-b04a-e4616c797a97",
+        "content": "This is a mock response to your question: add 1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:12:53.029006Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-dlcmhwoz-1755328697973",
+    "first_message": "Hello new 1",
+    "created_at": "2025-08-16T15:18:26.285778Z",
+    "updated_at": "2025-08-16T15:18:30.177016",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "53dd0dd5-c2be-4013-9b43-9d0377ac9636",
+        "content": "Hello new 1",
+        "role": "user",
+        "created_at": "2025-08-16T15:18:26.285727Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "ef326b7c-5d50-4b04-bb3a-eccd9dc4aba2",
+        "content": "This is a mock response to your question: Hello new 1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:18:26.285774Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "698c5d46-4cc3-48a6-9fc1-3665dc9a8d8f",
+        "content": "Hello3",
+        "role": "user",
+        "created_at": "2025-08-16T15:18:30.176971Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "e19bca4e-2e96-43ad-a399-256375ef132a",
+        "content": "This is a mock response to your question: Hello3. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:18:30.177011Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755329681679_bjepswczm",
+    "first_message": "hello",
+    "created_at": "2025-08-16T15:34:45.298898Z",
+    "updated_at": "2025-08-16T15:39:16.164503",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "fcc25458-9544-41e3-9a1c-b3759c8cfa87",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:34:45.298857Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "d6f6e7f7-68f5-418d-a29d-85d8d84e7321",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:34:45.298895Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "9d0b2cf9-528f-490d-98d7-e78174f4fdd2",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:37:11.768277Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "44ffb86e-aa2a-4396-b36c-820d8143287a",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:37:11.768381Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "d528cfd3-f6ad-40d3-b613-da1d4cdb3312",
+        "content": "hello 1",
+        "role": "user",
+        "created_at": "2025-08-16T15:38:46.622013Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "5b7add99-b423-43b1-a8c3-07c82c2ea411",
+        "content": "This is a mock response to your question: hello 1. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:38:46.622050Z"
+      },
+      {
+        "idx": 7,
+        "msg_id": "c8d93861-e3d8-40c0-a5cf-58749694b107",
+        "content": "help me",
+        "role": "user",
+        "created_at": "2025-08-16T15:39:16.164471Z"
+      },
+      {
+        "idx": 8,
+        "msg_id": "5f86324d-dde3-4283-a533-cd06dbe32c6d",
+        "content": "This is a mock response to your question: help me. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:39:16.164500Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755330024490_zdhp6o5h7",
+    "first_message": "Hello",
+    "created_at": "2025-08-16T15:40:24.496369Z",
+    "updated_at": "2025-08-16T15:41:39.250681",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "cbbbc834-3806-419f-b842-893769401d1e",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:40:24.496323Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "a009ad5b-1bdc-4842-93b3-9203f4013570",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:40:24.496365Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "91a3c4b1-91eb-4235-8d82-78b6f42760fd",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:41:39.250605Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "5e037fd8-b591-462f-9082-725c14f3e136",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:41:39.250673Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755330104483_4bba8v91j",
+    "first_message": "hello",
+    "created_at": "2025-08-16T15:41:48.468796Z",
+    "updated_at": "2025-08-16T15:44:57.068257",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "8e1d2bdd-b45e-42c9-a608-5a9d736f440a",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:41:48.468757Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "b745aee4-ef4f-4549-a086-bec45d8dc7f5",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:41:48.468792Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "91d4517c-6d40-45bc-ae3e-2e45183d5624",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:41:52.769446Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "56130fc0-746c-44bc-983f-09c9828ad269",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:41:52.769479Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "38e7859b-d4fd-41a3-8aec-3445e27e4415",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:44:57.068217Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "8d6c5cd0-bd6b-4cf0-89eb-5cccaa11e876",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:44:57.068254Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755330329650_4i0rl2bdr",
+    "first_message": "Hello",
+    "created_at": "2025-08-16T15:45:32.518641Z",
+    "updated_at": "2025-08-16T15:45:32.518644Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "d3af03ca-28d5-422a-8f17-3fdb175375a7",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T15:45:32.518523Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "6a6d0702-0397-4bbe-a044-69896404b7e5",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T15:45:32.518636Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755331427270_o107dvnee",
+    "first_message": "Hello",
+    "created_at": "2025-08-16T16:03:54.712850Z",
+    "updated_at": "2025-08-16T16:03:54.712852Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "3d6f609b-c9fc-4f23-946b-50183424cd52",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:03:54.712812Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "29557f6b-aa6f-4d1f-8fae-7a8be9f0be9b",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:03:54.712847Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-9ye102hd-1755331447631",
+    "first_message": "Hello",
+    "created_at": "2025-08-16T16:04:11.312377Z",
+    "updated_at": "2025-08-16T16:04:11.312380Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "94234b43-5d4d-4444-8aa1-33455b6753b2",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:04:11.312323Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "fbb7c1b0-bc4e-4900-ac2d-0b453e45ee85",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:04:11.312373Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-61r1x4ag-1755331785466",
+    "first_message": "Hello lenovo",
+    "created_at": "2025-08-16T16:09:53.866881Z",
+    "updated_at": "2025-08-16T16:09:53.866884Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "4c1b4459-b851-4f5b-a5ca-671960f9d233",
+        "content": "Hello lenovo",
+        "role": "user",
+        "created_at": "2025-08-16T16:09:53.866807Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "9157e935-fbc0-48da-b214-fe12442703c4",
+        "content": "This is a mock response to your question: Hello lenovo. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:09:53.866874Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-0atrzsec-1755332052401",
+    "first_message": "hello",
+    "created_at": "2025-08-16T16:14:33.062621Z",
+    "updated_at": "2025-08-16T16:14:33.062623Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "d2ca179c-956b-4a6e-a576-72c98c037282",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:14:33.062587Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "539db748-46cc-4982-ae4c-0348f877b620",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:14:33.062618Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-rsislbo5-1755332193826",
+    "first_message": "Hello",
+    "created_at": "2025-08-16T16:16:37.893502Z",
+    "updated_at": "2025-08-16T16:16:37.893569Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "028d3d34-c025-4cca-bab5-12d3616c4818",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:16:37.893458Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "4a2646e6-c7ba-4aae-b30e-f4afe0e654bd",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:16:37.893498Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-x56w4j6e-1755332408211",
+    "first_message": "Add data",
+    "created_at": "2025-08-16T16:20:13.309939Z",
+    "updated_at": "2025-08-16T16:20:13.309942Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "35577aaf-0636-4810-aadf-5fb2419a6bb9",
+        "content": "Add data",
+        "role": "user",
+        "created_at": "2025-08-16T16:20:13.309892Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "19f7a5ea-f3d6-4fc3-8ea5-b0baad4bb6f0",
+        "content": "This is a mock response to your question: Add data. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:20:13.309934Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755332450532_0i4il0v4k",
+    "first_message": "Hello",
+    "created_at": "2025-08-16T16:20:50.542267Z",
+    "updated_at": "2025-08-16T16:20:50.542269Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "f292dade-13c2-4be4-bdde-756b7f78367c",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:20:50.542240Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "66ff04c9-6393-40a9-a4b9-091c6e328ccd",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:20:50.542265Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-02rw4cju-1755332631402",
+    "first_message": "Hello",
+    "created_at": "2025-08-16T16:23:54.378547Z",
+    "updated_at": "2025-08-16T16:23:54.378549Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "5e8b201a-cc0d-463e-bbbf-09a398938a8e",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:23:54.378506Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "50f3d876-6883-45fa-bd8f-9850fb3d60fa",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:23:54.378543Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755332640594_wf26g05dj",
+    "first_message": "Add",
+    "created_at": "2025-08-16T16:24:02.645423Z",
+    "updated_at": "2025-08-16T16:29:31.941225",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "f3ccede6-90f4-4af9-9189-a08a70ae69c7",
+        "content": "Add",
+        "role": "user",
+        "created_at": "2025-08-16T16:24:02.645379Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "82c73f92-f8b1-42e2-9adf-cf7306a9c825",
+        "content": "This is a mock response to your question: Add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:24:02.645419Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "12e9b0af-b268-47d3-89cb-72eade9de691",
+        "content": "made",
+        "role": "user",
+        "created_at": "2025-08-16T16:25:41.101667Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "c2a7eba9-5bd4-4557-b640-0f51d25f659e",
+        "content": "This is a mock response to your question: made. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:25:41.101755Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "bc808d75-5302-4c40-aa90-9bae43c939a7",
+        "content": "lenovo",
+        "role": "user",
+        "created_at": "2025-08-16T16:26:15.789426Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "5d68d18a-a70a-41a7-a379-60f81c9c457b",
+        "content": "This is a mock response to your question: lenovo. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:26:15.789545Z"
+      },
+      {
+        "idx": 7,
+        "msg_id": "0e5979cf-ec99-4eb8-af50-cc641c8cbbaf",
+        "content": "Hello",
+        "role": "user",
+        "created_at": "2025-08-16T16:29:31.941192Z"
+      },
+      {
+        "idx": 8,
+        "msg_id": "471e8fc0-dcec-4b06-a0fa-a9d7a9d9b40d",
+        "content": "This is a mock response to your question: Hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:29:31.941222Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755332813124_ut8joxdrx",
+    "first_message": "Add change",
+    "created_at": "2025-08-16T16:26:53.131487Z",
+    "updated_at": "2025-08-16T16:26:53.131492Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "7473b786-bcd6-40a6-be92-b4cb3274b45c",
+        "content": "Add change",
+        "role": "user",
+        "created_at": "2025-08-16T16:26:53.131419Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "5bb21a63-0046-492c-8dab-8a5466fe4f0c",
+        "content": "This is a mock response to your question: Add change. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:26:53.131479Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755332983044_j02quecem",
+    "first_message": "add chuck",
+    "created_at": "2025-08-16T16:29:48.921164Z",
+    "updated_at": "2025-08-16T16:31:43.599190",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "444b4c92-3821-45aa-9a4f-60d63c9f44fc",
+        "content": "add chuck",
+        "role": "user",
+        "created_at": "2025-08-16T16:29:48.920993Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "0f9dc34d-bd42-406a-9ef4-021569864ef1",
+        "content": "This is a mock response to your question: add chuck. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:29:48.921161Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "889a4474-e965-4ff7-8276-f7974780765e",
+        "content": "mee too",
+        "role": "user",
+        "created_at": "2025-08-16T16:31:43.599149Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "49ec77d7-00d1-45c2-9e01-b6b409646d88",
+        "content": "This is a mock response to your question: mee too. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-16T16:31:43.599186Z"
+      }
+    ]
   }
 ]

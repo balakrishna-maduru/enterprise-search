@@ -142,40 +142,9 @@ class ChatApiService {
     return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
-  // Upload and process a document (mocked for now)
-  async uploadDocument(file: File): Promise<DocumentUploadApiResponse> {
-    // Mock implementation - simulate file processing
-    console.log(`Starting upload for file: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
-    
-    // Simulate upload progress
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate upload time
-    console.log('File uploaded, processing...');
-    
-    // Simulate processing time based on file size
-    const processingTime = Math.min(3000, Math.max(1000, file.size / 1000)); // 1-3 seconds
-    await new Promise(resolve => setTimeout(resolve, processingTime));
-    
-    // Simulate potential file types and extract mock data
-    const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
-    const estimatedPages = Math.floor(Math.random() * 50) + 1;
-    
-    const mockResponse: DocumentUploadResponse = {
-      document_id: `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      filename: file.name,
-      size: file.size,
-      status: 'completed',
-      pages: estimatedPages,
-      processed_at: new Date().toISOString(),
-    };
-
-    console.log('Document processing completed:', mockResponse);
-
-    return {
-      code: 0,
-      msg: `Document processed successfully. Extracted ${estimatedPages} pages from ${fileExtension.toUpperCase()} file.`,
-      trace_id: `trace_${Date.now()}`,
-      data: mockResponse
-    };
+  // Upload and process a document (must be implemented in backend before use)
+  async uploadDocument(_file: File): Promise<DocumentUploadApiResponse> {
+    throw new Error('Document upload is not implemented on the backend API. Please add an endpoint and update chatApiService.uploadDocument to call it.');
   }
 }
 

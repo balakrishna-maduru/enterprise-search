@@ -67,17 +67,30 @@ async def send_chat_message(request: ChatRequest) -> Dict[str, Any]:
         session_id = request.session_id or str(uuid.uuid4())
         
         # Mock response matching the Postman collection format EXACTLY
+        output_text = f"This is a mock response to your question: {request.input}. In a real implementation, this would be processed by the {request.provider} model with knowledge scope '{request.knowledge_scope}' and provide comprehensive insights based on the available data."
+        mock_citations = [
+            {
+                "title": "Lenovo.pdf",
+                "url": "https://1bank.sharepoint.com/sites/ekb-uat-usecase-testing/Shared%20Documents/POC%20Evaluation/Lenovo.pdf",
+                "text_used": "Lenovo Settings (Windows) An application that provides power management features, such as Connected Standby for the user."
+            },
+            {
+                "title": "Lenovo.pdf",
+                "url": "https://1bank.sharepoint.com/sites/ekb-uat-usecase-testing/Shared%20Documents/POC%20Evaluation/Lenovo.pdf",
+                "text_used": "Smart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power."
+            }
+        ]
         mock_response = {
             "code": 0,
-            "msg": "success", 
+            "msg": "success",
             "trace_id": str(uuid.uuid4()).replace('-', ''),
             "data": {
-                "output": f"This is a mock response to your question: {request.input}. In a real implementation, this would be processed by the {request.provider} model with knowledge scope '{request.knowledge_scope}' and provide comprehensive insights based on the available data.",
+                "output": output_text,
                 "session_id": session_id,
-                "citation": None,
+                "citation": mock_citations,
                 "evaluation": {
                     "HALLUCINATION": "PASS",
-                    "RELEVANCY": "PASS", 
+                    "RELEVANCY": "PASS",
                     "ACCURACY": "PASS"
                 }
             }
@@ -103,8 +116,8 @@ async def send_chat_message(request: ChatRequest) -> Dict[str, Any]:
                 assistant_msg = {
                     "idx": len(session.get("messages", [])) + 2,
                     "msg_id": str(uuid.uuid4()),
-                    "content": mock_response["data"]["output"],
-                    "role": "assistant", 
+                    "content": output_text,
+                    "role": "assistant",
                     "created_at": datetime.now().isoformat() + "Z"
                 }
                 
@@ -126,7 +139,7 @@ async def send_chat_message(request: ChatRequest) -> Dict[str, Any]:
             assistant_msg = {
                 "idx": 2,
                 "msg_id": str(uuid.uuid4()),
-                "content": mock_response["data"]["output"],
+                "content": output_text,
                 "role": "assistant",
                 "created_at": datetime.now().isoformat() + "Z"
             }

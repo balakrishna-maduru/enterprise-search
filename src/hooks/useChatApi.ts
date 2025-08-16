@@ -1,11 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { chatApiService, MessageResponse, SessionInfo, ChatRequest, ChatResponse, DocumentUploadApiResponse } from '../services/chatApiService';
 
+export interface Citation {
+  title: string;
+  url?: string;
+  text_used?: string;
+}
+
 export interface ChatMessage {
   id: string;
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
+  citations?: Citation[];
 }
 
 export interface ChatSession {
@@ -13,6 +20,7 @@ export interface ChatSession {
   firstMessage: string;
   createdAt: Date;
   messages: ChatMessage[];
+  document?: any; // Add document context
 }
 
 export const useChatApi = () => {
@@ -155,12 +163,17 @@ export const useChatApi = () => {
           timestamp: new Date(),
         };
         
-        // Create assistant message from response
+        // Create assistant message from response, including citations if present
         const assistantMessage: ChatMessage = {
           id: `assistant-${Date.now()}`,
           content: chatResponse.output,
           role: 'assistant',
           timestamp: new Date(),
+          citations: Array.isArray(chatResponse.citation) ? chatResponse.citation.map((c: any) => ({
+            title: c.title,
+            url: c.url,
+            text_used: c.text_used
+          })) : undefined,
         };
         
         // Update sessions list with new message count
@@ -226,12 +239,13 @@ export const useChatApi = () => {
   }, [currentSession, sessions]);
 
   // Create a new chat session
-  const createNewSession = useCallback(() => {
+  const createNewSession = useCallback((document?: any) => {
     const newSession: ChatSession = {
       id: chatApiService.generateSessionId(),
       firstMessage: '',
       createdAt: new Date(),
       messages: [],
+      document: document || undefined,
     };
     setCurrentSession(newSession);
     return newSession.id;

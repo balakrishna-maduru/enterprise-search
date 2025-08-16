@@ -23,8 +23,8 @@ const Layout: React.FC = () => {
     showSummary
   });
 
-  const navigateToChat = (document?: any) => {
-    setChatDocument(document);
+  const navigateToChat = (document?: any, initialQuestion?: string) => {
+    setChatDocument(document ? { ...document, initialQuestion } : null);
     setCurrentPage('chat');
   };
 
@@ -48,7 +48,7 @@ const Layout: React.FC = () => {
       <DocumentChatPage 
         isOpen={true}
         onClose={navigateToMain}
-        initialDocument={chatDocument}
+        document={chatDocument}
       />
     );
   }
@@ -101,8 +101,10 @@ const Layout: React.FC = () => {
         isOpen={showSummary}
         onClose={closeSummary}
         initialDocument={summaryDocument}
-        searchResults={searchResults}
-        searchQuery={searchQuery}
+        onAskQuestion={(question, doc) => {
+          setShowSummary(false);
+          navigateToChat(doc, question);
+        }}
       />
     </div>
   );

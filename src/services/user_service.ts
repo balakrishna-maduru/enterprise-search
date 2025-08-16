@@ -22,7 +22,8 @@ export class UserService {
 
   // Get current user email (most commonly used)
   static getCurrentUserEmail(): string | null {
-    return userStore.getCurrentUserEmail();
+  const user = userStore.getCurrentUser();
+  return user?.email || null;
   }
 
   // Check if user is authenticated

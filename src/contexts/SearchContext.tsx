@@ -7,7 +7,6 @@ import { useApiSearch } from '../hooks/useApiSearch';
 import { useApiLLM } from '../hooks/useApiLLM';
 import { SearchContextType, SearchResult, SearchFilters, Employee, PaginationInfo } from '../types';
 import { employeeService } from '../services/employee_service';
-import { getCurrentUserEmail, getCurrentUserName, getCurrentUserDepartment } from '../store/userStore';
 import { useUser } from '../hooks/useUser';
 import { apiService } from '../services/api_service';
 
@@ -114,7 +113,10 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         const dualSearchData = await apiService.dualSearch(
           searchTerm,
           5,
-          5
+          5,
+          currentUser,
+          0,
+          0
         );
         console.log('✅ Dual search data received:', dualSearchData);
         
@@ -148,79 +150,21 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         });
       }
     } catch (error) {
-      console.error('❌ Dual search failed:', error);
-      
-      // Provide fallback mock data when API is not available
-      const mockEmployees = [
-        {
-          id: 'mock-emp-1',
-          title: 'Sarah Chen',
-          content: 'Senior Product Manager in Digital Banking at DBS Bank',
-          summary: 'Sarah Chen - Senior Product Manager specializing in digital banking solutions',
-          source: 'employee-directory',
-          author: 'System',
-          department: 'Digital Banking', 
-          content_type: 'employee',
-          tags: ['product-management', 'digital-banking'],
-          timestamp: new Date().toISOString(),
-          url: `mailto:${getCurrentUserEmail() || 'user@example.com'}`,
-          score: 95,
-          employee_data: {
-            id: 1,
-            name: getCurrentUserName(),
-            title: 'Senior Product Manager',
-            email: getCurrentUserEmail() || 'user@example.com',
-            department: getCurrentUserDepartment() || 'Digital Banking',
-            location: 'Singapore',
-            phone: '+65 6000 0001',
-            start_date: '2020-01-01',
-            level: 3,
-            has_reports: true,
-            report_count: 3,
-            document_type: 'employee',
-            indexed_at: new Date().toISOString(),
-            search_text: 'Sarah Chen Senior Product Manager Digital Banking'
-          }
-        }
-      ];
-      
-      const mockDocuments = [
-        {
-          id: 'mock-doc-1',
-          title: 'Welcome to Enterprise Search',
-          content: 'Search through company documents, employee directory, and more. The system is running in demo mode with sample data.',
-          summary: 'Enterprise search system demo with sample data',
-          source: 'welcome-guide',
-          author: 'System',
-          department: 'IT',
-          content_type: 'document',
-          tags: ['welcome', 'guide', 'demo'],
-          timestamp: new Date().toISOString(),
-          url: '#',
-          score: 100
-        }
-      ];
-      
-      console.log('📋 Using fallback mock data due to API error');
-      setEmployeeResults(mockEmployees);
-      setDocumentResults(mockDocuments);
-      setEmployeeTotal(1);
-      setDocumentTotal(1);
-      
-      // Combine results
-      const combinedResults = [...mockEmployees, ...mockDocuments];
-      setSearchResults(combinedResults);
-      
-      // Update pagination for mock data
-      const newPagination: PaginationInfo = {
+      console.error('❌ Dual search failed, clearing results (no mocks):', error);
+      // On error, clear results and totals; do not use any mock data
+      setEmployeeResults([]);
+      setDocumentResults([]);
+      setEmployeeTotal(0);
+      setDocumentTotal(0);
+      setSearchResults([]);
+      setPagination({
         currentPage: 1,
         totalPages: 1,
-        totalResults: 2,
+        totalResults: 0,
         pageSize: pagination.pageSize || 10,
         hasNextPage: false,
         hasPreviousPage: false
-      };
-      setPagination(newPagination);
+      });
     } finally {
       setIsLoading(false);
     }

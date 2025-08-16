@@ -17,7 +17,7 @@ const DocumentChatPage: React.FC<DocumentChatPageProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-white">
       <div className="h-full">
-        <ChatInterface onClose={onClose} />
+        <ChatInterface onClose={onClose} initialQuestion={document?.initialQuestion} document={document} />
       </div>
     </div>
   );

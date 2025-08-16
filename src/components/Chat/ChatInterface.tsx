@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useChatApi } from '../../hooks/useChatApi';
+import { useChatApi, ChatMessage } from '../../hooks/useChatApi';
 import FileUpload from './FileUpload';
 
 interface ChatInterfaceProps {
   className?: string;
   onClose?: () => void;
+  initialQuestion?: string;
+  document?: any;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, initialQuestion, document }) => {
   const {
     sessions,
     currentSession,
@@ -20,7 +22,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose }
     uploadDocument,
   } = useChatApi();
 
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputMessage, setInputMessage] = useState(initialQuestion || '');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [knowledgeScope, setKnowledgeScope] = useState<'world' | 'company'>('world');
@@ -135,7 +137,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose }
 
   // Handle creating a new chat
   const handleNewChat = () => {
-    createNewSession();
+    // If document context is provided as prop, use it
+    createNewSession(document);
+    setInputMessage(initialQuestion || '');
   };
 
   // Handle session selection
@@ -169,6 +173,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose }
       content: msg.content,
       isUser: msg.role === 'user',
       timestamp: msg.timestamp,
+  citations: msg.citations || (msg as any).citation || [],
     })),
     createdAt: session.createdAt,
     updatedAt: session.createdAt,
@@ -182,6 +187,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose }
       content: msg.content,
       isUser: msg.role === 'user',
       timestamp: msg.timestamp,
+  citations: msg.citations || (msg as any).citation || [],
     })),
     createdAt: currentSession.createdAt,
     updatedAt: currentSession.createdAt,
@@ -350,27 +356,72 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose }
                 </div>
               )}
               
-              {currentChat.messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-                >
+              {currentChat.messages.map((msg: any, idx: number) => {
+                // Normalize message to ChatMessage shape
+                const message: ChatMessage = {
+                  id: msg.id,
+                  content: msg.content,
+                  role: msg.role || (msg.isUser ? 'user' : 'assistant'),
+                  timestamp: msg.timestamp,
+                  citations: msg.citations || [],
+                };
+                const isUser = (msg.isUser !== undefined) ? msg.isUser : message.role === 'user';
+                return (
                   <div
-                    className={`max-w-xs lg:max-w-2xl px-4 py-2 rounded-lg ${
-                      message.isUser
-                        ? 'bg-red-600 text-white'
-                        : 'bg-gray-100 text-gray-900'
-                    }`}
+                    key={message.id}
+                    className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                    <p className={`text-xs mt-1 ${
-                      message.isUser ? 'text-red-100' : 'text-gray-500'
-                    }`}>
-                      {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                    <div
+                      className={`max-w-xs lg:max-w-2xl px-4 py-2 rounded-lg ${
+                        isUser
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-100 text-gray-900'
+                      }`}
+                    >
+                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      {/* Citations for assistant messages */}
+                      {!isUser && message.citations && message.citations.length > 0 && (
+                        <div className="mt-2 bg-red-50 border-l-4 border-red-400 p-2 rounded text-xs text-gray-700">
+                          <span>
+                            {message.citations.map(cite => cite.text_used).filter(Boolean).join(' ')}
+                            {message.citations.length > 0 && (
+                              <span className="ml-2 text-red-700 font-semibold">
+                                {(message.citations ?? []).map((_, cidx) => `[${cidx + 1}]`).join(' ')}
+                              </span>
+                            )}
+                            {/* Citations summary below */}
+                            {message.citations.length > 0 && (
+                              <div className="mt-1 text-xs text-gray-700">
+                                {(message.citations ?? []).map((cite, cidx) =>
+                                  cite.url ? (
+                                    <div key={cidx}>
+                                      <a
+                                        href={cite.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="underline hover:text-red-900 text-red-700 font-semibold"
+                                      >
+                                        [{cidx + 1}] {cite.title}
+                                      </a>
+                                    </div>
+                                  ) : (
+                                    <div key={cidx} className="font-semibold text-red-700">[{cidx + 1}] {cite.title}</div>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          </span>
+                        </div>
+                      )}
+                      <p className={`text-xs mt-1 ${
+                        isUser ? 'text-red-100' : 'text-gray-500'
+                      }`}>
+                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               
               {isLoading && (
                 <div className="flex justify-start">

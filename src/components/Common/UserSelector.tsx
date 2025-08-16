@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useUser } from '../../hooks/useUser';
-import { availableUsers } from '../../data/users';
+// Removed availableUsers mock list; only show current user profile, no mock switching
 
 const UserSelector: React.FC = () => {
   const { user: currentUser, updateUser } = useUser();
@@ -51,31 +51,7 @@ const UserSelector: React.FC = () => {
         <ChevronDown className="ml-2 h-4 w-4" />
       </button>
 
-      {showUserDropdown && (
-        <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-          <div className="py-1">
-            {availableUsers.map((user) => (
-              <button
-                key={user.id}
-                onClick={() => handleUserSelect(user)}
-                className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                  currentUser.id === user.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
-                    {user.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2)}
-                  </div>
-                  <div>
-                    <div className="font-medium">{user.name}</div>
-                    <div className="text-xs text-gray-500">{user.position}</div>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+  {/* Dropdown removed as we no longer provide mock user switching */}
     </div>
   );
 };

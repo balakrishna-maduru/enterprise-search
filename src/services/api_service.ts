@@ -83,20 +83,72 @@ export interface ApiEmployeeResponse {
 
 export class ApiService {
   private baseUrl: string;
+  private authToken: string | null = null;
 
   constructor(baseUrl: string = 'http://localhost:8000/api/v1') {
     this.baseUrl = baseUrl;
   }
 
-  private getHeaders(): Record<string, string> {
-    return {
+  private async getAuthToken(): Promise<string> {
+    if (this.authToken) {
+      return this.authToken;
+    }
+
+    try {
+      // Login to get a proper JWT token
+      const loginResponse = await fetch(`${this.baseUrl}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: 'balu@mymail.com',
+          password: 'test' // Using mock user from the auth middleware
+        })
+      });
+
+      if (!loginResponse.ok) {
+        throw new Error(`Login failed: ${loginResponse.status}`);
+      }
+
+      const loginData = await loginResponse.json();
+      this.authToken = loginData.access_token;
+      console.log('✅ Successfully authenticated and got JWT token');
+      return this.authToken!; // We know it's not null here
+    } catch (error) {
+      console.error('❌ Authentication failed:', error);
+      throw new Error('Failed to authenticate with API');
+    }
+  }
+
+  private async getAuthHeaders(currentUser?: any): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
+
+    try {
+      // Try to get token from currentUser first
+      if (currentUser?.token) {
+        headers['Authorization'] = `Bearer ${currentUser.token}`;
+        console.log('🔑 Using currentUser token for auth');
+      } else {
+        // Get JWT token for API access
+        const token = await this.getAuthToken();
+        headers['Authorization'] = `Bearer ${token}`;
+        console.log('🔑 Using API service token for auth');
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not get auth token:', error);
+      // Continue without auth - let the API return 401 if needed
+    }
+
+    return headers;
   }
 
   async searchWithApi(
     query: string = '', 
     size: number = 10, 
+    currentUser?: any,
     contentTypes: string[] = [],
     from: number = 0,
     excludeContentTypes: string[] = []
@@ -125,8 +177,8 @@ export class ApiService {
           // Add excluded content types to the request (we'll need to modify the backend to handle this)
           exclude_content_type: excludeContentTypes
         },
-        size: Number(size),
-        from_: Number(from),
+        size,
+        from_: from,
         semantic_enabled: !isWildcardQuery, // Disable semantic search for wildcard queries
         hybrid_weight: isWildcardQuery ? 0 : 0.7
       };
@@ -138,8 +190,8 @@ export class ApiService {
         searchRequest 
       });
       
-      // Get headers (no authentication)
-      const headers = this.getHeaders();
+      // Get authentication headers
+      const headers = await this.getAuthHeaders(currentUser);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -248,7 +300,7 @@ export class ApiService {
       
       const results: SearchResult[] = [];
       
-      // ONLY add the logged-in user - no other employees on page 1
+      // ONLY add the logged-in user (balu) - no other employees on page 1
       if (currentUser) {
         const loggedInUserResult: SearchResult = {
           id: `user_${currentUser.id || 'current'}`,
@@ -301,12 +353,12 @@ export class ApiService {
     }
   }
 
-  async getNonEmployeeDocuments(size: number = 10, from: number = 0): Promise<{results: SearchResult[], total: number}> {
+  async getNonEmployeeDocuments(currentUser?: any, size: number = 10, from: number = 0): Promise<{results: SearchResult[], total: number}> {
     try {
       console.log(`🔍 Getting non-employee documents (page 2+) starting from ${from}...`);
       
       // Get documents and tickets ONLY (positive filter instead of exclude)
-      const documentsResponse = await this.searchWithApi('', size, ['document', 'ticket'], from);
+      const documentsResponse = await this.searchWithApi('', size, currentUser, ['document', 'ticket'], from);
       
       if (documentsResponse && documentsResponse.results) {
         console.log(`✅ Got ${documentsResponse.results.length} non-employee documents, total available: ${documentsResponse.total}`);
@@ -403,6 +455,7 @@ export class ApiService {
   async searchDocumentsOnly(
     query: string = '', 
     size: number = 10, 
+    currentUser?: any,
     from: number = 0
   ): Promise<{results: SearchResult[], total: number}> {
     try {
@@ -419,8 +472,8 @@ export class ApiService {
           tags: [],
           exclude_content_type: ['employee'] // Explicitly exclude employees
         },
-        size: Number(size),
-        from_: Number(from),
+        size,
+        from_: from,
         semantic_enabled: !isWildcardQuery,
         hybrid_weight: isWildcardQuery ? 0 : 0.7
       };
@@ -428,7 +481,7 @@ export class ApiService {
       const url = `${this.baseUrl}/search`; // Document search endpoint
       console.log('🔍 Making document search API request:', { url, query, searchRequest });
       
-      const headers = this.getHeaders();
+      const headers = await this.getAuthHeaders(currentUser);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -488,6 +541,7 @@ export class ApiService {
   async searchDocumentsWithFilters(
     query: string = '', 
     size: number = 10, 
+    currentUser?: any,
     from: number = 0,
     filters?: {
       source?: string[];
@@ -510,8 +564,8 @@ export class ApiService {
           tags: filters?.tags || [],
           exclude_content_type: ['employee'] // Always exclude employees for document search
         },
-        size: Number(size),
-        from_: Number(from),
+        size,
+        from_: from,
         semantic_enabled: !isWildcardQuery,
         hybrid_weight: isWildcardQuery ? 0 : 0.7
       };
@@ -523,7 +577,7 @@ export class ApiService {
         filters: searchRequest.filters
       });
       
-      const headers = this.getHeaders();
+      const headers = await this.getAuthHeaders(currentUser);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -594,6 +648,7 @@ export class ApiService {
   async searchEmployeesOnly(
     query: string = '', 
     size: number = 10, 
+    currentUser?: any,
     from: number = 0
   ): Promise<{results: SearchResult[], total: number}> {
     try {
@@ -612,7 +667,7 @@ export class ApiService {
       const fullUrl = query.trim() ? `${url}?${params.toString()}` : `${url}?q=*&size=${size}`;
       console.log('👥 Making employee search API request:', { fullUrl, query });
       
-      const headers = this.getHeaders();
+      const headers = await this.getAuthHeaders(currentUser);
       delete headers['Content-Type']; // GET request doesn't need Content-Type
       
       const response = await fetch(fullUrl, {
@@ -697,6 +752,7 @@ export class ApiService {
     query: string = '', 
     employeeSize: number = 5, 
     documentSize: number = 5,
+    currentUser?: any,
     employeeFrom: number = 0,
     documentFrom: number = 0
   ): Promise<{
@@ -704,49 +760,12 @@ export class ApiService {
     documents: {results: SearchResult[], total: number}
   }> {
     try {
-      // Check if API is available
-      const isApiAvailable = await this.healthCheck();
-      
-      if (!isApiAvailable) {
-        console.log('⚠️ API not available, using mock search results...');
-        
-        // Filter mock data based on query if provided
-        const mockEmployees = this.createMockSearchResults();
-        const mockDocuments = this.createMockDocuments();
-        
-        let filteredEmployees = mockEmployees;
-        let filteredDocuments = mockDocuments;
-        
-        if (query.trim()) {
-          const queryLower = query.toLowerCase();
-          filteredEmployees = mockEmployees.filter(emp => 
-            emp.title.toLowerCase().includes(queryLower) ||
-            emp.content.toLowerCase().includes(queryLower) ||
-            emp.department.toLowerCase().includes(queryLower)
-          );
-          filteredDocuments = mockDocuments.filter(doc => 
-            doc.title.toLowerCase().includes(queryLower) ||
-            doc.content.toLowerCase().includes(queryLower) ||
-            doc.department.toLowerCase().includes(queryLower)
-          );
-        }
-        
-        return {
-          employees: {
-            results: filteredEmployees.slice(employeeFrom, employeeFrom + employeeSize),
-            total: filteredEmployees.length
-          },
-          documents: {
-            results: filteredDocuments.slice(documentFrom, documentFrom + documentSize),
-            total: filteredDocuments.length
-          }
-        };
-      }
+  // Always use backend; if healthCheck fails, let subsequent calls error
       
       // Execute both searches in parallel
       const [employeeResponse, documentResponse] = await Promise.all([
-        this.searchEmployeesOnly(query, employeeSize, employeeFrom),
-        this.searchDocumentsOnly(query, documentSize, documentFrom)
+        this.searchEmployeesOnly(query, employeeSize, currentUser, employeeFrom),
+        this.searchDocumentsOnly(query, documentSize, currentUser, documentFrom)
       ]);
 
       console.log('✅ Dual search completed:', {
@@ -776,29 +795,7 @@ export class ApiService {
     documents: {results: SearchResult[], total: number}
   }> {
     try {
-      console.log('🚀 Loading landing page data with dual API calls...');
-      
-      // Check if API is available
-      const isApiAvailable = await this.healthCheck();
-      
-      if (!isApiAvailable) {
-        console.log('⚠️ API not available, using mock data...');
-        
-        // Return mock data when API is not available
-        const mockEmployees = this.createMockSearchResults();
-        const mockDocuments = this.createMockDocuments();
-        
-        return {
-          employees: {
-            results: mockEmployees.slice(0, employeeSize),
-            total: mockEmployees.length
-          },
-          documents: {
-            results: mockDocuments.slice(0, documentSize),
-            total: mockDocuments.length
-          }
-        };
-      }
+  console.log('🚀 Loading landing page data with dual API calls...');
       
       // For landing page, we want:
       // 1. Either the logged-in user only OR top employees
@@ -811,11 +808,11 @@ export class ApiService {
         employeePromise = this.getDefaultRecords(currentUser, 1);
       } else {
         // Get top employees if no user is logged in
-        employeePromise = this.searchEmployeesOnly('', employeeSize, 0);
+        employeePromise = this.searchEmployeesOnly('', employeeSize, currentUser, 0);
       }
       
       // Get recent documents (excluding employees)
-      const documentPromise = this.searchDocumentsOnly('', documentSize, 0);
+      const documentPromise = this.searchDocumentsOnly('', documentSize, currentUser, 0);
       
       // Execute both calls in parallel
       const [employeeResponse, documentResponse] = await Promise.all([
@@ -848,123 +845,6 @@ export class ApiService {
     } catch {
       return false;
     }
-  }
-
-  // Fallback method to create mock data when API is not available
-  private createMockSearchResults(): SearchResult[] {
-    // Create mock employee data when API is unavailable
-    const mockUsers = [
-      {
-        id: 'mock_1',
-        name: 'Demo User',
-        email: 'demo@example.com',
-        position: 'System Administrator',
-        department: 'IT',
-        company: 'Demo Company',
-        role: 'admin'
-      },
-      {
-        id: 'mock_2',
-        name: 'Test Manager',
-        email: 'manager@example.com',
-        position: 'Team Lead',
-        department: 'Engineering',
-        company: 'Demo Company',
-        role: 'manager'
-      }
-    ];
-
-    return mockUsers.map((user, index) => ({
-      id: user.id,
-      title: user.name,
-      content: `${user.position} in ${user.department} at ${user.company}`,
-      summary: `${user.name} - ${user.position} specializing in ${user.department}`,
-      source: 'user-directory',
-      author: 'System',
-      department: user.department,
-      content_type: 'employee',
-      tags: [user.department.toLowerCase().replace(/\s+/g, '-'), user.role],
-      timestamp: new Date().toISOString(),
-      url: `mailto:${user.email}`,
-      score: 95 - (index * 5),
-      employee_data: {
-        id: index + 1,
-        name: user.name,
-        title: user.position,
-        email: user.email,
-        department: user.department,
-        location: 'Singapore',
-        phone: '+65 6000 0000',
-        start_date: '2020-01-01',
-        manager_id: index > 0 ? 1 : undefined,
-        level: index === 0 ? 3 : 2,
-        has_reports: index === 0,
-        report_count: index === 0 ? 4 : 0,
-        document_type: 'employee',
-        indexed_at: new Date().toISOString(),
-        search_text: `${user.name} ${user.position} ${user.department}`
-      }
-    }));
-  }
-
-  private createMockDocuments(): SearchResult[] {
-    const mockDocs = [
-      {
-        title: 'Q4 Financial Report 2024',
-        content: 'Comprehensive financial analysis and performance metrics for the fourth quarter of 2024.',
-        source: 'finance-reports',
-        author: 'Finance Team',
-        department: 'Finance',
-        content_type: 'document'
-      },
-      {
-        title: 'Employee Handbook 2025',
-        content: 'Updated employee policies, procedures, and benefits information for the new year.',
-        source: 'hr-documents',
-        author: 'HR Department',
-        department: 'Human Resources',
-        content_type: 'document'
-      },
-      {
-        title: 'Product Roadmap - Digital Banking',
-        content: 'Strategic roadmap for digital banking initiatives and upcoming feature releases.',
-        source: 'product-docs',
-        author: 'Product Team',
-        department: 'Product Management',
-        content_type: 'document'
-      },
-      {
-        title: 'Security Guidelines 2025',
-        content: 'Updated cybersecurity protocols and best practices for all employees.',
-        source: 'security-docs',
-        author: 'Security Team',
-        department: 'IT Security',
-        content_type: 'document'
-      },
-      {
-        title: 'Training Materials - API Development',
-        content: 'Comprehensive training resources for API development and best practices.',
-        source: 'training-docs',
-        author: 'Engineering Team',
-        department: 'Engineering',
-        content_type: 'document'
-      }
-    ];
-
-    return mockDocs.map((doc, index) => ({
-      id: `doc_${index + 1}`,
-      title: doc.title,
-      content: doc.content,
-      summary: doc.content.substring(0, 100) + '...',
-      source: doc.source,
-      author: doc.author,
-      department: doc.department,
-      content_type: doc.content_type,
-      tags: [doc.department.toLowerCase().replace(/\s+/g, '-'), 'documentation'],
-      timestamp: new Date(Date.now() - (index * 24 * 60 * 60 * 1000)).toISOString(),
-      url: `#/document/${index + 1}`,
-      score: 90 - (index * 3)
-    }));
   }
 }
 
