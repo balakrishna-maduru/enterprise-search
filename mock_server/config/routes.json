@@ -1,0 +1,22 @@
+[
+  {
+    "method": "POST",
+    "path": "/summary",
+    "responseFile": "summary.json"
+  },
+  {
+    "method": "GET",
+    "path": "/messages",
+    "responseFile": "messages.json"
+  },
+  {
+    "method": "POST",
+    "path": "/chat",
+    "responseFile": "chat.json"
+  },
+  {
+    "method": "GET",
+    "path": "/sessions",
+    "responseFile": "sessions.json"
+  }
+]
