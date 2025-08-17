@@ -1,5 +1,6 @@
 // src/components/Documents/UnifiedDocumentsPage.tsx
 import React, { useEffect, useState, useCallback } from 'react';
+import { SummaryService } from '../../services/summary_service';
 import { useSearch } from '../../contexts/SearchContext';
 import { useUser } from '../../hooks/useUser';
 import { usePagination } from '../../hooks/usePagination';
@@ -86,21 +87,18 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     }
   }, [onNavigateToChat]);
 
+  const summaryService = new SummaryService();
   const handleSummarize = useCallback(async (document: SearchResult) => {
     setIsSummarizing(true);
     try {
-      // TODO: Call actual summarization API
-      console.log('Summarizing document:', document.title);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // For now, just navigate to summary with document context
-      if (onNavigateToSummary) {
+      // Call the real summary API
+      const result = await summaryService.summarizeById(document.index, document.id);
+      if (result.success && onNavigateToSummary) {
         onNavigateToSummary({
           type: 'summary',
           document: document,
-          title: `Summary of ${document.title}`
+          title: `Summary of ${document.title}`,
+          summary: result.data
         });
       }
     } catch (error) {
