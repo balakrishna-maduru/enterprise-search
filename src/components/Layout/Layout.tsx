@@ -37,17 +37,21 @@ const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-50/30 flex flex-col relative">
-      <div className="absolute inset-0 opacity-40">
+      <div className="absolute inset-0 opacity-40 pointer-events-none select-none">
         <div className="absolute inset-0 bg-white/60"></div>
         <div className="absolute inset-0" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e2e8f0' fill-opacity='0.4'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}></div>
       </div>
 
-      <Header />
-      <div className="flex flex-1 relative z-10">
-        {/* Sidebar */}
-            <div className={`flex flex-col bg-white border-r-2 border-red-600 shadow-lg transition-all duration-300 ${sidebarExpanded ? 'w-36' : 'w-10'} min-h-full`}>
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 z-30">
+        <Header />
+      </div>
+
+      <div className="flex flex-1 relative z-10 pt-20 pb-24">
+        {/* Fixed Sidebar */}
+        <div className={`flex flex-col bg-white border-r-2 border-red-600 shadow-lg transition-all duration-300 ${sidebarExpanded ? 'w-36' : 'w-10'} min-h-screen fixed top-20 left-0 z-40`} style={{height: 'calc(100vh - 5rem - 6rem)'}}>
           <button
             className="group flex items-center h-12 w-full hover:bg-red-700 focus:outline-none text-red-600 bg-white border-b border-red-600 px-2 transition-colors duration-150 justify-start"
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
@@ -82,8 +86,8 @@ const Layout: React.FC = () => {
             {sidebarExpanded && <span className="text-sm">Chat</span>}
           </button>
         </div>
-        {/* Main Content */}
-        <div className="flex-1 max-w-7xl mx-auto px-6 py-8 transition-all duration-300">
+  {/* Main Content */}
+  <div className="flex-1 max-w-7xl mx-auto px-6 py-8 pb-60 transition-all duration-300 overflow-y-auto" style={{maxHeight: 'calc(100vh - 5rem - 10rem)', marginLeft: sidebarExpanded ? '9rem' : '2.5rem'}}>
           {currentPage === 'main' && (
             <>
               <SearchSection />
@@ -110,8 +114,10 @@ const Layout: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Fixed Footer */}
+      <div className="fixed left-0 right-0 bottom-0 z-30">
+        <Footer />
+      </div>
 
       {/* Summary Modal */}
       <DocumentSummaryPage

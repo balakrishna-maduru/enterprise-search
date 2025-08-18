@@ -1,6 +1,7 @@
 // src/components/Summary/DocumentSummaryPage.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { chatApiService } from '../../services/chatApiService';
+import { content } from 'html2canvas/dist/types/css/property-descriptors/content';
 
 interface DocumentSummaryPageProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const DocumentSummaryPage: React.FC<DocumentSummaryPageProps> = ({
   const [chatError, setChatError] = useState<string | null>(null);
   type Citation = {
     title: string;
+    content: string;
     url?: string;
     text_used?: string;
   };
@@ -80,6 +82,7 @@ const DocumentSummaryPage: React.FC<DocumentSummaryPageProps> = ({
             citations: Array.isArray(chatResp.citation) ? chatResp.citation.map((c: any) => ({
               title: c.title,
               url: c.url,
+              content: c.content,
               text_used: c.text_used
             })) : undefined
           }
@@ -166,6 +169,13 @@ const DocumentSummaryPage: React.FC<DocumentSummaryPageProps> = ({
                 </div>
               </div>
             ))}
+            {/* Thinking indicator */}
+            {chatLoading && (
+              <div className="flex items-center gap-2 mt-4 text-red-700 text-sm font-semibold">
+                <span className="w-4 h-4 border-2 border-red-700 border-t-transparent rounded-full animate-spin inline-block" />
+                AI is thinking...
+              </div>
+            )}
             <div ref={feedEndRef} />
           </div>
           {/* Error */}
@@ -189,11 +199,11 @@ const DocumentSummaryPage: React.FC<DocumentSummaryPageProps> = ({
               onClick={handleAsk}
               disabled={chatLoading || !question.trim()}
             >
-              {chatLoading ? (
-                <span className="flex items-center gap-2"><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Sending...</span>
-              ) : (
-                <><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg><span>Chat</span></>
-              )}
+              <span className="flex items-center gap-2">
+                {chatLoading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                <span>Chat</span>
+              </span>
             </button>
           </div>
         </div>

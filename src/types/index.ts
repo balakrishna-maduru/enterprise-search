@@ -83,6 +83,7 @@ export interface SearchResult {
   content_type: string;
   score: number;
   employee_data?: Employee;
+  index?: string; // Added for document index (for summary API)
 }
 
 export interface SearchFilters {

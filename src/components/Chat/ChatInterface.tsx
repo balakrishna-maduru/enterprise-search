@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useChatApi, ChatMessage } from '../../hooks/useChatApi';
+import { useChatApi } from '../../hooks/useChatApi';
 import FileUpload from './FileUpload';
+import ChatMessages from './ChatMessages';
 
 interface ChatInterfaceProps {
   className?: string;
@@ -57,7 +58,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
         }, 100);
       }
     }
-  }, [currentSession?.messages?.length, isUserAtBottom, preserveScrollPosition]);
+  }, [currentSession, currentSession?.messages?.length, isUserAtBottom, preserveScrollPosition]);
 
   // When session changes, scroll to bottom to show latest messages
   useEffect(() => {
@@ -69,7 +70,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
         setPreserveScrollPosition(false);
       }, 200);
     }
-  }, [currentSession?.id]);
+  }, [currentSession, currentSession?.id]);
 
   // Handle sending a message
   const handleSendMessage = async () => {
@@ -165,6 +166,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
   };
 
   // Convert API session to display format
+  // Normalize all messages to always have citations array
+  function normalizeCitations(msg: any) {
+    if (Array.isArray(msg.citations)) return msg.citations;
+    if (Array.isArray(msg.citation)) return msg.citation;
+    // If citation is a single object, wrap in array
+    if (msg.citation && typeof msg.citation === 'object') return [msg.citation];
+    if (msg.citations && typeof msg.citations === 'object') return [msg.citations];
+    return [];
+  }
+
+  
   const chatSessions = sessions.map(session => ({
     id: session.id,
     title: session.firstMessage || 'New Chat',
@@ -172,13 +184,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
       id: msg.id,
       content: msg.content,
       isUser: msg.role === 'user',
-      timestamp: msg.timestamp,
-  citations: msg.citations || (msg as any).citation || [],
+      timestamp: typeof msg.timestamp === 'string' ? msg.timestamp : msg.timestamp?.toString?.() ?? '',
+      citations: normalizeCitations(msg),
     })),
-    createdAt: session.createdAt,
-    updatedAt: session.createdAt,
+    createdAt: typeof session.createdAt === 'string' ? session.createdAt : session.createdAt?.toString?.() ?? '',
+    updatedAt: typeof session.createdAt === 'string' ? session.createdAt : session.createdAt?.toString?.() ?? '',
   }));
 
+  //
   const currentChat = currentSession ? {
     id: currentSession.id,
     title: currentSession.firstMessage || 'New Chat',
@@ -186,11 +199,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
       id: msg.id,
       content: msg.content,
       isUser: msg.role === 'user',
-      timestamp: msg.timestamp,
-  citations: msg.citations || (msg as any).citation || [],
+      timestamp: typeof msg.timestamp === 'string' ? msg.timestamp : msg.timestamp?.toString?.() ?? '',
+      citations: normalizeCitations(msg),
     })),
-    createdAt: currentSession.createdAt,
-    updatedAt: currentSession.createdAt,
+    createdAt: typeof currentSession.createdAt === 'string' ? currentSession.createdAt : currentSession.createdAt?.toString?.() ?? '',
+    updatedAt: typeof currentSession.createdAt === 'string' ? currentSession.createdAt : currentSession.createdAt?.toString?.() ?? '',
   } : undefined;
 
   return (
@@ -272,7 +285,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
                       {chat.messages.length} messages
                     </p>
                     <p className="text-xs text-gray-400">
-                      {formatDate(chat.createdAt)}
+                      {formatDate(new Date(chat.createdAt))}
                     </p>
                   </div>
                   <button
@@ -342,140 +355,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
             scrollBehavior: 'smooth'
           }}
         >
-          {currentChat ? (
-            <div className="max-w-4xl mx-auto space-y-4 relative">
-              {/* Scroll indicators */}
-              {preserveScrollPosition && (
-                <div className="sticky top-0 bg-blue-50 border border-blue-200 rounded-lg p-2 mb-4 text-center text-sm text-blue-700 z-10">
-                  <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7l4-4m0 0l4 4m-4-4v18" />
-                    </svg>
-                    <span>Viewing older messages - scroll down for latest</span>
-                  </div>
-                </div>
-              )}
-              
-              {currentChat.messages.map((msg: any, idx: number) => {
-                // Normalize message to ChatMessage shape
-                const message: ChatMessage = {
-                  id: msg.id,
-                  content: msg.content,
-                  role: msg.role || (msg.isUser ? 'user' : 'assistant'),
-                  timestamp: msg.timestamp,
-                  citations: msg.citations || [],
-                };
-                const isUser = (msg.isUser !== undefined) ? msg.isUser : message.role === 'user';
-                return (
-                  <div
-                    key={message.id}
-                    className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-xs lg:max-w-2xl px-4 py-2 rounded-lg ${
-                        isUser
-                          ? 'bg-red-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                      {/* Citations for assistant messages */}
-                      {!isUser && message.citations && message.citations.length > 0 && (
-                        <div className="mt-2 bg-red-50 border-l-4 border-red-400 p-2 rounded text-xs text-gray-700">
-                          <span>
-                            {message.citations.map(cite => cite.text_used).filter(Boolean).join(' ')}
-                            {message.citations.length > 0 && (
-                              <span className="ml-2 text-red-700 font-semibold">
-                                {(message.citations ?? []).map((_, cidx) => `[${cidx + 1}]`).join(' ')}
-                              </span>
-                            )}
-                            {/* Citations summary below */}
-                            {message.citations.length > 0 && (
-                              <div className="mt-1 text-xs text-gray-700">
-                                {(message.citations ?? []).map((cite, cidx) =>
-                                  cite.url ? (
-                                    <div key={cidx}>
-                                      <a
-                                        href={cite.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="underline hover:text-red-900 text-red-700 font-semibold"
-                                      >
-                                        [{cidx + 1}] {cite.title}
-                                      </a>
-                                    </div>
-                                  ) : (
-                                    <div key={cidx} className="font-semibold text-red-700">[{cidx + 1}] {cite.title}</div>
-                                  )
-                                )}
-                              </div>
-                            )}
-                          </span>
-                        </div>
-                      )}
-                      <p className={`text-xs mt-1 ${
-                        isUser ? 'text-red-100' : 'text-gray-500'
-                      }`}>
-                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-              
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-100 rounded-lg px-4 py-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
-                      <span className="text-sm text-gray-500">AI is typing...</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-              
-              {/* Scroll to bottom button */}
-              {!isUserAtBottom && (
-                <button
-                  onClick={() => {
-                    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-                    setIsUserAtBottom(true);
-                    setPreserveScrollPosition(false); // Reset preserve position when user manually scrolls to bottom
-                  }}
-                  className="absolute bottom-4 right-4 bg-red-600 text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition-all duration-200 z-10"
-                  title="Scroll to bottom"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No chat selected</h3>
-                <p className="text-gray-500 mb-4">Start a new conversation or select an existing chat from the sidebar.</p>
-                <button
-                  onClick={() => handleNewChat()}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl shadow-md hover:shadow-lg hover:from-red-700 hover:to-red-800 transition-all duration-200 transform hover:scale-[1.02]"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Start New Chat
-                </button>
-              </div>
-            </div>
-          )}
+          <ChatMessages
+            currentChat={currentChat}
+            isLoading={isLoading}
+            preserveScrollPosition={preserveScrollPosition}
+            isUserAtBottom={isUserAtBottom}
+            setIsUserAtBottom={setIsUserAtBottom}
+            setPreserveScrollPosition={setPreserveScrollPosition}
+            messagesEndRef={messagesEndRef}
+            handleNewChat={handleNewChat}
+          />
         </div>
 
         {/* Chat Input */}
@@ -484,7 +373,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
             {/* Upload Status Notification */}
             {isUploadingDocument && (
               <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2 text-blue-700">
+                <div className="flex items-center gap-2 text-red-700">
                   <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
                   <span className="text-sm font-medium">Processing document...</span>
                 </div>
@@ -509,7 +398,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
               {selectedFile && (
                 <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-blue-700">
+                    <div className="flex items-center gap-2 text-red-700">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
@@ -518,7 +407,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
                     </div>
                     <button
                       onClick={handleClearFile}
-                      className="text-blue-500 hover:text-blue-700 p-1"
+                      className="text-blue-500 hover:text-red-700 p-1"
                       title="Remove file"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -586,7 +475,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = '', onClose, 
                     className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm flex items-center gap-2 flex-shrink-0"
                     title="Send"
                   >
-                    {isLoading || isUploadingDocument ? (
+                    {isLoading ? (
+                      <span className="text-sm font-medium">API thinking...</span>
+                    ) : isUploadingDocument ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <>

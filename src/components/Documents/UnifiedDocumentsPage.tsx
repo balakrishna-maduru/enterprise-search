@@ -92,7 +92,7 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     setIsSummarizing(true);
     try {
       // Call the real summary API
-      const result = await summaryService.summarizeById(document.index, document.id);
+  const result = await summaryService.summarizeById(document.index || '', document.id);
       if (result.success && onNavigateToSummary) {
         onNavigateToSummary({
           type: 'summary',

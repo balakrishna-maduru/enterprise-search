@@ -1,7 +1,7 @@
 // src/components/Analytics/DocumentViewTracker.tsx
 import React, { useState, useEffect } from 'react';
 import { documentTracker, DocumentViewStats, UserViewStats } from '../../services/document_tracking_service';
-import { Eye, Clock, TrendingUp, FileText, BarChart3 } from 'lucide-react';
+import { Eye, Clock, TrendingUp, BarChart3 } from 'lucide-react';
 
 interface DocumentViewTrackerProps {
   className?: string;
@@ -21,20 +21,16 @@ export const DocumentViewTracker: React.FC<DocumentViewTrackerProps> = ({
   const [lastViewed, setLastViewed] = useState<{ id: string; title: string; viewTime: string } | null>(null);
 
   useEffect(() => {
-    // Load user stats
+    // Only get last viewed document (async)
     if (showUserStats) {
-      const stats = documentTracker.getUserViewStats();
-      setUserStats(stats);
-      
-      const lastDoc = documentTracker.getLastViewedDocument();
-      setLastViewed(lastDoc);
+      (async () => {
+        const lastDoc = await documentTracker.getLastViewedDocument();
+        setLastViewed(lastDoc);
+      })();
     }
-
-    // Load popular documents
-    if (showPopularDocs) {
-      const popular = documentTracker.getMostViewedDocuments(5);
-      setPopularDocs(popular);
-    }
+    // Optionally: clear userStats and popularDocs since those methods do not exist
+    setUserStats(null);
+    setPopularDocs([]);
   }, [showUserStats, showPopularDocs]);
 
   const formatRelativeTime = (dateString: string): string => {

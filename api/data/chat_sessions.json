@@ -1074,5 +1074,901 @@
         "created_at": "2025-08-16T16:35:42.686686Z"
       }
     ]
+  },
+  {
+    "session_id": "doc-5vtlvo8f-1755426200704",
+    "first_message": "hello",
+    "created_at": "2025-08-17T19:40:36.782577Z",
+    "updated_at": "2025-08-17T19:40:36.782577Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "7ff0e558-0894-4109-9a18-0a3fcd531bed",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-17T19:40:36.782551Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "4164fb1a-0983-4d7a-bf3b-d38fa064addf",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-17T19:40:36.782575Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-luzsvjxi-1755433603553",
+    "first_message": "hellp",
+    "created_at": "2025-08-17T20:26:47.518931Z",
+    "updated_at": "2025-08-17T20:26:47.518932Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "5ddbfb0d-1e47-4c32-a8b5-6e740a0ce301",
+        "content": "hellp",
+        "role": "user",
+        "created_at": "2025-08-17T20:26:47.518892Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "bef13277-d0bf-4f2d-b3ec-04fcd0abde07",
+        "content": "This is a mock response to your question: hellp. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-17T20:26:47.518928Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-n8ck85ye-1755433849453",
+    "first_message": "hello",
+    "created_at": "2025-08-17T20:30:53.721714Z",
+    "updated_at": "2025-08-17T20:30:53.721716Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "28e9b556-76ce-4b74-b182-a39702ee616f",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-17T20:30:53.721655Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "49f29c1b-2b64-49f5-9677-10d305cb0da8",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-17T20:30:53.721710Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755433862118_1127gcrcw",
+    "first_message": "hellp",
+    "created_at": "2025-08-17T20:31:02.123903Z",
+    "updated_at": "2025-08-18T20:51:59.505489",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "0b483f35-1b60-41be-8407-575390319d23",
+        "content": "hellp",
+        "role": "user",
+        "created_at": "2025-08-17T20:31:02.123874Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "06300d03-d8ab-48da-807d-164716f2e5a6",
+        "content": "This is a mock response to your question: hellp. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-17T20:31:02.123899Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "a0e4c019-3a5c-4334-9f50-d71b1a17d86c",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-18T20:40:49.993409Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "66fba8f5-324f-437d-b002-409ff476829b",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:40:49.993742Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "1a7b3e96-30ea-4956-bd2b-80713f93536d",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-18T20:45:34.813671Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "d789b1f0-35f9-4967-a4ac-1eb01e93cbeb",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:45:34.813712Z"
+      },
+      {
+        "idx": 7,
+        "msg_id": "ba3acab8-418d-4bf7-a649-c118002516c8",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-18T20:47:29.726998Z"
+      },
+      {
+        "idx": 8,
+        "msg_id": "64d6a861-6177-4eef-a2ed-25078ee699bc",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:47:29.727042Z"
+      },
+      {
+        "idx": 9,
+        "msg_id": "4e2c3ca3-ceea-480d-acb7-8330f829f4bb",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-18T20:51:59.505449Z"
+      },
+      {
+        "idx": 10,
+        "msg_id": "ead2f045-c607-486a-8f26-dd8403b71e62",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:51:59.505484Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755521526146_4vbydvo8t",
+    "first_message": "hello",
+    "created_at": "2025-08-18T20:52:10.069516Z",
+    "updated_at": "2025-08-18T20:56:56.103679",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "650afc5c-823b-4f89-977b-b5ae8166408d",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-18T20:52:10.069127Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "00600997-fbf4-4967-ae47-ee495cfdd412",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:52:10.069510Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "315e4cd4-1d05-4cee-ac6a-37001fb772af",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-18T20:54:21.150997Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "b1facc4e-471e-41df-8a3d-ce631dbe748e",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:54:21.151029Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "60fabca3-1504-48ca-8f4e-44675ca069d3",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-08-18T20:56:56.103624Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "48deabaa-35e6-4cc0-8167-daa54db38440",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:56:56.103673Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755521986608_qyfp2mjzh",
+    "first_message": "add",
+    "created_at": "2025-08-18T20:59:49.974548Z",
+    "updated_at": "2025-08-18T20:59:49.974549Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "6dc80304-fa1f-4d82-8aad-89572d31dcc7",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T20:59:49.974522Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "ba66367a-839f-42fa-bf8a-bdda6df50393",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T20:59:49.974546Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755522126232_bd4lxn7sb",
+    "first_message": "add",
+    "created_at": "2025-08-18T21:02:09.819069Z",
+    "updated_at": "2025-08-18T21:23:06.008852",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "a9fc9341-95bf-4f46-a47b-5de34c880df2",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:02:09.819025Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "0070f1ff-f99f-4870-aa83-130c2621ef61",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:02:09.819065Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "fa0e507a-3104-41d0-aa53-a33fa75f515d",
+        "content": "ada",
+        "role": "user",
+        "created_at": "2025-08-18T21:21:12.639197Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "39745760-0daf-449a-b161-3dc173411b83",
+        "content": "This is a mock response to your question: ada. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:21:12.639217Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "529b58a2-0483-44f4-9eee-91afca1ce721",
+        "content": "ada",
+        "role": "user",
+        "created_at": "2025-08-18T21:23:06.008800Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "59cd540c-88ce-45c4-8899-f2954754d958",
+        "content": "This is a mock response to your question: ada. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:23:06.008846Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755522170123_9yw8ojy5r",
+    "first_message": "test",
+    "created_at": "2025-08-18T21:02:54.070985Z",
+    "updated_at": "2025-08-18T22:00:34.419891",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "0c2532a0-1626-4f13-8b79-78ae126d3367",
+        "content": "test",
+        "role": "user",
+        "created_at": "2025-08-18T21:02:54.070936Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "203d6eb6-769d-4aeb-a90f-7b099163bf57",
+        "content": "This is a mock response to your question: test. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:02:54.070982Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "b9b6c9f6-dbf7-4c5c-9564-72f16e5b5ab7",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:04:06.741318Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "2bfe7919-8b39-4f10-beb0-9800a977c5bc",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:04:06.741397Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "b7ce32eb-b4ee-43cc-bc87-5b2a23957c04",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:06:08.615384Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "3f4c90bd-2e45-4035-8527-793541de591f",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:06:08.615418Z"
+      },
+      {
+        "idx": 7,
+        "msg_id": "ec581eb1-679a-4d0e-8d27-8f6877c90dd8",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:06:54.896031Z"
+      },
+      {
+        "idx": 8,
+        "msg_id": "2d7de73c-1cdf-40dd-8cfe-17a719e0d14c",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:06:54.896065Z"
+      },
+      {
+        "idx": 9,
+        "msg_id": "6e1090fb-0387-4899-ac98-82a9b576dfe0",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:07:25.348604Z"
+      },
+      {
+        "idx": 10,
+        "msg_id": "078e2dbf-ff0f-4d22-8d2a-7c83298038c3",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:07:25.348707Z"
+      },
+      {
+        "idx": 11,
+        "msg_id": "05079a4d-bc21-4197-8404-b1fc8ed3508e",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:07:37.685767Z"
+      },
+      {
+        "idx": 12,
+        "msg_id": "8b9e5804-fee2-49c4-88d4-a5b410f01c23",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'company' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:07:37.685811Z"
+      },
+      {
+        "idx": 13,
+        "msg_id": "85d820aa-5ebb-48c8-9ce9-cb7d36005c42",
+        "content": "qwe",
+        "role": "user",
+        "created_at": "2025-08-18T21:10:08.529981Z"
+      },
+      {
+        "idx": 14,
+        "msg_id": "f1ea3411-3840-4ad2-895f-655cc4f5e055",
+        "content": "This is a mock response to your question: qwe. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:10:08.530008Z"
+      },
+      {
+        "idx": 15,
+        "msg_id": "82df462b-5876-4e50-8d0c-419279abccf8",
+        "content": "ada",
+        "role": "user",
+        "created_at": "2025-08-18T21:11:55.553444Z"
+      },
+      {
+        "idx": 16,
+        "msg_id": "55f5ef9c-07e4-4ed2-b63d-a2043d3a8ea3",
+        "content": "This is a mock response to your question: ada. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:11:55.553472Z"
+      },
+      {
+        "idx": 17,
+        "msg_id": "6e3eb015-0f9f-4a0a-806d-c6d64681cb5b",
+        "content": "data",
+        "role": "user",
+        "created_at": "2025-08-18T21:13:32.988837Z"
+      },
+      {
+        "idx": 18,
+        "msg_id": "4787e7d0-87d8-480f-b818-480c286b85d7",
+        "content": "This is a mock response to your question: data. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:13:32.988863Z"
+      },
+      {
+        "idx": 19,
+        "msg_id": "583076fe-bfa1-448d-aadc-7644befe88f1",
+        "content": "c",
+        "role": "user",
+        "created_at": "2025-08-18T21:15:54.182639Z"
+      },
+      {
+        "idx": 20,
+        "msg_id": "2a902fa9-0ddd-48c9-b8b4-16b2f973d430",
+        "content": "This is a mock response to your question: c. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:15:54.182668Z"
+      },
+      {
+        "idx": 21,
+        "msg_id": "c920bb3a-a513-4733-ac22-16dd1444fcb5",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:17:12.154894Z"
+      },
+      {
+        "idx": 22,
+        "msg_id": "d4e1c6dd-f2f5-4f32-9a1c-5a1b2f51e697",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:17:12.154922Z"
+      },
+      {
+        "idx": 23,
+        "msg_id": "d6f96fc5-8ad5-488c-9662-03a210defc5a",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:20:38.019550Z"
+      },
+      {
+        "idx": 24,
+        "msg_id": "b5d3cecd-a81e-40e4-9487-0a68e28ccc2b",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:20:38.019581Z"
+      },
+      {
+        "idx": 25,
+        "msg_id": "e39d409f-0f7b-4a56-ba4d-5dcb7810e7f1",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:23:24.373098Z"
+      },
+      {
+        "idx": 26,
+        "msg_id": "2f8cfa81-9e98-4cdd-bb7f-d4e22b241a2a",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:23:24.373128Z"
+      },
+      {
+        "idx": 27,
+        "msg_id": "d3bc8781-468c-4b1b-8264-33a7e718ea3d",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:26:32.777930Z"
+      },
+      {
+        "idx": 28,
+        "msg_id": "5687795e-8a1e-41b5-8c41-6ced25ea6e5e",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:26:32.777957Z"
+      },
+      {
+        "idx": 29,
+        "msg_id": "15806381-ce04-41ca-9afa-a4508963e182",
+        "content": "1234",
+        "role": "user",
+        "created_at": "2025-08-18T21:30:46.902889Z"
+      },
+      {
+        "idx": 30,
+        "msg_id": "3b87e108-4264-4662-b8a7-c1570db56f65",
+        "content": "This is a mock response to your question: 1234. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:30:46.902919Z"
+      },
+      {
+        "idx": 31,
+        "msg_id": "5814c2de-cd5b-4ac6-9e49-1b9a0949923a",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:39:48.841756Z"
+      },
+      {
+        "idx": 32,
+        "msg_id": "50a419e5-5d35-4a7d-9752-ccab82c45bec",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:39:48.841784Z"
+      },
+      {
+        "idx": 33,
+        "msg_id": "43288286-f390-4324-b1a6-e78cfeb860eb",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:40:39.433923Z"
+      },
+      {
+        "idx": 34,
+        "msg_id": "adbdd4fa-0cef-40d5-b8d8-7af3843c672c",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:40:39.433958Z"
+      },
+      {
+        "idx": 35,
+        "msg_id": "9a13be0a-9763-42bf-b852-0900b85ab075",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:42:32.326611Z"
+      },
+      {
+        "idx": 36,
+        "msg_id": "108641ae-8898-4fd9-8650-5e54452e42a6",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:42:32.326651Z"
+      },
+      {
+        "idx": 37,
+        "msg_id": "32ada037-2632-4df1-ae59-6f45d95aaae2",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:43:43.357193Z"
+      },
+      {
+        "idx": 38,
+        "msg_id": "0e791c3c-b4de-4395-abd0-c52f7260f196",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:43:43.357237Z"
+      },
+      {
+        "idx": 39,
+        "msg_id": "1e0a79b7-0039-484b-9f4a-34436c60f533",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:44:04.945302Z"
+      },
+      {
+        "idx": 40,
+        "msg_id": "6aa1810d-5707-42d9-a10d-963ff34d7cd3",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:44:04.945316Z"
+      },
+      {
+        "idx": 41,
+        "msg_id": "b286c1ad-fd28-4019-b6a9-5b17b0670e49",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:44:17.115863Z"
+      },
+      {
+        "idx": 42,
+        "msg_id": "62240fc7-1ba4-406a-b5b8-19fe02dfb5e5",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:44:17.115885Z"
+      },
+      {
+        "idx": 43,
+        "msg_id": "62c4421f-7563-4438-a4b1-436a12542204",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:46:24.648525Z"
+      },
+      {
+        "idx": 44,
+        "msg_id": "5ebf244d-47a4-4457-8fcc-d2ccf084908f",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:46:24.648545Z"
+      },
+      {
+        "idx": 45,
+        "msg_id": "6170c306-d031-4295-b41e-001fb49a540f",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:51:29.823970Z"
+      },
+      {
+        "idx": 46,
+        "msg_id": "4e66b7c1-8bc8-476a-a6b0-40ada4938983",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:51:29.824010Z"
+      },
+      {
+        "idx": 47,
+        "msg_id": "8a497778-11b4-4f36-8262-ab6b227d6ad0",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T21:56:36.219769Z"
+      },
+      {
+        "idx": 48,
+        "msg_id": "06931127-80eb-4dba-aac8-719dd1e6e9c1",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:56:36.219816Z"
+      },
+      {
+        "idx": 49,
+        "msg_id": "1e8b8f7e-f7ba-466f-9847-1c0dcbf18fff",
+        "content": "add 12345678",
+        "role": "user",
+        "created_at": "2025-08-18T21:58:02.080451Z"
+      },
+      {
+        "idx": 50,
+        "msg_id": "86946102-79cb-4842-bc9d-cab56d9e4030",
+        "content": "This is a mock response to your question: add 12345678. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T21:58:02.080496Z"
+      },
+      {
+        "idx": 51,
+        "msg_id": "3484eb42-da2f-40ce-9ef9-1a774b796f92",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:00:08.722621Z"
+      },
+      {
+        "idx": 52,
+        "msg_id": "40e390b3-f9c8-4221-bab8-baf3e609b4e0",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:00:08.722667Z"
+      },
+      {
+        "idx": 53,
+        "msg_id": "1b99e5be-2613-44d1-84e9-6cc66ec2d10c",
+        "content": "abooo",
+        "role": "user",
+        "created_at": "2025-08-18T22:00:34.419838Z"
+      },
+      {
+        "idx": 54,
+        "msg_id": "6cbb8c0a-0b96-4af7-8d9f-8485da766c60",
+        "content": "This is a mock response to your question: abooo. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:00:34.419877Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755525757805_29fzoopda",
+    "first_message": "add",
+    "created_at": "2025-08-18T22:02:42.477114Z",
+    "updated_at": "2025-08-18T22:02:42.477116Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "5ad2f690-30fb-444b-a404-a9d80449f4e5",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:02:42.477073Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "c75eafba-9d86-4ed6-9feb-eb4f60578873",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:02:42.477111Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755526579781_vxsxz2wmt",
+    "first_message": "add",
+    "created_at": "2025-08-18T22:16:19.787832Z",
+    "updated_at": "2025-08-18T22:16:19.787835Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "906662a1-50ad-45c7-b2e7-ee9ad69e06ba",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:16:19.787795Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "92e918c7-f05c-4914-a158-0d4fbcedc74c",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:16:19.787829Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755526729419_qqsxn7o4i",
+    "first_message": "add",
+    "created_at": "2025-08-18T22:18:49.428929Z",
+    "updated_at": "2025-08-18T22:18:49.428933Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "6766b857-93b6-426d-85bc-0d6be7f02f34",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:18:49.428654Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "6920fcd9-03fe-48ad-8af8-68c0924101e2",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:18:49.428880Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1755526764579_ytj2izjsk",
+    "first_message": "add",
+    "created_at": "2025-08-18T22:19:28.152914Z",
+    "updated_at": "2025-08-18T22:31:45.945023",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "0b0b1f0e-dfac-4ec2-8277-d11f3a91e33d",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:19:28.152872Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "4d2a5703-ed4c-4603-94fb-ccbfff96faa3",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:19:28.152910Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "99bf211c-25d4-4390-96d7-82de394446d4",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:19:46.292756Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "4f694b99-2ddb-47c5-b1f5-4f853ac00a72",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:19:46.292795Z"
+      },
+      {
+        "idx": 5,
+        "msg_id": "825df420-6ed7-4c1e-9765-ee6d9b003301",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:20:56.801600Z"
+      },
+      {
+        "idx": 6,
+        "msg_id": "a20fa7f9-8015-4c66-ad41-11db1e131a24",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:20:56.801618Z"
+      },
+      {
+        "idx": 7,
+        "msg_id": "a312f479-029d-4b44-9051-ade47ced22a9",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:21:06.438258Z"
+      },
+      {
+        "idx": 8,
+        "msg_id": "57c0e99e-9131-4041-98f3-f6670c7687ee",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:21:06.438299Z"
+      },
+      {
+        "idx": 9,
+        "msg_id": "0299278d-f829-4a21-a6d8-ee5d4edcf68d",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:22:59.414790Z"
+      },
+      {
+        "idx": 10,
+        "msg_id": "9328fa00-619b-462c-96cd-f8367b6b0240",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:22:59.414812Z"
+      },
+      {
+        "idx": 11,
+        "msg_id": "c19c835e-14ec-49d3-9ed8-24268363288c",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:24:50.886557Z"
+      },
+      {
+        "idx": 12,
+        "msg_id": "ac1b30d7-2f83-4f5e-8971-e86f0af62b23",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:24:50.886623Z"
+      },
+      {
+        "idx": 13,
+        "msg_id": "86e639a2-7e15-4b56-8146-6e10cdd5f4fd",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:25:40.286693Z"
+      },
+      {
+        "idx": 14,
+        "msg_id": "a5f3c4de-fdef-4242-8832-49b7067e09f9",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:25:40.286734Z"
+      },
+      {
+        "idx": 15,
+        "msg_id": "2c9f6637-b082-42bd-a152-64ecb38fcb7c",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:31:45.944961Z"
+      },
+      {
+        "idx": 16,
+        "msg_id": "f99c30c7-adb9-453f-9d0c-4b99e431da35",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:31:45.945017Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-s6kf6p32-1755527551065",
+    "first_message": "add",
+    "created_at": "2025-08-18T22:32:35.413932Z",
+    "updated_at": "2025-08-18T22:32:35.413935Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "655f1bc7-2714-4a71-b590-2587684f4705",
+        "content": "add",
+        "role": "user",
+        "created_at": "2025-08-18T22:32:35.413832Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "504f4ba3-1eb0-4300-bf15-c5d68495b856",
+        "content": "This is a mock response to your question: add. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:32:35.413926Z"
+      }
+    ]
+  },
+  {
+    "session_id": "doc-bp4a2cjj-1755528031992",
+    "first_message": "ass",
+    "created_at": "2025-08-18T22:40:54.424641Z",
+    "updated_at": "2025-08-18T22:40:58.702416",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "fa34108c-a7e3-41e0-a089-1b52aa48fa7b",
+        "content": "ass",
+        "role": "user",
+        "created_at": "2025-08-18T22:40:54.424616Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "dce38499-0912-4f15-b47d-fe0ecbb45076",
+        "content": "This is a mock response to your question: ass. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:40:54.424639Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "1769ae6e-dc56-428f-be8e-7f21ebce33b3",
+        "content": "ass",
+        "role": "user",
+        "created_at": "2025-08-18T22:40:58.702379Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "a08d14cc-7208-4831-9cc3-563df23b1861",
+        "content": "This is a mock response to your question: ass. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-08-18T22:40:58.702411Z"
+      }
+    ]
   }
 ]

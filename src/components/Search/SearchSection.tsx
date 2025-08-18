@@ -1,6 +1,8 @@
 // src/components/Search/SearchSection.tsx
 import React from 'react';
 import { useSearch } from '../../contexts/SearchContext';
+
+
 import { useDBSTheme } from '../../hooks/useDBSTheme';
 import { useToggle } from '../../hooks/useToggle';
 import { useUser } from '../../hooks/useUser';
@@ -8,11 +10,61 @@ import SearchInput from './SearchInput';
 import SearchFilters from './SearchFilters';
 import { Button, Icon } from '../UI';
 
+// FilterDef type for clarity
+interface FilterDef {
+  name: string;
+  values: { [value: string]: number };
+}
+
+const filtersData: FilterDef[] = [
+  {
+    name: 'container',
+    values: {
+      'Mega Policies Global RMG': 109,
+      'Mega Policies Global LCS': 93,
+      'Mega Policies SG CBG': 97,
+      'Mega Policies Global CBG': 357,
+      'Mega Policies IN FIN': 132,
+      'ekb-uat-usecase-testing': 1324,
+      'Mega Policies HK RMG': 114,
+      'Mega Policies Indonesia(ID) RMG': 67,
+      'DEAA': 963,
+      'Mega Policies TW RMG': 105
+    }
+  },
+  {
+    name: 'author',
+    values: {
+      'shudong': 732,
+      'uladzimir': 26,
+      'daoyongl': 18,
+      'DBS': 1356,
+      'prathimapawar': 20,
+      'shiyansu': 13,
+      'davidhenningson': 15,
+      'amitthakur': 11,
+      'leonlee': 12,
+      'keerthanap': 14
+    }
+  },
+  {
+    name: 'objectType',
+    values: {
+      'Article': 1356,
+      'page': 963,
+      'drive': 1324
+    }
+  }
+];
+
 export const SearchSection: React.FC = () => {
-  const { searchQuery, setSearchQuery, isLoading, executeSearch, selectedFilters, setSelectedFilters, hasSearched } = useSearch();
-  const { company } = useDBSTheme();
+  const { searchQuery, setSearchQuery, isLoading, executeSearch, hasSearched } = useSearch();
+  useDBSTheme();
   const { value: showFiltersDropdown, toggle: toggleFiltersDropdown, setFalse: hideFilters } = useToggle(false);
   const { user } = useUser();
+
+  // Local state for selected filters (object: { [filterName]: string[] })
+  const [selectedFilters, setSelectedFilters] = React.useState<{ [filterName: string]: string[] }>({});
 
   const handleSearchSubmit = () => {
     executeSearch(searchQuery);
@@ -21,27 +73,11 @@ export const SearchSection: React.FC = () => {
   // Helper function to get active filter labels
   const getActiveFilterLabels = () => {
     const labels: string[] = [];
-    
-    if (selectedFilters.source?.length > 0) {
-      labels.push(...selectedFilters.source.map(s => `Source: ${s}`));
-    }
-    
-    if (selectedFilters.contentType?.length > 0) {
-      labels.push(...selectedFilters.contentType.map(ct => `Type: ${ct}`));
-    }
-    
-    if (selectedFilters.author && selectedFilters.author.length > 0) {
-      labels.push(...selectedFilters.author.map(a => `Author: ${a}`));
-    }
-    
-    if (selectedFilters.tags && selectedFilters.tags.length > 0) {
-      labels.push(...selectedFilters.tags.map(t => `Tag: ${t}`));
-    }
-    
-    if (selectedFilters.dateRange && selectedFilters.dateRange !== 'all') {
-      labels.push(`Date: ${selectedFilters.dateRange}`);
-    }
-    
+    Object.entries(selectedFilters).forEach(([filterName, values]) => {
+      if (values && values.length > 0) {
+        labels.push(...values.map(v => `${filterName.charAt(0).toUpperCase() + filterName.slice(1)}: ${v}`));
+      }
+    });
     return labels;
   };
 
@@ -128,23 +164,10 @@ export const SearchSection: React.FC = () => {
                 <button
                   onClick={() => {
                     const [filterType, filterValue] = label.split(': ');
+                    const key = filterType.charAt(0).toLowerCase() + filterType.slice(1);
                     const newFilters = { ...selectedFilters };
-                    switch (filterType) {
-                      case 'Source':
-                        newFilters.source = newFilters.source.filter(s => s !== filterValue);
-                        break;
-                      case 'Type':
-                        newFilters.contentType = newFilters.contentType.filter(ct => ct !== filterValue);
-                        break;
-                      case 'Author':
-                        if (newFilters.author) newFilters.author = newFilters.author.filter(a => a !== filterValue);
-                        break;
-                      case 'Tag':
-                        if (newFilters.tags) newFilters.tags = newFilters.tags.filter(t => t !== filterValue);
-                        break;
-                      case 'Date':
-                        newFilters.dateRange = 'all';
-                        break;
+                    if (Array.isArray(newFilters[key])) {
+                      newFilters[key] = newFilters[key].filter((v: string) => v !== filterValue);
                     }
                     setSelectedFilters(newFilters);
                   }}
@@ -161,7 +184,8 @@ export const SearchSection: React.FC = () => {
         {showFiltersDropdown && (
           <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
             <SearchFilters
-              filters={selectedFilters}
+              filters={filtersData}
+              selectedFilters={selectedFilters}
               onFiltersChange={setSelectedFilters}
               isOpen={showFiltersDropdown}
               onToggle={hideFilters}

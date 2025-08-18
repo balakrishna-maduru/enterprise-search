@@ -5,6 +5,7 @@ export interface Citation {
   title: string;
   url?: string;
   text_used?: string;
+  content?: string;
 }
 
 export interface ChatMessage {
@@ -172,6 +173,7 @@ export const useChatApi = () => {
           citations: Array.isArray(chatResponse.citation) ? chatResponse.citation.map((c: any) => ({
             title: c.title,
             url: c.url,
+            content: c.content,
             text_used: c.text_used
           })) : undefined,
         };

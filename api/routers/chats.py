@@ -71,15 +71,31 @@ async def send_chat_message(request: ChatRequest) -> Dict[str, Any]:
         mock_citations = [
             {
                 "title": "Lenovo.pdf",
+                "content": "PC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk® Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.",
                 "url": "https://1bank.sharepoint.com/sites/ekb-uat-usecase-testing/Shared%20Documents/POC%20Evaluation/Lenovo.pdf",
                 "text_used": "Lenovo Settings (Windows) An application that provides power management features, such as Connected Standby for the user."
             },
             {
                 "title": "Lenovo.pdf",
+                # Simulate missing content, fallback to text_used
+                "content": "Smart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.",
                 "url": "https://1bank.sharepoint.com/sites/ekb-uat-usecase-testing/Shared%20Documents/POC%20Evaluation/Lenovo.pdf",
                 "text_used": "Smart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power."
             }
         ]
+
+        # Append citation contents with markers [1], [2], ...
+        if mock_citations:
+            for idx, cite in enumerate(mock_citations):
+                content = cite.get("content") or cite.get("text_used") or ""
+                marker = f"[{idx+1}]"
+                # Add a space before marker if content is not empty
+                if content:
+                    output_text += f"\n\n{content}{marker}"
+        # Ensure all citations have 'content', fallback to 'text_used' if missing
+        for cite in mock_citations:
+            if not cite.get("content") and cite.get("text_used"):
+                cite["content"] = cite["text_used"]
         mock_response = {
             "code": 0,
             "msg": "success",
