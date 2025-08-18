@@ -81,7 +81,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   }, []);
 
   // New dual search function
-  const executeDualSearch = useCallback(async (query?: string): Promise<void> => {
+  const executeDualSearch = useCallback(async (query?: string, page?: number): Promise<void> => {
     const searchTerm = query || searchQuery;
     console.log('🔍 Dual search triggered for:', searchTerm);
     console.log('🔍 Current user:', currentUser);
@@ -89,8 +89,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     
     setIsLoading(true);
     setIsDualSearchMode(true);
-    
     try {
+      const pageNum = page || 1;
       if (!searchTerm.trim()) {
         // Empty search: do NOT auto-load content; keep landing empty
         setEmployeeResults([]);
@@ -101,46 +101,42 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         setPagination({
           currentPage: 1,
           totalPages: 1,
-            totalResults: 0,
-            pageSize: pagination.pageSize || 10,
-            hasNextPage: false,
-            hasPreviousPage: false
+          totalResults: 0,
+          pageSize: pagination.pageSize || 10,
+          hasNextPage: false,
+          hasPreviousPage: false
         });
         return;
       } else {
-        console.log('🔍 Executing dual search for:', searchTerm);
+        console.log('🔍 Executing dual search for:', searchTerm, 'page:', pageNum);
         // For search queries, execute dual search
         const dualSearchData = await apiService.dualSearch(
           searchTerm,
-          5,
-          5,
+          pagination.pageSize || 10,
+          pagination.pageSize || 10,
           currentUser,
-          0,
-          0
+          pageNum - 1, // backend may expect 0-based page
+          pageNum - 1
         );
         console.log('✅ Dual search data received:', dualSearchData);
-        
         setEmployeeResults(dualSearchData.employees.results);
         setDocumentResults(dualSearchData.documents.results);
         setEmployeeTotal(dualSearchData.employees.total);
         setDocumentTotal(dualSearchData.documents.total);
-        
         // Combine results for backward compatibility
         const combinedResults = [...dualSearchData.employees.results, ...dualSearchData.documents.results];
         setSearchResults(combinedResults);
-        
         // Update pagination based on combined totals
         const totalResults = dualSearchData.employees.total + dualSearchData.documents.total;
         const newPagination: PaginationInfo = {
-          currentPage: 1,
+          currentPage: pageNum,
           totalPages: Math.ceil(totalResults / (pagination.pageSize || 10)),
           totalResults: totalResults,
           pageSize: pagination.pageSize || 10,
-          hasNextPage: totalResults > (pagination.pageSize || 10),
-          hasPreviousPage: false
+          hasNextPage: pageNum < Math.ceil(totalResults / (pagination.pageSize || 10)),
+          hasPreviousPage: pageNum > 1
         };
         setPagination(newPagination);
-        
         console.log('✅ Dual search completed:', {
           employees: dualSearchData.employees.results.length,
           employeesTotal: dualSearchData.employees.total,
@@ -192,16 +188,15 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   }, [searchQuery]);
 
   // Manual search function - now uses dual search by default
-  const executeManualSearch = useCallback(async (query?: string): Promise<void> => {
+  const executeManualSearch = useCallback(async (query?: string, page?: number): Promise<void> => {
     const searchTerm = query || searchQuery;
-    console.log('🔍 Manual search triggered for:', searchTerm);
-    
+    console.log('🔍 Manual search triggered for:', searchTerm, 'page:', page);
     if (searchTerm.trim()) {
-      await executeDualSearch(searchTerm);
+      await executeDualSearch(searchTerm, page);
       setHasSearched(true);
     } else {
       // clearing search resets state
-      await executeDualSearch('');
+      await executeDualSearch('', 1);
       setHasSearched(false);
     }
   }, [searchQuery, executeDualSearch]);
@@ -234,32 +229,20 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     if (page < 1 || page > pagination.totalPages || page === pagination.currentPage) {
       return;
     }
-    
-    console.log(`🔍 Navigating to page ${page}...`);
+    console.log(`🔍 Navigating to page ${page} and triggering search...`);
     setIsLoading(true);
-
     try {
-      // TODO: Implement pagination for dual search mode
-      console.log('Pagination in dual search mode not yet fully implemented');
-      
-      // For now, just update pagination state
-      const newPagination: PaginationInfo = {
-        currentPage: page,
-        totalPages: pagination.totalPages,
-        totalResults: pagination.totalResults,
-        pageSize: pagination.pageSize,
-        hasNextPage: page < pagination.totalPages,
-        hasPreviousPage: page > 1
-      };
-      setPagination(newPagination);
-
-      console.log(`✅ Successfully navigated to page ${page}`);
+      // Call the search function with the new page number
+      // You may need to update executeDualSearch/executeManualSearch to accept a page param
+      await executeManualSearch(undefined, page); // undefined = use current query
+      // Pagination will be updated by the search function
+      console.log(`✅ Successfully navigated to page ${page} and triggered search`);
     } catch (error) {
       console.error(`❌ Failed to navigate to page ${page}:`, error);
     } finally {
       setIsLoading(false);
     }
-  }, [pagination]);
+  }, [pagination, executeManualSearch]);
 
   const nextPage = useCallback(async () => {
     if (pagination.hasNextPage) {
@@ -330,7 +313,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     testConnection,
     setSearchMode,
     setConnectionStatus,
-    executeSearch: executeManualSearch,
+  executeSearch: (query: string, _filters?: Partial<SearchFilters>) => executeManualSearch(query),
     searchType,
     setSearchType,
     toggleResultSelection,

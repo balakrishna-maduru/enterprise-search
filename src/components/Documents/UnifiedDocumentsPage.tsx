@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { SummaryService } from '../../services/summary_service';
 import { useSearch } from '../../contexts/SearchContext';
 import { useUser } from '../../hooks/useUser';
-import { usePagination } from '../../hooks/usePagination';
+// import { usePagination } from '../../hooks/usePagination';
 import { SearchResult } from '../../types';
 import DocumentGrid from './DocumentGrid';
 import { EmployeeSearchResults } from '../Employee/EmployeeSearchResults';
@@ -43,8 +43,8 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   const [totalResults, setTotalResults] = useState(0);
   const [isSummarizing, setIsSummarizing] = useState(false);
   
-  const resultsPerPage = 10;
-  const pagination = usePagination(totalResults, resultsPerPage);
+  // Use global pagination from context
+  const { pagination, goToPage, nextPage, previousPage } = useSearch();
 
   // Add immediate visual feedback
   console.log('🏗️ UnifiedDocumentsPage rendered with:', {
@@ -70,10 +70,8 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  // Reset pagination when search changes
-  useEffect(() => {
-    pagination.reset();
-  }, [searchQuery, selectedFilters]);
+
+  // No need to reset pagination here; handled by context
 
   const handleDocumentClick = useCallback((document: SearchResult) => {
     if (onNavigateToChat) {
@@ -172,20 +170,13 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
       )}
 
       {/* Pagination */}
-      {totalResults > resultsPerPage && (
+      {pagination.totalResults > pagination.pageSize && (
         <div className="flex justify-center">
           <Pagination
-            pagination={{
-              currentPage: pagination.currentPage,
-              totalPages: pagination.totalPages,
-              totalResults: totalResults,
-              pageSize: resultsPerPage,
-              hasNextPage: pagination.hasNextPage,
-              hasPreviousPage: pagination.hasPreviousPage
-            }}
-            onPageChange={pagination.goToPage}
-            onNext={pagination.nextPage}
-            onPrevious={pagination.previousPage}
+            pagination={pagination}
+            onPageChange={goToPage}
+            onNext={nextPage}
+            onPrevious={previousPage}
           />
         </div>
       )}
