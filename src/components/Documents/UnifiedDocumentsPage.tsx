@@ -11,6 +11,7 @@ import { SearchResultsSummary } from '../Search/SearchResultsSummary';
 import { Button } from '../UI';
 import Pagination from '../Common/Pagination';
 import LoadingSpinner from '../Common/LoadingSpinner';
+import SearchFilters from '../Search/SearchFilters';
 
 interface UnifiedDocumentsPageProps {
   className?: string;
@@ -26,25 +27,64 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   const { 
     searchQuery, 
     selectedFilters,
+    setSelectedFilters,
     hasSearched,
     documentResults,
     employeeResults,
     isLoading,
     documentTotal,
-    employeeTotal
+    employeeTotal,
+    pagination, goToPage, nextPage, previousPage
   } = useSearch();
-  
   const { user: currentUser } = useUser();
-  
   // Local state
   const [documents, setDocuments] = useState<SearchResult[]>([]);
   const [employees, setEmployees] = useState<SearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [isSummarizing, setIsSummarizing] = useState(false);
-  
-  // Use global pagination from context
-  const { pagination, goToPage, nextPage, previousPage } = useSearch();
+
+  // Example filtersData, ensure all values are numbers and no undefineds
+  const filtersData = [
+    {
+      name: 'container',
+      values: {
+        'Mega Policies Global RMG': 109,
+        'Mega Policies Global LCS': 93,
+        'Mega Policies SG CBG': 97,
+        'Mega Policies Global CBG': 357,
+        'Mega Policies IN FIN': 132,
+        'ekb-uat-usecase-testing': 1324,
+        'Mega Policies HK RMG': 114,
+        'Mega Policies Indonesia(ID) RMG': 67,
+        'DEAA': 963,
+        'Mega Policies TW RMG': 105
+      } as { [value: string]: number }
+    },
+    {
+      name: 'author',
+      values: {
+        'shudong': 732,
+        'uladzimir': 26,
+        'daoyongl': 18,
+        'DBS': 1356,
+        'prathimapawar': 20,
+        'shiyansu': 13,
+        'davidhenningson': 15,
+        'amitthakur': 11,
+        'leonlee': 12,
+        'keerthanap': 14
+      } as { [value: string]: number }
+    },
+    {
+      name: 'objectType',
+      values: {
+        'Article': 1356,
+        'page': 963,
+        'drive': 1324
+      } as { [value: string]: number }
+    }
+  ];
 
   // Add immediate visual feedback
   console.log('🏗️ UnifiedDocumentsPage rendered with:', {
@@ -128,64 +168,77 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   }
 
   return (
-    <div className={`space-y-8 ${className}`}>
-      
-      {/* Header: hidden until user performs a search */}
-  {/* Header removed per request (hide search title and count) */}
+    <div className={`flex flex-row w-full max-w-7xl mx-auto ${className}`}>
+      {/* Main content */}
+      <div className="flex-1 pr-8 space-y-8">
+        {/* Search Summary */}
+        {hasSearched && searchQuery.trim() && (
+          <SearchResultsSummary
+            totalResults={documentTotal + employeeTotal}
+            documentCount={documentResults.length}
+            employeeCount={employeeResults.length}
+            isSearchActive={!!searchQuery.trim()}
+          />
+        )}
 
-  {/* Search Summary */}
-  {hasSearched && searchQuery.trim() && (
-        <SearchResultsSummary
-          totalResults={totalResults}
-          documentCount={documents.length}
-          employeeCount={employees.length}
-          isSearchActive={!!searchQuery.trim()}
-        />
-      )}
+        {/* Landing Empty State */}
+        {!hasSearched && !searchQuery.trim() && (
+          <div className="text-center py-24 text-gray-500">
+            <p className="text-lg mb-4">Type a search above to find documents and employees.</p>
+            <p className="text-sm">Your results will appear here after you run your first search.</p>
+          </div>
+        )}
 
-  {/* Employee + Document Results Combined Container */}
+        {/* Results */}
+        {hasSearched && (
+          <div className="flex justify-center">
+            <div className="w-full max-w-4xl space-y-10">
+              {employeeResults.length > 0 && (
+                <EmployeeSearchResults employeeResults={employeeResults} />
+              )}
+              <DocumentGrid
+                documents={documentResults}
+                onDocumentClick={handleDocumentClick}
+                onSummarizeDocument={handleSummarize}
+                onChatWithDocument={handleChatWithDocument}
+                isLoading={isLoading}
+              />
+            </div>
+          </div>
+        )}
 
-      {/* Documents Grid or Landing Empty State */}
-      {!hasSearched && !searchQuery.trim() && (
-        <div className="text-center py-24 text-gray-500">
-          <p className="text-lg mb-4">Type a search above to find documents and employees.</p>
-          <p className="text-sm">Your results will appear here after you run your first search.</p>
-        </div>
-      )}
-      {hasSearched && (
-        <div className="flex justify-center">
-          <div className="w-full max-w-4xl space-y-10">
-            {employees.length > 0 && (
-              <EmployeeSearchResults employeeResults={employees} />
-            )}
-            <DocumentGrid
-              documents={documents}
-              onDocumentClick={handleDocumentClick}
-              onSummarizeDocument={handleSummarize}
-              onChatWithDocument={handleChatWithDocument}
-              isLoading={isLoading}
+        {/* Pagination */}
+        {pagination.totalResults > pagination.pageSize && (
+          <div className="flex justify-center">
+            <Pagination
+              pagination={pagination}
+              onPageChange={goToPage}
+              onNext={nextPage}
+              onPrevious={previousPage}
             />
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Pagination */}
-      {pagination.totalResults > pagination.pageSize && (
-        <div className="flex justify-center">
-          <Pagination
-            pagination={pagination}
-            onPageChange={goToPage}
-            onNext={nextPage}
-            onPrevious={previousPage}
-          />
-        </div>
-      )}
-
-      {/* Loading overlay */}
-      {isLoading && (
-        <div className="flex justify-center py-8">
-          <LoadingSpinner size="lg" />
-        </div>
+        {/* Loading overlay */}
+        {isLoading && (
+          <div className="flex justify-center py-8">
+            <LoadingSpinner size="lg" />
+          </div>
+        )}
+      </div>
+      {/* Right-side filters tab: only show after search or if query is not empty */}
+      {(hasSearched || searchQuery.trim()) && (
+        <aside className="w-80 min-w-[320px]">
+          <div className="sticky top-24">
+            <SearchFilters
+              filters={filtersData}
+              selectedFilters={selectedFilters}
+              onFiltersChange={setSelectedFilters}
+              isOpen={true}
+              onToggle={() => {}}
+            />
+          </div>
+        </aside>
       )}
     </div>
   );

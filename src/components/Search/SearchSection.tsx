@@ -1,8 +1,5 @@
-// src/components/Search/SearchSection.tsx
 import React from 'react';
 import { useSearch } from '../../contexts/SearchContext';
-
-
 import { useDBSTheme } from '../../hooks/useDBSTheme';
 import { useToggle } from '../../hooks/useToggle';
 import { useUser } from '../../hooks/useUser';
@@ -58,13 +55,10 @@ const filtersData: FilterDef[] = [
 ];
 
 export const SearchSection: React.FC = () => {
-  const { searchQuery, setSearchQuery, isLoading, executeSearch, hasSearched } = useSearch();
+  const { searchQuery, setSearchQuery, isLoading, executeSearch, hasSearched, selectedFilters, setSelectedFilters } = useSearch();
   useDBSTheme();
   const { value: showFiltersDropdown, toggle: toggleFiltersDropdown, setFalse: hideFilters } = useToggle(false);
   const { user } = useUser();
-
-  // Local state for selected filters (object: { [filterName]: string[] })
-  const [selectedFilters, setSelectedFilters] = React.useState<{ [filterName: string]: string[] }>({});
 
   const handleSearchSubmit = () => {
     executeSearch(searchQuery);
@@ -74,8 +68,12 @@ export const SearchSection: React.FC = () => {
   const getActiveFilterLabels = () => {
     const labels: string[] = [];
     Object.entries(selectedFilters).forEach(([filterName, values]) => {
-      if (values && values.length > 0) {
-        labels.push(...values.map(v => `${filterName.charAt(0).toUpperCase() + filterName.slice(1)}: ${v}`));
+      if (Array.isArray(values) && values.length > 0) {
+        labels.push(...values.map((v: string) => `${filterName.charAt(0).toUpperCase() + filterName.slice(1)}: ${v}`));
+      }
+      // Optionally handle string filters (e.g., dateRange)
+      if (typeof values === 'string' && filterName === 'dateRange' && values !== 'all') {
+        labels.push(`DateRange: ${values}`);
       }
     });
     return labels;
@@ -166,8 +164,10 @@ export const SearchSection: React.FC = () => {
                     const [filterType, filterValue] = label.split(': ');
                     const key = filterType.charAt(0).toLowerCase() + filterType.slice(1);
                     const newFilters = { ...selectedFilters };
-                    if (Array.isArray(newFilters[key])) {
-                      newFilters[key] = newFilters[key].filter((v: string) => v !== filterValue);
+                    const arrayFields = ['source', 'contentType', 'author', 'tags'];
+                    if (arrayFields.includes(key)) {
+                      const arrKey = key as 'source' | 'contentType' | 'author' | 'tags';
+                      newFilters[arrKey] = (newFilters[arrKey] as string[]).filter((v: string) => v !== filterValue);
                     }
                     setSelectedFilters(newFilters);
                   }}

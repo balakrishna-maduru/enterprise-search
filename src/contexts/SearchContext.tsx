@@ -81,12 +81,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   }, []);
 
   // New dual search function
-  const executeDualSearch = useCallback(async (query?: string, page?: number): Promise<void> => {
+
+  const executeDualSearch = useCallback(async (query?: string, page?: number, filtersOverride?: any): Promise<void> => {
     const searchTerm = query || searchQuery;
-    console.log('🔍 Dual search triggered for:', searchTerm);
+    // Use all dynamic filters as-is
+    const filters = filtersOverride || selectedFilters;
+    console.log('🔍 Dual search triggered for:', searchTerm, 'filters:', filters);
     console.log('🔍 Current user:', currentUser);
     console.log('🔍 API Service available:', !!apiService);
-    
     setIsLoading(true);
     setIsDualSearchMode(true);
     try {
@@ -108,7 +110,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         });
         return;
       } else {
-        console.log('🔍 Executing dual search for:', searchTerm, 'page:', pageNum);
+        console.log('🔍 Executing dual search for:', searchTerm, 'page:', pageNum, 'filters:', filters);
         // For search queries, execute dual search
         const dualSearchData = await apiService.dualSearch(
           searchTerm,
@@ -164,7 +166,13 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, currentUser, pagination.pageSize]);
+  }, [searchQuery, currentUser, pagination.pageSize, selectedFilters]);
+  // Trigger search when filters change
+  useEffect(() => {
+    if (hasSearched) {
+      executeDualSearch(undefined, 1, selectedFilters);
+    }
+  }, [selectedFilters]);
 
   // Clear selections when user changes
   useEffect(() => {
@@ -274,15 +282,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   }, [searchResults]);
 
   const contextValue: SearchContextType = {
-    searchQuery,
-    setSearchQuery,
-  hasSearched,
+  searchQuery,
+  setSearchQuery,
+  hasSearched, // Indicates if a search has been performed (used to trigger effects)
   setHasSearched,
     searchResults,
     setSearchResults,
     selectedResults,
     setSelectedResults,
-    
     // New dual API state
     employeeResults,
     setEmployeeResults,
@@ -294,7 +301,6 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setDocumentTotal,
     isDualSearchMode,
     setIsDualSearchMode,
-    
     isLoading,
     setIsLoading,
     isConversationalMode,
@@ -313,22 +319,22 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     testConnection,
     setSearchMode,
     setConnectionStatus,
-  executeSearch: (query: string, _filters?: Partial<SearchFilters>) => executeManualSearch(query),
+    executeSearch: (query: string, _filters?: Partial<SearchFilters>) => executeManualSearch(query),
     searchType,
     setSearchType,
     toggleResultSelection,
     selectAllResults,
     generateComprehensiveSummary,
-    
     // New dual search method
     executeDualSearch,
-    
     // Pagination
     pagination,
     loadDefaultDocuments,
     goToPage,
     nextPage,
-    previousPage
+    previousPage,
+    // Add a right-side filter tab (for layout integration, not a function)
+    // You will use the context's selectedFilters and setSelectedFilters in your layout to render the filter tab
   };
 
   return (

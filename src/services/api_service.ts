@@ -542,106 +542,89 @@ export class ApiService {
     query: string = '', 
     size: number = 10, 
     currentUser?: any,
-    from: number = 0,
-    filters?: {
-      source?: string[];
-      contentType?: string[];
-      dateRange?: string;
-      author?: string[];
-      tags?: string[];
-    }
+    employeeFrom: number = 0,
+    documentFrom: number = 0,
+    filters?: any
   ): Promise<{results: SearchResult[], total: number}> {
-    try {
-      const isWildcardQuery = query === '*' || query.trim() === '';
-      
-      const searchRequest: SearchRequest = {
-        query: isWildcardQuery ? '' : query,
-        filters: {
-          source: filters?.source || [],
-          content_type: filters?.contentType || ['document', 'ticket'],
-          date_range: filters?.dateRange || 'all',
-          author: filters?.author || [],
-          tags: filters?.tags || [],
-          exclude_content_type: ['employee'] // Always exclude employees for document search
-        },
-        size,
-        from_: from,
-        semantic_enabled: !isWildcardQuery,
-        hybrid_weight: isWildcardQuery ? 0 : 0.7
-      };
+    const isWildcardQuery = query === '*' || query.trim() === '';
+    const from = documentFrom || 0;
+    const searchRequest: SearchRequest = {
+      query: isWildcardQuery ? '' : query,
+      filters: filters || {},
+      size,
+      from_: from,
+      semantic_enabled: !isWildcardQuery,
+      hybrid_weight: isWildcardQuery ? 0 : 0.7
+    };
 
-      const url = `${this.baseUrl}/search`;
-      console.log('🔍 Making filtered documents search:', { 
-        url, 
-        query: query === '*' ? 'WILDCARD (*)' : query,
-        filters: searchRequest.filters
-      });
-      
-      const headers = await this.getAuthHeaders(currentUser);
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(searchRequest)
-      });
+    const url = `${this.baseUrl}/search`;
+    console.log('🔍 Making filtered documents search:', { 
+      url, 
+      query: query === '*' ? 'WILDCARD (*)' : query,
+      filters: searchRequest.filters
+    });
 
-      if (!response.ok) {
-        throw new Error(`Search API error: ${response.status}`);
-      }
+    const headers = await this.getAuthHeaders(currentUser);
 
-      const apiResponse = await response.json();
-      console.log('📥 Filtered documents search API response:', apiResponse);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(searchRequest)
+    });
 
-      // Handle both direct response format and wrapped response format
-      let results = [];
-      let total = 0;
-      
-      if (apiResponse.results) {
-        // Direct format from search API
-        results = apiResponse.results;
-        total = apiResponse.total || results.length;
-      } else if (apiResponse.success && apiResponse.data && apiResponse.data.results) {
-        // Wrapped format
-        results = apiResponse.data.results;
-        total = apiResponse.data.total || results.length;
-      } else {
-        console.warn('⚠️ Filtered search API returned unexpected format:', apiResponse);
-        return { results: [], total: 0 };
-      }
+    if (!response.ok) {
+      throw new Error(`Search API error: ${response.status}`);
+    }
 
-      if (!results || results.length === 0) {
-        console.warn('⚠️ Filtered search API returned no results');
-        return { results: [], total: 0 };
-      }
+    const apiResponse = await response.json();
+    console.log('📥 Filtered documents search API response:', apiResponse);
 
-      // Transform API search results to SearchResult format (inline transformation)
-      const transformedResults = results.map((result: any) => {
-        return {
-          id: result.id?.toString() || Math.random().toString(),
-          title: result.title || result.name || 'Untitled',
-          content: result.content || result.search_text || result.bio || '',
-          summary: result.summary || result.content?.substring(0, 200) || '',
-          source: result.source || 'Unknown',
-          author: result.author || 'Unknown',
-          department: result.department || 'Unknown',
-          content_type: result.content_type || result.document_type || 'document',
-          tags: result.tags || [],
-          timestamp: result.timestamp || result.indexed_at || new Date().toISOString(),
-          url: result.url || '#',
-          score: result.score || 0
-        } as SearchResult;
-      });
-
-      console.log('✅ Filtered documents search transformed results:', transformedResults.length);
-
-      return {
-        results: transformedResults,
-        total
-      };
-    } catch (error) {
-      console.error('❌ Filtered documents search error:', error);
+    // Handle both direct response format and wrapped response format
+    let results = [];
+    let total = 0;
+    
+    if (apiResponse.results) {
+      // Direct format from search API
+      results = apiResponse.results;
+      total = apiResponse.total || results.length;
+    } else if (apiResponse.success && apiResponse.data && apiResponse.data.results) {
+      // Wrapped format
+      results = apiResponse.data.results;
+      total = apiResponse.data.total || results.length;
+    } else {
+      console.warn('⚠️ Filtered search API returned unexpected format:', apiResponse);
       return { results: [], total: 0 };
     }
+
+    if (!results || results.length === 0) {
+      console.warn('⚠️ Filtered search API returned no results');
+      return { results: [], total: 0 };
+    }
+
+    // Transform API search results to SearchResult format (inline transformation)
+    const transformedResults = results.map((result: any) => {
+      return {
+        id: result.id?.toString() || Math.random().toString(),
+        title: result.title || result.name || 'Untitled',
+        content: result.content || result.search_text || result.bio || '',
+        summary: result.summary || result.content?.substring(0, 200) || '',
+        source: result.source || 'Unknown',
+        author: result.author || 'Unknown',
+        department: result.department || 'Unknown',
+        content_type: result.content_type || result.document_type || 'document',
+        tags: result.tags || [],
+        timestamp: result.timestamp || result.indexed_at || new Date().toISOString(),
+        url: result.url || '#',
+        score: result.score || 0
+      } as SearchResult;
+    });
+
+    console.log('✅ Filtered documents search transformed results:', transformedResults.length);
+
+    return { results: transformedResults, total };
+  } catch (error: unknown) {
+    console.error('❌ Filtered documents search error:', error);
+    return { results: [], total: 0 };
   }
 
   // New method: Search only employees

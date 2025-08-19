@@ -85,15 +85,52 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
   };
 
   return (
-    <Card 
-      variant="bordered" 
+    <Card
+      variant="bordered"
       hover={!!onClick}
       onClick={onClick ? handleClick : undefined}
-      className={`${className}`}
+      className={`group relative ${className}`}
     >
       <div className="flex flex-col sm:flex-row gap-4">
-        {/* Main Content */}
-        <div className="flex-1">
+        {/* Main Content with relative positioning for icon */}
+        <div className="flex-1 relative">
+          {/* Summarize icon button, top-right of content area, only on hover */}
+          {(onSummarize || onChat) && (
+            <div className="absolute top-0 right-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              {onSummarize && (
+                <div className="relative flex flex-col items-center">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleSummarize}
+                    className="p-2 rounded-full hover:bg-blue-100"
+                    aria-label="Summarize"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </Button>
+                  {/* Tooltip label on hover */}
+                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
+                    Summarize
+                  </span>
+                </div>
+              )}
+              {onChat && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleChat}
+                  className="flex items-center gap-1 text-xs"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Chat
+                </Button>
+              )}
+            </div>
+          )}
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
@@ -141,36 +178,6 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
               </div>
             )}
           </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex sm:flex-col gap-2 justify-center sm:justify-start shrink-0">
-          {onSummarize && (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSummarize}
-              className="flex items-center gap-1 text-xs"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Summarize
-            </Button>
-          )}
-          {onChat && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleChat}
-              className="flex items-center gap-1 text-xs"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              Chat
-            </Button>
-          )}
         </div>
       </div>
     </Card>
