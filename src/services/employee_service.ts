@@ -196,7 +196,8 @@ export class EmployeeService {
       
       // Convert ES Employee to main Employee type by adding missing properties
       const employee: Employee = {
-        id: parseInt(esEmployee.id),
+        id: String(esEmployee.id), // Ensure id is string
+        employeeId: String(esEmployee.id), // Add employeeId
         name: esEmployee.name,
         title: esEmployee.title,
         email: esEmployee.email,

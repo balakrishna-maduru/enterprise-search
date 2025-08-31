@@ -9,7 +9,7 @@ const OrgChartNode: React.FC<{ node: HierarchyNode }> = ({ node }) => {
     <div className="flex flex-col items-center text-center relative">
       {/* Node Card */}
       <div
-                className={`relative p-3 rounded-lg shadow-lg min-w-[180px] bg-white border-4 cursor-pointer ${
+                className={`relative p-3 rounded-lg shadow-lg w-[250px] h-[100px] bg-white border-4 cursor-pointer ${
           node.is_target ? 'border-red-500 ring-4 ring-red-200' : 'border-blue-500'
         }`}
         onClick={() => {
@@ -26,10 +26,10 @@ const OrgChartNode: React.FC<{ node: HierarchyNode }> = ({ node }) => {
               {node.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
             </div>
           )}
-          <div className="flex-1 text-left">
-            <div className="font-bold text-gray-800 text-base">{node.name}</div>
-            <div className="text-sm text-gray-600">{node.title}</div>
-            {node.country && <div className="text-xs text-gray-500 mt-1">{node.country}</div>}
+          <div className="flex-1 text-left overflow-hidden">
+            <div className="font-bold text-gray-800 text-base truncate whitespace-nowrap">{node.name}</div>
+            <div className="text-sm text-gray-600 truncate whitespace-nowrap">{node.title}</div>
+            {node.country && <div className="text-xs text-gray-500 mt-1 truncate whitespace-nowrap">{node.country}</div>}
           </div>
         </div>
       </div>

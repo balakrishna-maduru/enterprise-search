@@ -247,7 +247,7 @@ export class ApiService {
         let employee_data: Employee | undefined;
         if (result.content_type === 'employee' || result.document_type === 'employee') {
           employee_data = {
-            id: parseInt(result.id) || 0,
+            id: String(result.id),
             name: result.name || result.title,
             title: result.title || '',
             email: result.email || '',
@@ -320,7 +320,8 @@ export class ApiService {
           url: currentUser.email ? `mailto:${currentUser.email}` : '#',
           score: 100,
           employee_data: {
-            id: currentUser.id || 999,
+            id: String(currentUser.id || 999), // Ensure id is string
+            employeeId: String(currentUser.employeeId || currentUser.id || 'unknown'), // Add employeeId
             name: currentUser.name || 'Current User',
             title: currentUser.position || currentUser.title || 'Employee',
             email: currentUser.email || '',
@@ -400,7 +401,8 @@ export class ApiService {
       return apiResponse.data.employees.map((apiEmployee: any) => {
         // Create proper Employee object
         const employee: Employee = {
-          id: apiEmployee.id,
+          id: String(apiEmployee.id), // Ensure id is string
+          employeeId: String(apiEmployee.employeeId || apiEmployee.id), // Add employeeId
           name: apiEmployee.name,
           title: apiEmployee.title,
           email: apiEmployee.email,
@@ -686,7 +688,7 @@ export class ApiService {
       const transformedResults = employees.map((emp: any) => {
         const id = emp.employeeId || emp.id || emp._id;
         const employee_data: Employee = {
-          id: parseInt(id) || 0,
+          id: String(id), // Ensure id is string
           employeeId: id,
           name: emp.fullName || 'Unknown',
           title: emp.designations || '',
