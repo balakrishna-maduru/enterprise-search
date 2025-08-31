@@ -14,21 +14,65 @@ import argparse
 
 # Configuration
 ELASTICSEARCH_URL = "http://localhost:9200"
-INDEX_NAME = "employees"
+INDEX_NAME = "new_people"
 DEFAULT_CSV_FILE = "employees_export.csv"
 
-def create_employees_index():
-    """Create the employees index with proper mapping"""
+def create_target_index():
+    """Create the target index with proper mapping if it doesn't exist."""
     
-    mapping = {
+    index_body = {
+        "settings": {
+            "analysis": {
+                "analyzer": {
+                    "edge_ngram_analyzer": {
+                        "tokenizer": "edge_ngram_tokenizer",
+                        "filter": ["lowercase"]
+                    }
+                },
+                "tokenizer": {
+                    "edge_ngram_tokenizer": {
+                        "type": "edge_ngram",
+                        "min_gram": 2,
+                        "max_gram": 20,
+                        "token_chars": ["letter", "digit"]
+                    }
+                }
+            }
+        },
         "mappings": {
             "properties": {
                 "id": {"type": "keyword"},
-                "name": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
+                "name": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {"type": "keyword"},
+                        "edge_ngram": {
+                            "type": "text",
+                            "analyzer": "edge_ngram_analyzer",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                },
                 "email": {"type": "keyword"},
-                "title": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
-                "department": {"type": "keyword"},
-                "location": {"type": "keyword"},
+                "title": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {"type": "keyword"},
+                        "edge_ngram": {
+                            "type": "text",
+                            "analyzer": "edge_ngram_analyzer",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                },
+                "department": {
+                    "type": "text",
+                    "fields": {"keyword": {"type": "keyword"}}
+                },
+                "location": {
+                    "type": "text",
+                    "fields": {"keyword": {"type": "keyword"}}
+                },
                 "phone": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
                 "start_date": {"type": "date"},
                 "manager_id": {"type": "keyword"},
@@ -53,12 +97,12 @@ def create_employees_index():
     # Check if index exists
     check_response = requests.head(index_url)
     if check_response.status_code == 200:
-        print(f"⚠️  Index '{INDEX_NAME}' already exists")
+        print(f"⚠️  Index '{INDEX_NAME}' already exists. For mapping changes to apply, delete the index and re-run.")
         return True
     
     # Create index
-    print(f"🔧 Creating index '{INDEX_NAME}'...")
-    response = requests.put(index_url, json=mapping)
+    print(f"🔧 Creating index '{INDEX_NAME}' with optimized mapping...")
+    response = requests.put(index_url, json=index_body)
     
     if response.ok:
         print(f"✅ Index '{INDEX_NAME}' created successfully")
@@ -107,8 +151,8 @@ def build_hierarchy_data(employees):
             current_id = current_emp['manager_id']
             level += 1
             
-            # Prevent infinite loops
-            if level > 10:
+            # Prevent infinite loops in case of data cycles
+            if level > 20:
                 break
         
         emp['level'] = level
@@ -128,7 +172,7 @@ def build_hierarchy_data(employees):
             current_id = current_emp.get('manager_id')
             
             # Prevent infinite loops
-            if len(path_parts) > 10:
+            if len(path_parts) > 20:
                 break
         
         # Reverse to get top-down hierarchy
@@ -166,36 +210,25 @@ def import_employees_from_csv(csv_file, clear_existing=False):
         print(f"❌ CSV file not found: {csv_file}")
         return False
     
-    print(f"🔄 Starting employee import from {csv_file}...")
+    print(f"🔄 Starting import from {csv_file} to index '{INDEX_NAME}'...")
     
     try:
         # Clear existing data if requested
         if clear_existing:
-            print("🗑️  Clearing existing employee data...")
+            print(f"🗑️  Clearing existing data from index '{INDEX_NAME}'...")
             delete_url = f"{ELASTICSEARCH_URL}/{INDEX_NAME}/_delete_by_query"
             delete_body = {"query": {"match_all": {}}}
             requests.post(delete_url, json=delete_body)
         
         # Create index if it doesn't exist
-        if not create_employees_index():
+        if not create_target_index():
             return False
         
         # Read CSV file
         employees = []
-        missing_hierarchy_columns = False
         
         with open(csv_file, 'r', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
-            
-            # Check if hierarchy columns are missing
-            fieldnames = reader.fieldnames or []
-            hierarchy_fields = ['level', 'reports', 'has_reports', 'report_count']
-            missing_fields = [field for field in hierarchy_fields if field not in fieldnames]
-            
-            if missing_fields:
-                missing_hierarchy_columns = True
-                print(f"⚠️  Missing hierarchy columns: {', '.join(missing_fields)}")
-                print("🔧 Will auto-generate hierarchy data from manager relationships")
             
             for row in reader:
                 # Convert JSON strings back to lists
@@ -211,33 +244,33 @@ def import_employees_from_csv(csv_file, clear_existing=False):
                     except json.JSONDecodeError:
                         row['projects'] = row['projects'].split(',') if row['projects'] else []
                 
-                if row.get('reports') and not missing_hierarchy_columns:
+                if row.get('reports'):
                     try:
                         row['reports'] = json.loads(row['reports'])
                     except json.JSONDecodeError:
                         row['reports'] = []
                 
                 # Convert string booleans and numbers only if they exist
-                if row.get('has_reports') and not missing_hierarchy_columns:
+                if row.get('has_reports'):
                     row['has_reports'] = row['has_reports'].lower() in ('true', '1', 'yes')
                 
-                if row.get('level') and not missing_hierarchy_columns:
+                if row.get('level'):
                     try:
                         row['level'] = int(row['level'])
                     except ValueError:
-                        row['level'] = 0
+                        row['level'] = None # Set to None if invalid, will be recalculated
                 
                 if row.get('org_level'):
                     try:
                         row['org_level'] = int(row['org_level'])
                     except ValueError:
-                        row['org_level'] = 0
+                        row['org_level'] = None # Set to None if invalid
                 
-                if row.get('report_count') and not missing_hierarchy_columns:
+                if row.get('report_count'):
                     try:
                         row['report_count'] = int(row['report_count'])
                     except ValueError:
-                        row['report_count'] = 0
+                        row['report_count'] = None # Set to None if invalid
                 
                 if row.get('tenure_years'):
                     try:
@@ -246,16 +279,14 @@ def import_employees_from_csv(csv_file, clear_existing=False):
                         row['tenure_years'] = 0.0
                 
                 # Remove empty fields
-                employee = {k: v for k, v in row.items() if v}
+                employee = {k: v for k, v in row.items() if v is not None and v != ''}
                 employees.append(employee)
         
         print(f"📊 Read {len(employees)} employees from CSV")
         
-        # Build hierarchy data if columns are missing
-        if missing_hierarchy_columns:
-            employees = build_hierarchy_data(employees)
-        
-        print(f"📊 Read {len(employees)} employees from CSV")
+        # Always rebuild hierarchy data from manager_id to ensure data integrity
+        print("🔧 Recalculating all hierarchy data (levels, reports, etc.) to ensure consistency...")
+        employees = build_hierarchy_data(employees)
         
         # Bulk import to Elasticsearch
         print("📤 Uploading to Elasticsearch...")
@@ -283,7 +314,7 @@ def import_employees_from_csv(csv_file, clear_existing=False):
                     if 'index' in item and 'error' in item['index']:
                         print(f"  - Error indexing {item['index'].get('_id', 'unknown')}: {item['index']['error']}")
             else:
-                print(f"✅ Successfully imported {len(employees)} employees")
+                print(f"✅ Successfully imported {len(employees)} documents into '{INDEX_NAME}'")
             
             # Refresh index
             refresh_url = f"{ELASTICSEARCH_URL}/{INDEX_NAME}/_refresh"
@@ -308,7 +339,7 @@ def verify_import():
         if response.ok:
             data = response.json()
             count = data['count']
-            print(f"📊 Verification: {count} employees in index")
+            print(f"📊 Verification: {count} documents in index '{INDEX_NAME}'")
             
             # Get a sample employee
             search_url = f"{ELASTICSEARCH_URL}/{INDEX_NAME}/_search"
@@ -332,13 +363,13 @@ def verify_import():
 
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser(description='Import employee data from CSV to Elasticsearch')
+    parser = argparse.ArgumentParser(description='Import data from CSV to Elasticsearch.')
     parser.add_argument('--file', '-f', default=DEFAULT_CSV_FILE, help='CSV file to import')
     parser.add_argument('--clear', '-c', action='store_true', help='Clear existing data before import')
     
     args = parser.parse_args()
     
-    print("🏢 Employee CSV Import Tool")
+    print("🏢 CSV Data Import Tool for Elasticsearch")
     print("=" * 40)
     
     if import_employees_from_csv(args.file, args.clear):

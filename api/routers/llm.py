@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from typing import Dict, Any
 import json
-from models.llm import (
+from api.models.llm import (
     SummaryRequest, ComprehensiveSummaryRequest, ChatRequest, 
     SummaryResponse, ChatResponse
 )
-from models.user import User
-from services.llm_service import LLMService
-from middleware.auth import get_current_user
+from api.models.user import User
+from api.services.llm_service import LLMService
+from api.middleware.auth import get_current_user
 
 router = APIRouter()
 

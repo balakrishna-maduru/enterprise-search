@@ -40,36 +40,28 @@ export const EmployeeSearchResults: React.FC<EmployeeSearchResultsProps> = ({
   };
 
   const handleViewHierarchy = async (employee: SearchResult) => {
-    // Try multiple ways to get employee ID
-    let employeeId = employee.employee_data?.id || employee.id;
-    
-    // If the ID is a string that looks like a number, parse it
-    if (typeof employeeId === 'string') {
-      const numericId = parseInt(employeeId, 10);
-      if (!isNaN(numericId)) {
-        employeeId = numericId;
-      }
-    }
-    
+    // Always use the correct employeeId from the data for hierarchy API
+    const employeeId = employee.employee_data?.employeeId || employee.employeeId || employee.id;
+
     console.log('Employee data for hierarchy:', {
       employee_data: employee.employee_data,
       employee_id: employeeId,
       original_id: employee.id,
       full_employee: employee
     });
-    
+
     if (!employeeId) {
-      console.warn('No employee ID found for hierarchy');
-      alert('Employee ID not available for hierarchy view. Please make sure the employee data contains a valid ID.');
+      console.warn('No employeeId found for hierarchy');
+      alert('Employee ID not available for hierarchy view. Please make sure the employee data contains a valid employeeId.');
       return;
     }
 
     setLoadingHierarchy(employee.id);
     try {
-      console.log('Fetching hierarchy for employee ID:', employeeId);
+      console.log('Fetching hierarchy for employeeId:', employeeId);
       const hierarchy = await employeeService.getEmployeeHierarchy(employeeId);
       console.log('Hierarchy response:', hierarchy);
-      
+
       if (hierarchy) {
         setSelectedEmployeeHierarchy(hierarchy);
       } else {

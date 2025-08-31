@@ -227,17 +227,16 @@ start_backend() {
     # Activate conda environment
     activate_python_env
     
-    cd "$API_DIR"
+    cd "$PROJECT_ROOT"
     
     if [ "$DEBUG_MODE" = "true" ]; then
         print_debug "Starting backend in debug mode with auto-reload..."
-        nohup uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug > "$LOG_DIR/backend.log" 2>&1 &
+        nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload --log-level debug > "$LOG_DIR/backend.log" 2>&1 &
     else
-        nohup uvicorn main:app --host 0.0.0.0 --port 8000 > "$LOG_DIR/backend.log" 2>&1 &
+        nohup uvicorn api.main:app --host 0.0.0.0 --port 8000 > "$LOG_DIR/backend.log" 2>&1 &
     fi
     
     echo $! > "$PID_DIR/backend.pid"
-    cd "$PROJECT_ROOT"
     
     # Wait for backend to be ready
     wait_for_service "http://localhost:8000/api/v1/health" "Python API Backend"
@@ -294,6 +293,25 @@ setup_elasticsearch_data() {
     python setup_elastic.py
     python gen_test_data.py
     
+    cd "$PROJECT_ROOT"
+}
+
+# Function to import new people data
+import_new_people_data() {
+    print_status "Importing new people data from new_people_data_generated.json..."
+
+    # Activate conda environment
+    activate_python_env
+
+    # Run the import script
+    if [ ! -f "$PYTHON_DIR/import_new_people_data.py" ]; then
+        print_error "Import script 'import_new_people_data.py' not found."
+        print_error "Please ensure the file exists in the 'python' directory."
+        return 1
+    fi
+
+    python "$PYTHON_DIR/import_new_people_data.py"
+
     cd "$PROJECT_ROOT"
 }
 
@@ -455,6 +473,17 @@ case "${1:-}" in
         setup_python_env
         setup_elasticsearch_data
         print_status "Setup completed successfully!"
+        ;;
+    "generate-new-data")
+        print_status "Generating new people data..."
+        activate_python_env
+        python "$PYTHON_DIR/generate_new_people_data.py"
+        print_status "✅ New data generation complete."
+        ;;
+    "import-new-data")
+        start_elasticsearch || exit 1
+        import_new_people_data
+        print_status "✅ New data import complete."
         ;;
     "install")
         case "${2:-}" in
@@ -678,23 +707,26 @@ case "${1:-}" in
     *)
         echo "Enterprise Search Application Manager"
         echo
-        echo "Usage: $0 {start|stop|restart|status|logs|dev|setup|install|install-deps|elasticsearch}"
+        echo "Usage: $0 {start|stop|restart|status|logs|dev|setup|install|elasticsearch|generate-new-data|import-new-data}"
         echo
         echo "Commands:"
-        echo "  start       - Start all services (backend + frontend)"
-        echo "  stop        - Stop all services"
-        echo "  restart     - Restart all services"
-        echo "  status      - Show status of all services"
-        echo "  logs        - Show logs (usage: logs [backend|frontend])"
-        echo "  dev         - Start in development mode with auto-reload"
-        echo "  setup       - Setup Python environment and Elasticsearch data"
-        echo "  install     - Install/reinstall components (clean|deps|python|node|elasticsearch|full)"
-        echo "  install-deps - Force install/update all dependencies (legacy)"
-        echo "  elasticsearch - Manage Elasticsearch (start|stop|restart|logs)"
+        echo "  start               - Start all services (backend + frontend)"
+        echo "  stop                - Stop all services"
+        echo "  restart             - Restart all services"
+        echo "  status              - Show status of all services"
+        echo "  logs                - Show logs (usage: logs [backend|frontend])"
+        echo "  dev                 - Start in development mode with auto-reload"
+        echo "  setup               - Setup Python environment and Elasticsearch data"
+        echo "  install             - Install/reinstall components (clean|deps|python|node|elasticsearch|full)"
+        echo "  elasticsearch       - Manage Elasticsearch (start|stop|restart|logs)"
+        echo "  generate-new-data   - Generate 'new_people_data_generated.json'"
+        echo "  import-new-data     - Import 'new_people_data_generated.json' into Elasticsearch"
         echo
         echo "Examples:"
         echo "  $0 dev                    # Start in development mode"
         echo "  $0 start                  # Start all services"
+        echo "  $0 generate-new-data      # Generate the new sample data file"
+        echo "  $0 import-new-data        # Import the new data into a new index"
         echo "  $0 install clean          # Clean installation (removes everything)"
         echo "  $0 install deps           # Update all dependencies"
         echo "  $0 install python         # Setup Python environment only"

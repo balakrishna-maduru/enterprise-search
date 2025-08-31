@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Dict, Any
-from services.elasticsearch_service import ElasticsearchService
-from services.llm_service import LLMService
-from middleware.auth import get_current_user
-from models.user import User
+from api.services.elasticsearch_service import ElasticsearchService
+from api.services.llm_service import LLMService
+from api.middleware.auth import get_current_user
+from api.models.user import User
 
 router = APIRouter()
 
@@ -38,7 +38,7 @@ async def summarize_document(
                     return SummaryResponseEnvelope(code=404, msg="Document not found", data="")
                 doc = resp.json()['_source']
         # Prepare a fake SearchResult for LLMService
-        from models.search import SearchResult
+        from api.models.search import SearchResult
         search_result = SearchResult(
             id=request.docId,
             title=doc.get('title', 'Untitled'),
@@ -55,7 +55,7 @@ async def summarize_document(
         )
         llm_service = LLMService()
         # Use the LLM to summarize this single document
-        from models.llm import SummaryRequest
+        from api.models.llm import SummaryRequest
         summary_req = SummaryRequest(query=f"Summarize document {doc.get('title', '')}", search_results=[search_result])
         summary_resp = await llm_service.generate_summary(summary_req, current_user)
         return SummaryResponseEnvelope(code=0, msg="success", data=summary_resp.summary)

@@ -8,6 +8,7 @@ import { SearchResult } from '../../types';
 import DocumentGrid from './DocumentGrid';
 import { EmployeeSearchResults } from '../Employee/EmployeeSearchResults';
 import { SearchResultsSummary } from '../Search/SearchResultsSummary';
+import ResultsPerPage from '../Common/ResultsPerPage';
 import { Button } from '../UI';
 import Pagination from '../Common/Pagination';
 import LoadingSpinner from '../Common/LoadingSpinner';
@@ -34,7 +35,7 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     isLoading,
     documentTotal,
     employeeTotal,
-    pagination, goToPage, nextPage, previousPage
+    pagination, setPageSize, goToPage, nextPage, previousPage
   } = useSearch();
   const { user: currentUser } = useUser();
   // Local state
@@ -173,12 +174,15 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
       <div className="flex-1 pr-8 space-y-8">
         {/* Search Summary */}
         {hasSearched && searchQuery.trim() && (
-          <SearchResultsSummary
-            totalResults={documentTotal + employeeTotal}
-            documentCount={documentResults.length}
-            employeeCount={employeeResults.length}
-            isSearchActive={!!searchQuery.trim()}
-          />
+          <div className="flex justify-between items-center">
+            <SearchResultsSummary
+              totalResults={documentTotal + employeeTotal}
+              documentCount={documentResults.length}
+              employeeCount={employeeResults.length}
+              isSearchActive={!!searchQuery.trim()}
+            />
+            <ResultsPerPage />
+          </div>
         )}
 
         {/* Landing Empty State */}

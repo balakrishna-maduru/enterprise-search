@@ -5,11 +5,11 @@ from typing import Dict, List, Optional
 from datetime import timedelta
 from elasticsearch import Elasticsearch
 
-from models.user import User
-from middleware.auth import (
+from api.models.user import User
+from api.middleware.auth import (
     create_access_token, get_current_user
 )
-from config import settings
+from api.config import settings
 
 router = APIRouter()
 
@@ -45,13 +45,13 @@ async def validate_user_email(email: str) -> Optional[Dict]:
         search_body = {
             "query": {
                 "term": {
-                    "email.keyword": email
+                    "emailAddress": email
                 }
             },
             "size": 1
         }
         
-        result = es.search(index="employees", body=search_body)
+        result = es.search(index="new_people", body=search_body)
         
         if result['hits']['total']['value'] > 0:
             # Return the employee data
@@ -78,11 +78,11 @@ async def login(request: LoginRequest) -> LoginResponse:
     
     # Create user data from employee data
     user_data = {
-        "id": employee_data.get("id", request.email.split("@")[0]),
-        "name": employee_data.get("name", "Unknown User"),
-        "email": employee_data.get("email", request.email),
-        "department": employee_data.get("department", "Unknown"),
-        "position": employee_data.get("title", "Employee"),  # title maps to position
+        "id": employee_data.get("employeeId", request.email.split("@")[0]),
+        "name": employee_data.get("fullName", "Unknown User"),
+        "email": employee_data.get("emailAddress", request.email),
+        "department": employee_data.get("departments", "Unknown"),
+        "position": employee_data.get("designations", "Employee"),  # designations maps to position
         "role": "employee",  # Default role for now
         "company": "Enterprise"
     }
@@ -90,7 +90,7 @@ async def login(request: LoginRequest) -> LoginResponse:
     # Create access token with user data in payload
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token_data = {
-        "sub": request.email,
+        "sub": user_data["email"],
         "user_id": user_data["id"],
         "name": user_data["name"],
         "department": user_data["department"],
@@ -98,12 +98,9 @@ async def login(request: LoginRequest) -> LoginResponse:
         "role": user_data["role"],
         "company": user_data["company"],
         # Add additional employee data to token
-        "employee_id": employee_data.get("id"),
-        "location": employee_data.get("location"),
-        "level": employee_data.get("level"),
-        "manager_id": employee_data.get("manager_id"),
-        "skills": employee_data.get("skills", []),
-        "start_date": employee_data.get("start_date")
+        "employee_id": employee_data.get("employeeId"),
+        "location": employee_data.get("city"),
+        "manager_id": employee_data.get("managerEmpId")
     }
     access_token = create_access_token(
         data=token_data, 

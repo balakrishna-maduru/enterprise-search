@@ -11,7 +11,78 @@ import random
 
 # Elasticsearch endpoint
 ES_URL = "http://localhost:9200"
-INDEX_NAME = "employees"
+INDEX_NAME = "new_people"
+
+def create_index_with_mapping():
+    """Create the target index with the correct mapping if it doesn't exist."""
+    index_url = f"{ES_URL}/{INDEX_NAME}"
+    
+    # Check if index exists
+    if requests.head(index_url).status_code == 200:
+        print(f"✅ Index '{INDEX_NAME}' already exists. Skipping creation.")
+        return True
+
+    print(f"🔧 Index '{INDEX_NAME}' not found. Creating with optimized mapping...")
+    
+    # This mapping should be consistent with import_employees.py
+    index_body = {
+        "settings": {
+            "analysis": {
+                "analyzer": {
+                    "edge_ngram_analyzer": {
+                        "tokenizer": "edge_ngram_tokenizer",
+                        "filter": ["lowercase"]
+                    }
+                },
+                "tokenizer": {
+                    "edge_ngram_tokenizer": {
+                        "type": "edge_ngram",
+                        "min_gram": 2,
+                        "max_gram": 20,
+                        "token_chars": ["letter", "digit"]
+                    }
+                }
+            }
+        },
+        "mappings": {
+            "properties": {
+                "id": {"type": "keyword"},
+                "name": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {"type": "keyword"},
+                        "edge_ngram": {"type": "text", "analyzer": "edge_ngram_analyzer", "search_analyzer": "standard"}
+                    }
+                },
+                "email": {"type": "keyword"},
+                "title": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {"type": "keyword"},
+                        "edge_ngram": {"type": "text", "analyzer": "edge_ngram_analyzer", "search_analyzer": "standard"}
+                    }
+                },
+                "department": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
+                "location": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
+                "phone": {"type": "keyword"},
+                "start_date": {"type": "date"},
+                "manager_id": {"type": "keyword"},
+                "level": {"type": "integer"}, # <-- This is the critical field for the sort error
+                "skills": {"type": "text"},
+                "projects": {"type": "text"},
+                "bio": {"type": "text"},
+                "last_updated": {"type": "date"}
+            }
+        }
+    }
+    
+    response = requests.put(index_url, json=index_body)
+    if response.ok:
+        print(f"✅ Index '{INDEX_NAME}' created successfully.")
+        return True
+    else:
+        print(f"❌ Failed to create index: {response.status_code} - {response.text}")
+        return False
 
 # Employee data templates by level
 LEVEL_TEMPLATES = {
@@ -291,6 +362,11 @@ def insert_employees_to_elasticsearch(employees):
 def main():
     print("🚀 Generating 7-level employee hierarchy...")
     
+    # Ensure the index exists with the correct mapping before inserting data
+    if not create_index_with_mapping():
+        print("❌ Aborting due to index creation failure.")
+        return
+
     # Generate employee data
     employees = generate_employee_data()
     
@@ -318,7 +394,7 @@ def main():
     
     print("\n✅ Employee hierarchy creation completed!")
     print("🔍 You can now test the hierarchy with any employee ID using:")
-    print("   curl 'http://localhost:8000/api/v1/employees/{employee_id}/hierarchy'")
+    print("   curl 'http://localhost:8000/api/v1/employees/{employee_id.employeeId}/hierarchy'")
 
 if __name__ == "__main__":
     main()

@@ -213,7 +213,7 @@ const EmployeeHierarchyTree: React.FC<EmployeeHierarchyTreeProps> = ({ hierarchy
           </div>
 
           {/* Classic Hierarchy Tree */}
-          <div className="bg-white rounded-lg border border-red-200 p-4">
+          <div className="bg-white rounded-lg border border-red-200 p-4 overflow-auto max-h-[60vh]">
             <h4 className="text-lg font-semibold text-red-700 mb-4">Organization Structure</h4>
             {hierarchy.hierarchy_tree ? renderNode(hierarchy.hierarchy_tree) : (
               <div className="text-center py-4 text-red-400">

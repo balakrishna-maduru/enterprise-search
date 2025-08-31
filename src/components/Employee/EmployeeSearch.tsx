@@ -48,7 +48,7 @@ const EmployeeSearch: React.FC<EmployeeSearchProps> = ({
     setIsLoading(true);
     
     try {
-      const hierarchy = await employeeService.getEmployeeHierarchy(employee.id);
+      const hierarchy = await employeeService.getEmployeeHierarchy(employee.employeeId);
       setEmployeeHierarchy(hierarchy);
       setShowHierarchy(true);
       

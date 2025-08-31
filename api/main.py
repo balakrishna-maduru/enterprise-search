@@ -4,9 +4,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from contextlib import asynccontextmanager
 import uvicorn
 
-from config import settings
-from routers import search, llm, health, auth, employees, chats, summary
-from middleware.auth import get_current_user
+from api.config import settings
+from api.routers import search, llm, health, auth, employees, chats, summary
+from api.middleware.auth import get_current_user
 
 
 @asynccontextmanager
@@ -42,7 +42,7 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(
-        "main:app",
+        "api.main:app",
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG

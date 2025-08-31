@@ -1,0 +1,43 @@
+{
+  "employee": {
+    "id": "537001",
+    "name": "James Wilson",
+    "title": "Chief Executive Officer"
+  },
+  "hierarchy_tree": {
+    "id": "537001",
+    "name": "James Wilson",
+    "title": "Chief Executive Officer",
+    "is_target": true,
+    "reports": [
+      {
+        "id": "537002",
+        "name": "Sarah Chen",
+        "title": "Chief Technology Officer",
+        "is_target": false,
+        "reports": []
+      },
+      {
+        "id": "537003",
+        "name": "Michael Davis",
+        "title": "Chief Financial Officer",
+        "is_target": false,
+        "reports": []
+      },
+      {
+        "id": "537004",
+        "name": "Jennifer Martinez",
+        "title": "VP of Human Resources",
+        "is_target": false,
+        "reports": []
+      },
+      {
+        "id": "537005",
+        "name": "Robert Brown",
+        "title": "VP of Sales",
+        "is_target": false,
+        "reports": []
+      }
+    ]
+  }
+}

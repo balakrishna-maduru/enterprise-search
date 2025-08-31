@@ -80,6 +80,11 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setSearchQueryState(query);
   }, []);
 
+  // New function to update page size and reset to page 1
+  const setPageSize = useCallback((size: number) => {
+    setPagination(p => ({ ...p, pageSize: size, currentPage: 1 }));
+  }, []);
+
   // New dual search function
 
   const executeDualSearch = useCallback(async (query?: string, page?: number, filtersOverride?: any): Promise<void> => {
@@ -167,12 +172,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       setIsLoading(false);
     }
   }, [searchQuery, currentUser, pagination.pageSize, selectedFilters]);
-  // Trigger search when filters change
+  // Trigger search when filters or page size change
   useEffect(() => {
     if (hasSearched) {
       executeDualSearch(undefined, 1, selectedFilters);
     }
-  }, [selectedFilters]);
+  }, [selectedFilters, pagination.pageSize]);
 
   // Clear selections when user changes
   useEffect(() => {
@@ -331,6 +336,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     pagination,
     loadDefaultDocuments,
     goToPage,
+    setPageSize,
     nextPage,
     previousPage,
     // Add a right-side filter tab (for layout integration, not a function)

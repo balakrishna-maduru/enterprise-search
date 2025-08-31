@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-Simple script to run the Enterprise Search API
+Simple script to run the Enterprise Search API.
+Run this from the project root: `python api/run.py`
 """
 import sys
 import os
 
-# Add the current directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# This script assumes it's being run from the project root.
+# No need to modify sys.path if the project structure is correct.
 
 if __name__ == "__main__":
     import uvicorn
-    from config import settings
+    # Use absolute import path
+    from api.config import settings
     
     print("🚀 Starting Enterprise Search API...")
     print(f"📡 Server will run on http://{settings.HOST}:{settings.PORT}")
@@ -18,8 +20,9 @@ if __name__ == "__main__":
     print(f"🔧 Debug mode: {settings.DEBUG}")
     
     uvicorn.run(
-        "main:app",
+        "api.main:app", # Use absolute path to the app
         host=settings.HOST,
         port=settings.PORT,
-        reload=settings.DEBUG
+        reload=settings.DEBUG,
+        reload_dirs=["api"] # Optional: specify reload directory
     )

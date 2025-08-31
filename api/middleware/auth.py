@@ -6,8 +6,8 @@ from typing import Optional
 import json
 import os
 
-from models.user import User, UserRole
-from config import settings
+from api.models.user import User, UserRole
+from api.config import settings
 
 security = HTTPBearer()
 

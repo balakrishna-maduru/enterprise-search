@@ -684,40 +684,43 @@ export class ApiService {
 
       // Transform employee data to SearchResult format
       const transformedResults = employees.map((emp: any) => {
+        const id = emp.employeeId || emp.id || emp._id;
         const employee_data: Employee = {
-          id: emp.id || parseInt(emp._id) || 0,
-          name: emp.name || emp.title || 'Unknown',
-          title: emp.title || emp.position || '',
-          email: emp.email || '',
-          department: emp.department || '',
-          location: emp.location || '',
-          phone: emp.phone || '',
-          start_date: emp.start_date || emp.startDate || '',
-          manager_id: emp.manager_id || emp.managerId,
-          level: emp.level || 1,
-          has_reports: emp.has_reports || emp.hasReports || false,
-          report_count: emp.report_count || emp.reportCount || 0,
+          id: parseInt(id) || 0,
+          employeeId: id,
+          name: emp.fullName || 'Unknown',
+          title: emp.designations || '',
+          email: emp.emailAddress || '',
+          department: emp.departments || '',
+          location: emp.city || '',
+          phone: emp.contactNos || '',
+          start_date: emp.startDate || '', // This field is not in the sample data
+          manager_id: emp.managerEmpId ? parseInt(emp.managerEmpId) : undefined,
+          level: emp.level || 0, // This field is not in the sample data
+          has_reports: emp.has_reports || false,
+          report_count: emp.report_count || 0,
           document_type: 'employee',
-          indexed_at: emp.indexed_at || emp.indexedAt || new Date().toISOString(),
-          search_text: emp.search_text || `${emp.name} ${emp.title} ${emp.department}`
+          indexed_at: emp.modified || new Date().toISOString(),
+          search_text: `${emp.fullName} ${emp.designations} ${emp.departments}`
         };
 
         return {
-          id: emp.id || emp._id || `emp_${Math.random()}`,
-          title: emp.name || emp.title || 'Unknown Employee',
-          content: `${emp.title || 'Employee'} in ${emp.department || 'Unknown Department'}${emp.location ? ` - ${emp.location}` : ''}`,
-          summary: `${emp.name || 'Unknown'} - ${emp.title || 'Employee'} in ${emp.department || 'Unknown Department'}`,
+          id: id || `emp_${Math.random()}`,
+          employeeId: id,
+          title: emp.fullName || 'Unknown Employee',
+          content: `${emp.designations || 'Employee'} in ${emp.departments || 'Unknown Department'}${emp.city ? ` - ${emp.city}` : ''}`,
+          summary: `${emp.fullName || 'Unknown'} - ${emp.designations || 'Employee'} in ${emp.departments || 'Unknown Department'}`,
           source: 'employee-directory',
           author: 'HR System',
-          department: emp.department || 'Unknown',
+          department: emp.departments || 'Unknown',
           content_type: 'employee',
           tags: [
-            emp.department?.toLowerCase().replace(/\s+/g, '-'),
-            emp.title?.toLowerCase().replace(/\s+/g, '-'),
+            emp.departments?.toLowerCase().replace(/\s+/g, '-'),
+            emp.designations?.toLowerCase().replace(/\s+/g, '-'),
             'employee'
           ].filter(Boolean),
-          timestamp: emp.start_date || emp.indexed_at || new Date().toISOString(),
-          url: emp.email ? `mailto:${emp.email}` : '#',
+          timestamp: emp.modified || new Date().toISOString(),
+          url: emp.profileUrl || (emp.emailAddress ? `mailto:${emp.emailAddress}` : '#'),
           score: emp.score || emp._score || 100,
           employee_data
         } as SearchResult;

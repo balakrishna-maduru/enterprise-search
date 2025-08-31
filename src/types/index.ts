@@ -1,6 +1,7 @@
 // Employee Types
 export interface Employee {
-  id: number;
+  id: string; // Changed to string
+  employeeId: string;
   name: string;
   title: string;
   email: string;
@@ -15,6 +16,9 @@ export interface Employee {
   document_type: string;
   indexed_at: string;
   search_text: string;
+  country?: string; // Added
+  userImageUrl?: string; // Added
+  profileUrl?: string; // Added
 }
 
 export interface EmployeeHierarchy {
@@ -33,6 +37,9 @@ export interface HierarchyNode {
   level: number;
   reports: HierarchyNode[];
   is_target: boolean;
+  country?: string; // Added
+  userImageUrl?: string; // Added
+  profileUrl?: string; // Added
 }
 
 export interface EmployeeSearchResult extends SearchResult {
@@ -71,6 +78,7 @@ export interface User {
 // Search Types
 export interface SearchResult {
   id: string;
+  employeeId?: string;
   title: string;
   summary: string;
   content: string;
@@ -173,6 +181,7 @@ export interface SearchContextType {
   pagination: PaginationInfo;
   loadDefaultDocuments: () => Promise<void>;
   goToPage: (page: number) => Promise<void>;
+  setPageSize?: (size: number) => void;
   nextPage: () => Promise<void>;
   previousPage: () => Promise<void>;
 }

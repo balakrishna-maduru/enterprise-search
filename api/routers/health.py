@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from typing import Dict, Any
-from services.elasticsearch_service import ElasticsearchService
-from models.user import User
-from middleware.auth import get_optional_user
+from api.services.elasticsearch_service import ElasticsearchService
+from api.models.user import User
+from api.middleware.auth import get_optional_user
 
 router = APIRouter()
 

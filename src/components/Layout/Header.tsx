@@ -59,8 +59,13 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Side - User Profile */}
+          {/* Top Right Logos and User Profile */}
           <div className="flex items-center space-x-6">
+            {/* Add Know_kute_logo.png and knowkute.png */}
+            <div className="flex items-center space-x-2">
+              <img src="/Know_kute_logo.png" alt="Know Kute Logo" className="h-10 w-auto object-contain" />
+              <img src="/knowkute.png" alt="Knowkute Logo" className="h-10 w-auto object-contain" />
+            </div>
             <ConnectionStatus />
             <div className="relative" ref={userMenuRef}>
               <div 

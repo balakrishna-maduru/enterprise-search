@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
-from models.search import SearchRequest, SearchResponse
-from services.elasticsearch_service import ElasticsearchService
+from api.models.search import SearchRequest, SearchResponse
+from api.services.elasticsearch_service import ElasticsearchService
 
 router = APIRouter()
 

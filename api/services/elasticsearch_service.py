@@ -1,9 +1,9 @@
 import httpx
 import json
 from typing import List, Dict, Any, Optional
-from models.search import SearchRequest, SearchResult, SearchResponse, SearchFilter
-from models.user import User
-from config import settings
+from api.models.search import SearchRequest, SearchResult, SearchResponse, SearchFilter
+from api.models.user import User
+from api.config import settings
 import logging
 
 logger = logging.getLogger(__name__)

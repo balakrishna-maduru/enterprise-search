@@ -52,8 +52,8 @@ export const useEmployeeApi = () => {
     try {
       setLoading(true);
       setError(null);
-
-      const response = await fetch(`/api/v1/employees/${employeeId}`);
+      console.log('🔍 Fetching employee details for:', JSON.stringify(employeeId));
+      const response = await fetch(`/api/v1/employees/${employeeId.employeeId}`);
       
       if (!response.ok) {
         throw new Error(`Failed to get employee: ${response.statusText}`);

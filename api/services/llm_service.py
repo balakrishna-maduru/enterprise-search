@@ -1,13 +1,13 @@
 import httpx
 import json
 from typing import List, Dict, Any
-from models.llm import (
+from api.models.llm import (
     SummaryRequest, ComprehensiveSummaryRequest, ChatRequest, 
     ChatResponse, SummaryResponse, ChatMessage
 )
-from models.search import SearchResult
-from models.user import User
-from config import settings
+from api.models.search import SearchResult
+from api.models.user import User
+from api.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
