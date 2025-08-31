@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 Script to populate the employee_hierarchy index with individual employee nodes.
+This script is designed to handle a large number of employees by processing them
+in streams and batches, keeping memory usage low.
 """
 
 import os
@@ -50,101 +52,123 @@ class HierarchyNodePopulator:
             connection_params['verify_certs'] = self.config['verify_certs']
             if self.config['ca_certs']:
                 connection_params['ca_certs'] = self.config['ca_certs']
-        connection_params['request_timeout'] = 30
+        connection_params['request_timeout'] = 60
         return Elasticsearch(**connection_params)
 
-    def get_all_employees(self):
-        """Get all employees from the source index using a scrolling search."""
-        try:
-            resp = self.es.search(
-                index=self.source_index,
-                body={"query": {"match_all": {}}},
-                scroll="2m",
-                size=1000
-            )
-            scroll_id = resp['_scroll_id']
-            sid = scroll_id
-            scroll_size = len(resp['hits']['hits'])
-
-            employees = resp['hits']['hits']
-
-            while scroll_size > 0:
-                resp = self.es.scroll(scroll_id=sid, scroll="2m")
-                sid = resp['_scroll_id']
-                scroll_size = len(resp['hits']['hits'])
-                employees.extend(resp['hits']['hits'])
-
-            return [e['_source'] for e in employees]
-        except Exception as e:
-            print(f"Error fetching employees: {e}")
-            return []
-
     def populate_nodes(self):
-        """Populates the hierarchy index with employee nodes."""
-        employees = self.get_all_employees()
-        if not employees:
-            print("No employees found to process.")
+        """
+        Populates the hierarchy index by streaming employees, building hierarchy maps,
+        and then streaming again to generate and index the final documents in batches.
+        """
+        print("Starting hierarchy population process...")
+
+        # Pass 1: Build hierarchy relationship maps in memory.
+        print("Pass 1: Building manager and report relationship maps...")
+        reports_map = defaultdict(list)
+        employee_to_manager_map = {}
+        
+        employee_count = 0
+        try:
+            query = {
+                "query": {"match_all": {}},
+                "_source": ["employeeId", "managerEmpId"]
+            }
+            for emp in helpers.scan(self.es, index=self.source_index, query=query):
+                employee_count += 1
+                emp_source = emp['_source']
+                employee_id = emp_source.get('employeeId')
+                manager_id = emp_source.get('managerEmpId')
+
+                if not employee_id:
+                    continue
+
+                employee_id_str = str(employee_id)
+                manager_id_str = str(manager_id) if manager_id and str(manager_id) != 'null' else None
+
+                employee_to_manager_map[employee_id_str] = manager_id_str
+                
+                if manager_id_str:
+                    reports_map[manager_id_str].append(employee_id_str)
+                
+                if employee_count % 10000 == 0:
+                    print(f"  ...processed {employee_count} employees for map building")
+
+            print(f"Pass 1 complete. Processed {employee_count} employees.")
+            if employee_count == 0:
+                print("No employees found to process.")
+                return
+
+        except Exception as e:
+            print(f"Error during Pass 1 (building maps): {e}")
             return
 
-        print(f"Found {len(employees)} employees. Preparing documents...")
+        print("\nPass 2: Generating and indexing hierarchy documents...")
+        
+        def generate_actions():
+            processed_count = 0
+            for emp in helpers.scan(self.es, index=self.source_index, query={"query": {"match_all": {}}}):
+                processed_count += 1
+                if processed_count % 10000 == 0:
+                    print(f"  ...prepared {processed_count} documents for indexing")
 
-        # Create a map for quick lookup of employees by their ID
-        employee_by_id = {emp.get('employeeId'): emp for emp in employees if emp.get('employeeId')}
+                emp_source = emp['_source']
+                employee_id = emp_source.get("employeeId")
+                if not employee_id:
+                    continue
 
-        reports_map = defaultdict(list)
-        for emp in employees:
-            manager_id = emp.get('managerEmpId')
-            if manager_id:
-                reports_map[str(manager_id)].append(emp['employeeId'])
-
-        actions = []
-        for emp in employees:
-            employee_id = emp.get("employeeId")
-            if not employee_id:
-                continue
-
-            # Build the management chain IDs
-            management_chain_ids = []
-            current_emp_id = employee_id
-            # Traverse upwards until no manager is found or a cycle is detected (max 50 levels for safety)
-            for _ in range(50):
-                if current_emp_id not in employee_by_id:
-                    break # Employee not found in our dataset
+                management_chain_ids = []
+                current_emp_id = str(employee_id)
+                for _ in range(50):
+                    if current_emp_id and current_emp_id != 'None':
+                        if current_emp_id in management_chain_ids:
+                            print(f"Warning: Cycle detected for employee {employee_id} at manager {current_emp_id}. Breaking chain.")
+                            break
+                        
+                        management_chain_ids.append(current_emp_id)
+                        manager_id = employee_to_manager_map.get(current_emp_id)
+                        
+                        if not manager_id:
+                            break 
+                        
+                        current_emp_id = manager_id
+                    else:
+                        break
                 
-                current_emp_data = employee_by_id[current_emp_id]
-                management_chain_ids.append(str(current_emp_id)) # Add current employee to their own chain
+                management_chain_ids.reverse()
 
-                manager_id = current_emp_data.get('managerEmpId')
-                if not manager_id or str(manager_id) == 'null' or str(manager_id) == '':
-                    break # No manager, reached the top
-
-                # Check for cycles to prevent infinite loops
-                if str(manager_id) in management_chain_ids:
-                    print(f"Warning: Cycle detected for employee {employee_id} at manager {manager_id}. Breaking chain traversal.")
-                    break
-                
-                current_emp_id = str(manager_id)
-            
-            # The chain is built from employee up to CEO, so reverse it for CEO to employee order
-            management_chain_ids.reverse()
-
-            doc = {
-                "_index": self.target_index,
-                "_id": employee_id,
-                "_source": {
-                    **emp,
-                    "reports": reports_map.get(employee_id, []),
-                    "management_chain_ids": management_chain_ids # New field
+                yield {
+                    "_index": self.target_index,
+                    "_id": employee_id,
+                    "_source": {
+                        **emp_source,
+                        "reports": reports_map.get(str(employee_id), []),
+                        "management_chain_ids": management_chain_ids,
+                    }
                 }
-            }
-            actions.append(doc)
-
-        print(f"Bulk indexing {len(actions)} documents...")
+        
+        print(f"Starting bulk indexing of {employee_count} documents...")
         try:
-            helpers.bulk(self.es, actions)
+            success, errors = helpers.bulk(
+                self.es, 
+                generate_actions(), 
+                chunk_size=500, 
+                raise_on_error=False,
+                max_retries=3,
+                initial_backoff=2,
+                max_backoff=60
+            )
+            
+            print(f"\nBulk indexing complete. Success: {success}, Failures: {len(errors)}")
+
+            if errors:
+                print("First 5 errors encountered:")
+                for i, error in enumerate(errors[:5]):
+                    print(f"  {i+1}: {error}")
+            
             print("\n✅ Hierarchy node population completed!")
+
         except Exception as e:
-            print(f"Error during bulk indexing: {e}")
+            print(f"An unrecoverable error occurred during bulk indexing: {e}")
 
 def main():
     print("Populating Employee Hierarchy Nodes")
