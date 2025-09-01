@@ -13,12 +13,25 @@ import { Button } from '../UI';
 import Pagination from '../Common/Pagination';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import SearchFilters from '../Search/SearchFilters';
+import MessageRenderer from '../Chat/MessageRenderer'; // Import the new component
 
 interface UnifiedDocumentsPageProps {
   className?: string;
   onNavigateToChat?: (document?: any) => void;
   onNavigateToSummary?: (document?: any) => void;
 }
+
+interface ChatResponseData {
+  output: string;
+  citation?: Array<{ title: string; content: string; url: string; text_used: string }>;
+  session_id?: string;
+  evaluation?: any;
+}
+
+// Helper to generate a simple session ID
+const generateSessionId = () => {
+  return `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+};
 
 export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({ 
   className = '', 
@@ -44,6 +57,8 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [isSummarizing, setIsSummarizing] = useState(false);
+  // New state for chat response, now stores the data object
+  const [chatResponseData, setChatResponseData] = useState<ChatResponseData | null>(null);
 
   // Example filtersData, ensure all values are numbers and no undefineds
   const filtersData = [
@@ -101,6 +116,7 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
       setDocuments([]);
       setEmployees([]);
       setTotalResults(0);
+      setChatResponseData(null); // Clear chat response data on empty search
       return;
     }
     // Use context results populated by executeSearch/dual search
@@ -109,7 +125,73 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
     setTotalResults(documentTotal + employeeTotal);
   }, [currentUser, hasSearched, searchQuery, documentResults, employeeResults, documentTotal, employeeTotal]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  // New function to call the chat API
+  const callChatApi = useCallback(async (query: string) => {
+    const words = query.trim().split(/\s+/);
+    if (words.length > 2) {
+      console.log(`Attempting to call chat API for query: "${query}"`);
+      
+      const requestBody = {
+        "session_id": generateSessionId(),
+        "input": query,
+        "provider": "GCP_CLAUDE",
+        "provider_id": "claude-3-5-sonnet@20240620",
+        "knnField": "embeddings",
+        "rankWindowSize": 50,
+        "rankConstant": 20,
+        "k": 5,
+        "indexName": "datasets-datanaut.ekb.qodo.data-ada.sg.uat", // This might need to be dynamic
+        "embeddingModelType": "DBS_QUDO_EMBEDDING_MODEL",
+        "numberOfCandidates": 10,
+        "temperature": 0.01,
+        "embeddingModelHostType": "DBS_HOST_EMBEDDING_MODEL",
+        "size": 20,
+        "radius": 1,
+        "collapseField": "docId",
+        "rerank_topk": 5,
+        "knowledge_scope": "world"
+      };
+
+      console.log('Request Body:', JSON.stringify(requestBody, null, 2));
+
+      try {
+        const response = await fetch('http://localhost:8000/api/v1/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.code === 0 && result.data) {
+            setChatResponseData(result.data); // Store the entire data object
+          } else {
+            setChatResponseData({ output: result.msg || 'Unknown error from chat API' });
+            console.error('Chat API error:', result.msg);
+          }
+        } else {
+          // Log the full response for debugging 422
+          const errorText = await response.text();
+          setChatResponseData({ output: `Error from chat API: ${response.status} ${response.statusText}. Details: ${errorText}` });
+          console.error('Chat API error:', response.status, response.statusText, errorText);
+        }
+      } catch (error) {
+        setChatResponseData({ output: `Failed to connect to chat API: ${error}` });
+        console.error('Chat API connection error:', error);
+      }
+    } else {
+      setChatResponseData(null); // Clear chat response if query is 2 words or less
+    }
+  }, []);
+
+  useEffect(() => { 
+    loadData(); 
+    if (hasSearched && searchQuery.trim()) {
+      callChatApi(searchQuery);
+    }
+  }, [loadData, hasSearched, searchQuery, callChatApi]);
 
 
   // No need to reset pagination here; handled by context
@@ -182,6 +264,17 @@ export const UnifiedDocumentsPage: React.FC<UnifiedDocumentsPageProps> = ({
               isSearchActive={!!searchQuery.trim()}
             />
             <ResultsPerPage />
+          </div>
+        )}
+
+        {/* New: Display Chat Response using MessageRenderer */}
+        {chatResponseData && chatResponseData.output && (
+          <div className="bg-blue-50 p-4 rounded-lg shadow-md mb-4">
+            <h4 className="text-blue-800 font-semibold mb-2">Chat Response:</h4>
+            <MessageRenderer 
+              output={chatResponseData.output} 
+              citations={chatResponseData.citation} 
+            />
           </div>
         )}
 

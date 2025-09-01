@@ -1,0 +1,258 @@
+[
+  {
+    "session_id": "session_1756713062298_703bru80b",
+    "first_message": "hello",
+    "created_at": "2025-09-01T15:51:07.187387Z",
+    "updated_at": "2025-09-01T15:51:07.187389Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "36e24406-378b-414a-bcb6-326f5116e17a",
+        "content": "hello",
+        "role": "user",
+        "created_at": "2025-09-01T15:51:07.187349Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "e50f5102-445e-4c67-9802-724873e5a5b7",
+        "content": "This is a mock response to your question: hello. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T15:51:07.187383Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714253648_tw4beqmzr",
+    "first_message": "ada",
+    "created_at": "2025-09-01T16:10:59.804685Z",
+    "updated_at": "2025-09-01T16:12:35.706975",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "1e6a378d-1daa-44e0-9495-0e86ea3dc723",
+        "content": "ada",
+        "role": "user",
+        "created_at": "2025-09-01T16:10:59.804623Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "90ebdfd9-26ca-49e4-b7ca-47424b9b7dc9",
+        "content": "This is a mock response to your question: ada. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:10:59.804681Z"
+      },
+      {
+        "idx": 3,
+        "msg_id": "ed190cee-f829-4538-8654-718fd4cff017",
+        "content": "ada",
+        "role": "user",
+        "created_at": "2025-09-01T16:12:35.706909Z"
+      },
+      {
+        "idx": 4,
+        "msg_id": "c8d2455d-ea89-47f8-af4c-093d6ee859d8",
+        "content": "This is a mock response to your question: ada. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:12:35.706971Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714441631_i3wzz3ul3x8",
+    "first_message": "what is api?",
+    "created_at": "2025-09-01T16:14:01.640737Z",
+    "updated_at": "2025-09-01T16:14:01.640739Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "c32fa8b0-dae5-4842-83ac-fdfd358bd856",
+        "content": "what is api?",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:01.640700Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "419f98b3-359c-4f4b-919d-fdc90c6d87c4",
+        "content": "This is a mock response to your question: what is api?. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:01.640733Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714441632_7lvfomabbxa",
+    "first_message": "what is api?",
+    "created_at": "2025-09-01T16:14:01.643216Z",
+    "updated_at": "2025-09-01T16:14:01.643218Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "04de0978-87ce-45a2-b8e9-d50e7f26daf0",
+        "content": "what is api?",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:01.643199Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "378e4f8d-f26c-41e5-8056-3b504ca5fdc1",
+        "content": "This is a mock response to your question: what is api?. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:01.643213Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714451628_v16lwh4ktod",
+    "first_message": "what is api",
+    "created_at": "2025-09-01T16:14:11.633392Z",
+    "updated_at": "2025-09-01T16:14:11.633394Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "fe58fb87-1ac8-44cb-acd9-a28d42602587",
+        "content": "what is api",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:11.633369Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "b8290fc1-8e1e-437b-a864-196336a44cf0",
+        "content": "This is a mock response to your question: what is api. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:11.633389Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714451790_kzzdc9yd0er",
+    "first_message": "what is ap",
+    "created_at": "2025-09-01T16:14:11.793011Z",
+    "updated_at": "2025-09-01T16:14:11.793013Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "f7976d5f-06a9-47f9-a297-57a42999582a",
+        "content": "what is ap",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:11.792986Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "ad649cf1-9ea0-4283-aa3c-489078eeef79",
+        "content": "This is a mock response to your question: what is ap. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:11.793007Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714451953_gnflnpcu3y7",
+    "first_message": "what is a",
+    "created_at": "2025-09-01T16:14:11.956519Z",
+    "updated_at": "2025-09-01T16:14:11.956522Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "14b7da00-16a6-4d73-a54a-8645557ddf25",
+        "content": "what is a",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:11.956494Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "bd6901c7-cd2c-4bda-bc6b-42f6a92dcd98",
+        "content": "This is a mock response to your question: what is a. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:11.956516Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714458618_aelpau596in",
+    "first_message": "what is a",
+    "created_at": "2025-09-01T16:14:18.624690Z",
+    "updated_at": "2025-09-01T16:14:18.624692Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "6b500770-4007-4083-aa75-5480c115ae75",
+        "content": "what is a",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:18.624670Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "42f9b40a-7704-4172-8021-8e2675074cc6",
+        "content": "This is a mock response to your question: what is a. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:18.624688Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714458844_ajvy6lq5lmv",
+    "first_message": "what is ad",
+    "created_at": "2025-09-01T16:14:18.847492Z",
+    "updated_at": "2025-09-01T16:14:18.847495Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "8d020a11-434f-4059-b4b4-e7d5a871d977",
+        "content": "what is ad",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:18.847469Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "3fa5355a-e8c7-4142-8001-5af05548339c",
+        "content": "This is a mock response to your question: what is ad. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:18.847490Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714459043_01hlktpay2sm",
+    "first_message": "what is ada",
+    "created_at": "2025-09-01T16:14:19.047886Z",
+    "updated_at": "2025-09-01T16:14:19.047888Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "3c5f6707-11a3-45ab-b053-576333028342",
+        "content": "what is ada",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:19.047859Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "b6b7a0d0-c4d1-48b6-8f67-b6e4f65369c2",
+        "content": "This is a mock response to your question: what is ada. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:19.047883Z"
+      }
+    ]
+  },
+  {
+    "session_id": "session_1756714459322_ph6922kk45",
+    "first_message": "what is ada",
+    "created_at": "2025-09-01T16:14:19.324864Z",
+    "updated_at": "2025-09-01T16:14:19.324870Z",
+    "messages": [
+      {
+        "idx": 1,
+        "msg_id": "6d77e147-4359-4122-871d-88f434b927c5",
+        "content": "what is ada",
+        "role": "user",
+        "created_at": "2025-09-01T16:14:19.324834Z"
+      },
+      {
+        "idx": 2,
+        "msg_id": "38a346e6-e09c-4e79-95ef-91f0417101d8",
+        "content": "This is a mock response to your question: what is ada. In a real implementation, this would be processed by the GCP_CLAUDE model with knowledge scope 'world' and provide comprehensive insights based on the available data.\n\nPC tool Benefit\n\nLenovo Settings (Windows) An application that provides power management features, such as\nConnected Standby for the user.\n\nAdaptive Thermal Management Adjusts system power and fan speeds based on ambient levels.\n\nActive Directory and LANDesk\u00ae Supports remote deployment of power schemes and global settings\nto allow administrators the ability to control and enforce ThinkPad\nenergy savings company-wide.\n\nEasyResume Provides quick recovery from computer lid close, balancing low power\nstate by suppressing CPU usage at lid close.\n\nIntelligent Cooling Balances thermal performance to adjust settings to provide a cooler\nsurface for comfort while optimizing product energy.\n\nEnergy Saving Power Supply Unit\n(PSU)\n\nThe PSU turns off the internal fan when the system detects the power\nload is low and saves energy consumption.[1]\n\nSmart Power (Monitors) A power and energy management feature that dynamically detects and optimizes the distribution of power.[2]",
+        "role": "assistant",
+        "created_at": "2025-09-01T16:14:19.324852Z"
+      }
+    ]
+  }
+]
